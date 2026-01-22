@@ -129,10 +129,10 @@ export default forwardRef(function FileInput(
                                     <img 
                                         src={preview} 
                                         alt="Preview" 
-                                        className="w-12 h-10 object-cover rounded"
+                                        className="w-12 h-9 object-cover rounded"
                                     />
                                 ) : (
-                                    <div className="w-12 h-10 bg-gray-100 rounded flex items-center justify-center">
+                                    <div className="w-12 h-9 bg-gray-100 rounded flex items-center justify-center">
                                         <FileIcon className="w-6 h-6 text-gray-400" />
                                     </div>
                                 )}

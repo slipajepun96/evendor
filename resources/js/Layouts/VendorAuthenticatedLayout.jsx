@@ -7,6 +7,9 @@ import { useState } from 'react';
 
 export default function VendorAuthenticatedLayout({ header, children }) {
     // const user = usePage().props.auth.user;
+    const vendor = usePage().props.auth.vendor; 
+
+
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -67,7 +70,7 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-gray-50 transition duration-150 ease-in-out hover:text-gray-100 focus:outline-none"
                                             >
-                                                {/* {user.name} */}
+                                                {vendor?.vendor_contact_person}
 
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
@@ -261,7 +264,7 @@ export default function VendorAuthenticatedLayout({ header, children }) {
             )}
 
             <main>
-                {typeof children === 'function' ? children({ user }) : children}
+                {typeof children === 'function' ? children({ user, vendor }) : children}
 
             </main>
         </div>

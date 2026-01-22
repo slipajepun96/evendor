@@ -24,15 +24,15 @@ class VendorDetails extends Model
     }
 
     protected $fillable = [
+            'vendor_account_id',
             'vendor_email',
             'vendor_type',
-            'vendor_roc_number',
-            'vendor_entity_number',
-            'vendor_nric_number',
-            'vendor_company_name',
+            'vendor_company_type',
+            'vendor_id_num',
+            'vendor_name',
             'vendor_contact_person',
             'vendor_contact_person_phone',
-            'vemodr_contact_person_designation',
+            'vendor_contact_person_designation',
             'vendor_phone',
             'vendor_address',
             'vendor_bumiputera_status',
@@ -42,10 +42,14 @@ class VendorDetails extends Model
             'vendor_tax_identification_num',
             'vendor_sst_number',
             'vendor_establishment_date',
-            'vendor_authorised_capital',
-            'vendor_paid_up_capital',
+            'vendor_capital_1',//authorised
+            'vendor_capital_2', //paidup
             'vendor_bumiputera_ownership_percent',
             'vendor_non_bumiputera_ownership_percent',
+            'vendor_bank_name',
+            'vendor_bank_account_number',
+            'vendor_bank_entity_registration_num',
+            'vendor_bank_account_statement_address',
             'vendor_MOF_reg_num',
             'vendor_MOF_start_date',
             'vendor_MOF_expiry_date',
@@ -66,5 +70,10 @@ class VendorDetails extends Model
             'vendor_CIDB_CE_cat_grade',
             'vendor_CIDB_ME_cat_grade',
             'vendor_CIDB_attachment_address',
+            'vendor_MPOB_license_num',
+            'vendor_MPOB_start_date',
+            'vendor_MPOB_end_date',
+            'vendor_MPOB_license_category',
+            'vendor_MPOB_attachment_address',
     ];
 }

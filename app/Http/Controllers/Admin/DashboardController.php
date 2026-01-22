@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
@@ -17,78 +17,17 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class VendorController extends Controller
+class DashboardController extends Controller
 {
-    public function showLoginForm()
-    {
-        return redirect('/');
-    }
-
-    public function vendorLogin(Request $request)
-    {
-        $request->validate([
-            'vendor_email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        // Attempt to authenticate the vendor
-        if (Auth::guard('vendor')->attempt([
-            'vendor_email' => $request->vendor_email,
-            'password' => $request->password
-        ], $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
-            return redirect()->intended(route('vendor.dashboard', absolute: false));
-        }
-
-        return back()->withErrors([
-            'vendor_email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('vendor_email');
-    }
-
-    public function vendorRegister(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'vendor_contact_person' => 'required|string|max:255',
-            'vendor_email' => 'required|string|lowercase|email|max:255|unique:vendors,vendor_email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
-        $vendor = Vendor::create([
-            'vendor_contact_person' => $request->vendor_contact_person,
-            'vendor_email' => $request->vendor_email,
-            'password' => $request->password, // Auto-hashed by model cast
-        ]);
-
-        event(new Registered($vendor));
-
-        Auth::guard('vendor')->login($vendor);
-
-        return redirect(route('vendor.dashboard', absolute: false));
-    }
-
-    public function vendorLogout(Request $request): RedirectResponse
-    {
-        Auth::guard('vendor')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
-
-    public function vendorDashboard(): Response
+    public function adminDashboard(): Response
     {
 
-        $vendor = Auth::guard('vendor')->user()->vendor_contact_person;
-        $completed_registration = false;
-
-        //check is vendor has completed registration
-        $completed_registration_status = VendorDetails::where('vendor_account_id', Auth::guard('vendor')->user()->id)->where('is_active', '1')->exists();
-
-        return Inertia::render('Vendor/VendorDashboard', [
-            'vendor' => $vendor,
-            'completed_registration_status' => $completed_registration_status,
+        $unapproved_vendors = VendorDetails::where('is_approved','0')->where('is_active', '1')->get();
+        $approved_vendors = VendorDetails::where('is_approved','1')->where('is_active', '1')->get();
+        
+        return Inertia::render('Dashboard', [
+            'unapproved_vendors' => $unapproved_vendors,
+            'approved_vendors' => $approved_vendors,
         ]);
     }
 
@@ -313,3 +252,4 @@ class VendorController extends Controller
 
     }
 }
+

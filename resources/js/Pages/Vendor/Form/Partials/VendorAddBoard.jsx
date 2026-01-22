@@ -113,7 +113,7 @@ export default function VendorAddBoard({ onAddBoard }) {
                                 <div>
                                     <InputLabel
                                         htmlFor="vendor_board_ic_num"
-                                        value="No. Kad Pengenalan"
+                                        value="No. Kad Pengenalan / Pasport"
                                     />
                                     <TextInput
                                         id="vendor_board_ic_num"

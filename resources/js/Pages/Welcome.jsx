@@ -60,11 +60,11 @@ export default function Welcome({ auth, canResetPassword, status }) {
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
 
                         <main className="mt-6">
-                            <section class="sm:bg-white md:bg-gray-50">
-                                <div class=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
-                                    <div class="flex flex-col justify-center">
-                                        <h1 class="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
-                                        <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
+                            <section className="sm:bg-white md:bg-gray-50">
+                                <div className=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
+                                    <div className="flex flex-col justify-center">
+                                        <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
+                                        <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
                                         <div className='grid grid-cols-3 gap-2'>
                                             <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
                                                 Selamat
@@ -81,14 +81,14 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl">
-                                            <h2 class="text-2xl font-bold text-gray-900">
+                                        <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl">
+                                            <h2 className="text-2xl font-bold text-gray-900">
                                                 {formType === 'register' ? 'Daftar Sebagai Vendor' : formType === 'admin' ? 'Log Masuk Pentadbir' : 'Log Masuk Vendor'}
                                             </h2>
 
                                             {formType === 'login' ? (
                                                 // Vendor Login Form
-                                                <form class="md:mt-8 md:space-y-6" action="#" onSubmit={submitLogin}>
+                                                <form className="md:mt-8 md:space-y-6" action="#" onSubmit={submitLogin}>
                                                     <div>
                                                         <InputLabel htmlFor="vendor_email" value="E-Mel" />
 
@@ -97,7 +97,7 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                                             type="email"
                                                             name="vendor_email"
                                                             value={data.vendor_email}
-                                                            className="mt-1 block w-full"
+                                                            className="mt-1 block w-full text-gray-800"
                                                             autoComplete="vendor_email"
                                                             isFocused={true}
                                                             onChange={(e) => setData('vendor_email', e.target.value)}
@@ -203,7 +203,7 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                             ) : ""
                                         }
 
-                                            <div class="text-sm font-medium text-gray-900 border-t pt-4 mt-4">
+                                            <div className="text-sm font-medium text-gray-900 border-t pt-4 mt-4">
                                                 {formType === 'register' ? (
                                                     <>
                                                         Sudah mempunyai akaun?

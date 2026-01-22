@@ -27,15 +27,37 @@ import {
 } from "@/Components/ui/select"
 import { useForm } from '@inertiajs/react';
 import VendorAddBoard from './Partials/VendorAddBoard';
+import { Calendar } from "@/Components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export default function VendorDashboard() {
+    const { vendor } = usePage().props.auth;
     const user = usePage().props.auth.user;
 
     const hours = now.getHours();
 
 
-    const [vendorType, setVendorType] = useState('company'); 
+    const [vendorType, setVendorType] = useState(''); 
+    const [companyType, setCompanyType] = useState(''); 
     const [boardDirectors, setBoardDirectors] = useState([]); 
+    const [shouldSubmit, setShouldSubmit] = useState(false);
+    
+    // Separate state for each calendar popup
+    const [openEstablishment, setOpenEstablishment] = useState(false);
+    const [openMOFStart, setOpenMOFStart] = useState(false);
+    const [openMOFExpiry, setOpenMOFExpiry] = useState(false);
+    const [openPKKStart, setOpenPKKStart] = useState(false);
+    const [openPKKExpiry, setOpenPKKExpiry] = useState(false);
+    const [openCIDBStart, setOpenCIDBStart] = useState(false);
+    const [openCIDBExpiry, setOpenCIDBExpiry] = useState(false);
+    const [openMPOBStart, setOpenMPOBStart] = useState(false);
+    const [openMPOBExpiry, setOpenMPOBExpiry] = useState(false);
 
     //state untuk bod
     const handleAddBoardDirector = (directorData) => {
@@ -50,25 +72,28 @@ export default function VendorDashboard() {
     const { data, setData, post, processing, errors, reset } = useForm({
             vendor_email: '',
             vendor_type: '',
-            vendor_roc_number: '',
-            vendor_entity_number: '',
-            vendor_nric_number: '',
+            vendor_company_type: '',
+            vendor_id_num: '',
             vendor_name: '',
-            vendor_contact_person: '',
+            vendor_contact_person: vendor.vendor_contact_person || '',
             vendor_contact_person_phone: '',
-            vemodr_contact_person_designation: '',
+            vendor_contact_person_designation: '',
             vendor_phone: '',
             vendor_address: '',
-            vendor_bumiputera_status: '',
+            // vendor_bumiputera_status: '',
             vendor_business_experience_year: '',
             vendor_business_experience_month: '',
             vendor_website: '',
             vendor_tax_identification_num: '',
             vendor_sst_number: '',
             vendor_establishment_date: '',
-            vendor_authorised_capital: '',
-            vendor_paid_up_capital: '',
-            vendor_bumiputera_ownership_percent: '',
+            vendor_capital_1: '',
+            vendor_capital_2: '',
+            vendor_bumiputera_ownership_percent: '' || 0.00,
+            vendor_bank_entity_registration_num: '',
+            vendor_bank_account_statement_address: '',
+            vendor_bank_name: '',
+            vendor_bank_account_number: '',
             vendor_non_bumiputera_ownership_percent: '',
             vendor_MOF_reg_num: '',
             vendor_MOF_start_date: '',
@@ -90,31 +115,50 @@ export default function VendorDashboard() {
             vendor_CIDB_CE_cat_grade: '',
             vendor_CIDB_ME_cat_grade: '',
             vendor_CIDB_attachment_address: '',
+            vendor_MPOB_license_num: '',
+            vendor_MPOB_start_date: '',
+            vendor_MPOB_end_date: '',
+            vendor_MPOB_license_category: '',
+            vendor_MPOB_attachment_address: '',
     });
 
     const submit = (e) => {
         e.preventDefault();
-        console.log('onSuccess', data);
+        // console.log('onSuccess', data);
+        if(currentPart !== totalParts){
+            return;
+        }
 
-        post(route('allottee.add'), {
-            onSuccess: () => {
-                reset(
-                    'allottee_nric',
-                    'allottee_name',
-                    'allottee_address',
-                    'allottee_phone_num',
-                    'allottee_email',
-                    'allottee_bank_name',
-                    'allottee_bank_acc_num',
-                    'allottee_is_dead',
-                    'allottee_dead_cert_num',
-                );
-                // Close the dialog
-                console.log('onSuccess', data);
-                setIsDialogOpen(false);
-            },
-        });
+        setData(prev => ({
+            ...prev,
+            boardDirectors : boardDirectors
+        }));
+        setShouldSubmit(true);
     };
+
+    useEffect(() => {
+        if (shouldSubmit) {
+            setShouldSubmit(false);
+            
+            post(route('vendor.complete-registration.save'), {
+                ...data
+            },
+            {
+                preserveScroll: true,
+                onError: errors => {
+                    console.group('Submission Errors');
+                    console.error('Errors:', errors);
+                    console.groupEnd();
+                },
+                onSuccess: () => {
+                    reset();
+                },
+            });
+        }
+    }, [data, shouldSubmit]); // Watch for changes in data and shouldSubmit
+
+
+
 
     const handleNext = () => {
         if (currentPart < totalParts) {
@@ -133,9 +177,18 @@ export default function VendorDashboard() {
     const handleVendorTypeChange = (type) => {
         setVendorType(type);
         setData('vendor_type', type);
+        setData('vendor_company_type', '');
+        // setData('')
     };
 
-    const totalParts = 4;
+    const handleCompanyTypeChange = (companyType) => {
+        setCompanyType(companyType);
+        setData('vendor_company_type', companyType);
+    };
+
+    const [dropdown, setDropdown] = useState("dropdown")
+
+    const totalParts = 5;
 
     const [currentPart, setCurrentPart] = useState(1);
 
@@ -206,17 +259,49 @@ export default function VendorDashboard() {
                                                     { value: 'company', label: 'Syarikat' },
                                                     { value: 'gov_entity', label: 'Perbadanan / Entiti Kerajaan' },
                                                     { value: 'cooperation', label: 'Koperasi' },
-                                                    { value: 'individual', label: 'Individu' },
+                                                    { value: 'organisation', label: 'Pertubuhan / Kelab' },
                                                 ]}
                                                 columns={4}
                                                 required
                                             />
                                             <InputError
-                                                message={errors.product_name}
+                                                message={errors.vendor_type}
                                                 className="mt-2"
                                             />
                                         </div>
                                     </div>
+                                    {vendorType === 'company' && (
+                                    <div className="grid flex-1 gap-2 md:grid-cols-1 mt-2">
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_company_type"
+                                                value={
+                                                    <>
+                                                        Jenis Syarikat<span className="text-red-500">*</span>
+                                                    </>
+                                                }
+                                            />
+                                            <RadioGroup
+                                                name="vendor_company_type"
+                                                value={data.vendor_company_type}
+                                                 onChange={handleCompanyTypeChange}
+                                                options={[
+                                                    { value: 'bhd', label: 'Syarikat Berhad' },
+                                                    { value: 'sdn-bhd', label: 'Syarikat Sendirian Berhad' },
+                                                    { value: 'partnership', label: 'Perkongsian' },
+                                                    { value: 'sole-ownership', label: 'Milikan Tunggal' },
+                                                ]}
+                                                columns={4}
+                                            />
+                                            <InputError
+                                                message={errors.vendor_company_type}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                    </div>
+                                    )}
+                                    {(vendorType !== '') && (
+                                        <>
                                     <div className="grid flex-1 gap-2 md:grid-cols-1 my-2">
                                         <div className='grid-cols-2'>
                                             <InputLabel
@@ -247,12 +332,13 @@ export default function VendorDashboard() {
                                         {vendorType !== 'gov_entity' && ( 
                                         <div>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_id_num"
                                                 value={
                                                     <>
-                                                    {vendorType === 'company' && ( <>No. Pendaftaran SSM (Bagi Syarikat Sahaja) </>)}
+                                                    {vendorType === 'company' && ( <>No. Pendaftaran SSM  </>)}
                                                     {vendorType === 'individual' && ( <>No. Kad Pengenalan</>)}
                                                     {vendorType === 'cooperation' && ( <>No. Pendaftaran Koperasi</>)}
+                                                    {vendorType === 'organisation' && ( <>No. Pendaftaran Pertubuhan / Kelab</>)}
                                                         {/* No. Pendaftaran SSM (Bagi Syarikat Sahaja) / Koperasi / No. Kad Pengenalan (Bagi Individu Sahaja) */}
                                                         <span className="text-red-500">*</span>
                                                     </>
@@ -260,17 +346,17 @@ export default function VendorDashboard() {
                                             />
 
                                             <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
+                                                id="vendor_id_num"
+                                                name="vendor_id_num"
+                                                value={data.vendor_id_num}
                                                 className="mt-1 block w-full"
                                                 onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
+                                                    setData('vendor_id_num', e.target.value)
                                                 }
                                                 required
                                             />
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_id_num}
                                                 className="mt-2"
                                             />
                                         </div>
@@ -278,51 +364,43 @@ export default function VendorDashboard() {
                                         {vendorType !== 'individual' && (
                                         <div>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_establishment_date"
                                                 value={
                                                     <>
-                                                        Tarikh Mula Pendaftaran<span className="text-red-500">*</span>
+                                                        Tarikh Mula Pendaftaran / Ditubuhkan<span className="text-red-500">*</span>
                                                     </>
                                                 }
                                             />
-                                            <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
-                                                }
-                                                required
-                                            />
+
+                                            <Popover open={openEstablishment} onOpenChange={setOpenEstablishment} modal={false}>
+                                                <PopoverTrigger asChild>
+                                                    <button
+                                                        type="button"
+                                                        className={cn(
+                                                            "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                            !data.vendor_establishment_date && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        { data.vendor_establishment_date ? format(data.vendor_establishment_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                    </button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                    <Calendar
+                                                    mode="single"
+                                                    selected={data.vendor_establishment_date ? new Date(data.vendor_establishment_date) : undefined}
+                                                    onSelect={selectedDate => {
+                                                            setData('vendor_establishment_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                            setOpenEstablishment(false);
+                                                        }}
+                                                    captionLayout={dropdown}
+                                                    fromYear={1900}
+                                                    toYear={2100}
+                                                    className="rounded-lg border shadow-sm"
+                                                />
+                                                </PopoverContent>
+                                            </Popover>
                                             <InputError
-                                                message={errors.vendor_name}
-                                                className="mt-2"
-                                            />
-                                        </div>
-                                        )}
-                                        {vendorType == 'company'  && (
-                                        <div>
-                                            <InputLabel
-                                                htmlFor="vendor_name"
-                                                value={
-                                                    <>
-                                                        Tarikh Tamat Pendaftaran (Jika Ada)
-                                                    </>
-                                                }
-                                            />
-                                            <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
-                                                }
-                                                required
-                                            />
-                                            <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_establishment_date}
                                                 className="mt-2"
                                             />
                                         </div>
@@ -331,7 +409,7 @@ export default function VendorDashboard() {
                                     <div className="grid flex-1 gap-2 md:grid-cols-1 my-2">
                                         <div className='grid-cols-2'>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_address"
                                                 value={
                                                     <>
                                                         Alamat Surat Menyurat Vendor<span className="text-red-500">*</span>
@@ -339,17 +417,17 @@ export default function VendorDashboard() {
                                                 }
                                             />
                                             <TextArea
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
+                                                id="vendor_address"
+                                                name="vendor_address"
+                                                value={data.vendor_address}
                                                 className="mt-1 block w-full"
                                                 onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
+                                                    setData('vendor_address', e.target.value)
                                                 }
                                                 required
                                             />
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_address}
                                                 className="mt-2"
                                             />
                                         </div>
@@ -357,7 +435,7 @@ export default function VendorDashboard() {
                                     <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
                                         <div>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_phone"
                                                 value={
                                                     <>
                                                         No. Telefon<span className="text-red-500">*</span>
@@ -365,23 +443,23 @@ export default function VendorDashboard() {
                                                 }
                                             />
                                             <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
+                                                id="vendor_phone"
+                                                name="vendor_phone"
+                                                value={data.vendor_phone}
                                                 className="mt-1 block w-full"
                                                 onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
+                                                    setData('vendor_phone', e.target.value)
                                                 }
                                                 required
                                             />
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_phone}
                                                 className="mt-2"
                                             />
                                         </div>
                                         <div>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_email"
                                                 value={
                                                     <>
                                                         E-Mel<span className="text-red-500">*</span>
@@ -389,23 +467,23 @@ export default function VendorDashboard() {
                                                 }
                                             />
                                             <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
+                                                id="vendor_email"
+                                                name="vendor_email"
+                                                value={data.vendor_email}
                                                 className="mt-1 block w-full"
                                                 onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
+                                                    setData('vendor_email', e.target.value)
                                                 }
                                                 required
                                             />
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_email}
                                                 className="mt-2"
                                             />
                                         </div>
                                         <div>
                                             <InputLabel
-                                                htmlFor="vendor_name"
+                                                htmlFor="vendor_website"
                                                 value={
                                                     <>
                                                         Laman Web
@@ -413,74 +491,146 @@ export default function VendorDashboard() {
                                                 }
                                             />
                                             <TextInput
-                                                id="vendor_name"
-                                                name="vendor_name"
-                                                value={data.vendor_name}
+                                                id="vendor_website"
+                                                name="vendor_website"
+                                                value={data.vendor_website}
                                                 className="mt-1 block w-full"
                                                 onChange={(e) =>
-                                                    setData('vendor_name', e.target.value)
+                                                    setData('vendor_website', e.target.value)
                                                 }
                                                 required
                                             />
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_website}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_contact_person"
+                                                value={
+                                                    <>
+                                                        Nama Pegawai Bertugas
+                                                    </>
+                                                }
+                                            />
+                                            <TextInput
+                                                id="vendor_contact_person"
+                                                name="vendor_contact_person"
+                                                value={data.vendor_contact_person}
+                                                className="mt-1 block w-full"
+                                                // onChange={(e) =>
+                                                //     setData('vendor_phone', e.target.value)
+                                                // }
+                                                disabled
+                                            />
+                                        </div>
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_contact_person_designation"
+                                                value={
+                                                    <>
+                                                        Jawatan Pegawai Bertugas<span className="text-red-500">*</span>
+                                                    </>
+                                                }
+                                            />
+                                            <TextInput
+                                                id="vendor_contact_person_designation"
+                                                name="vendor_contact_person_designation"
+                                                value={data.vendor_contact_person_designation}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) =>
+                                                    setData('vendor_contact_person_designation', e.target.value)
+                                                }
+                                                required
+                                            />
+                                            <InputError
+                                                message={errors.vendor_contact_person_designation}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_contact_person_phone"
+                                                value={
+                                                    <>
+                                                        No. Telefon Pegawai Bertugas<span className="text-red-500">*</span>
+                                                    </>
+                                                }
+                                            />
+                                            <TextInput
+                                                id="vendor_contact_person_phone"
+                                                name="vendor_contact_person_phone"
+                                                value={data.vendor_contact_person_phone}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) =>
+                                                    setData('vendor_contact_person_phone', e.target.value)
+                                                }
+                                                required
+                                            />
+                                            <InputError
+                                                message={errors.vendor_contact_person_phone}
                                                 className="mt-2"
                                             />
                                         </div>
                                     </div>
                                     <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
 
-                                        {vendorType === 'company' && (
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="vendor_name"
-                                                        value={
-                                                            <>
-                                                                Modal Dibenarkan<span className="text-red-500">*</span>
-                                                            </>
-                                                        }
-                                                    />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value)
-                                                        }
-                                                        required
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_name}
-                                                        className="mt-2"
-                                                    />
-                                                </div>
+                                        {((vendorType === 'company' && (companyType === 'sdn-bhd' || companyType === 'bhd')) || vendorType === 'cooperation') && (
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_capital_1"
+                                                    value={
+                                                        <>
+                                                                {vendorType === 'company' ? 'Modal Dibenarkan' : 'Modal Yuran'} <span className="text-red-500">*</span>
+                                                        </>
+                                                    }
+                                                />
+                                                <TextInput
+                                                    id="vendor_capital_1"
+                                                    name="vendor_capital_1"
+                                                    value={data.vendor_capital_1}
+                                                    className="mt-1 block w-full"
+                                                    onChange={(e) =>
+                                                        setData('vendor_capital_1', e.target.value)
+                                                    }
+                                                    formatNumber={true}
+                                                    required
+                                                />
+                                                <InputError
+                                                    message={errors.vendor_capital_1}
+                                                    className="mt-2"
+                                                />
+                                            </div>
                                         )}
-                                        {vendorType === 'company' && (
-                                                <div>
-                                                    <InputLabel
-                                                        htmlFor="vendor_name"
-                                                        value={
-                                                            <>
-                                                                Modal Dibayar<span className="text-red-500">*</span>
-                                                            </>
-                                                        }
-                                                    />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value)
-                                                        }
-                                                        required
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_name}
-                                                        className="mt-2"
-                                                    />
-                                                </div>
+                                        {((vendorType === 'company' && (companyType === 'sdn-bhd' || companyType === 'bhd')) || vendorType === 'cooperation') && (
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_capital_2"
+                                                    value={
+                                                        <>
+                                                            {vendorType === 'company' ? 'Modal Dibayar' : 'Modal Syer'} <span className="text-red-500">*</span>
+                                                        </>
+                                                    }
+                                                />
+                                                <TextInput
+                                                    id="vendor_capital_2"
+                                                    name="vendor_capital_2"
+                                                    value={data.vendor_capital_2}
+                                                    className="mt-1 block w-full"
+                                                    onChange={(e) =>
+                                                        setData('vendor_capital_2', e.target.value)
+                                                    }
+                                                    formatNumber={true}
+                                                    required
+                                                />
+                                                <InputError
+                                                    message={errors.vendor_capital_2}
+                                                    className="mt-2"
+                                                />
+                                            </div>
                                         )}
                                     </div>
                                     <div className="grid flex-1 gap-2 md:grid-cols-2 my-2">
@@ -488,7 +638,7 @@ export default function VendorDashboard() {
                                         <div className='grid flex-1 gap-2 grid-cols-2'>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="vendor_name"
+                                                    htmlFor="vendor_bumiputera_ownership_percent"
                                                     value={
                                                         <>
                                                             Peratus Pemilikan Bumiputera<span className="text-red-500">*</span>
@@ -496,19 +646,26 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <TextInput
-                                                    id="vendor_name"
-                                                    name="vendor_name"
-                                                    value={data.vendor_name}
+                                                    id="vendor_bumiputera_ownership_percent"
+                                                    name="vendor_bumiputera_ownership_percent"
+                                                    value={data.vendor_bumiputera_ownership_percent}
                                                     className="mt-1 block w-full"
                                                     onChange={(e) =>
-                                                        setData('vendor_name', e.target.value)
+                                                        {
+                                                            const bumiputeraValue = e.target.value;
+                                                            setData('vendor_bumiputera_ownership_percent', e.target.value);
+
+                                                            // Calculate using the new value directly
+                                                            const bumiPercent = parseFloat(bumiputeraValue) || 0.00;
+                                                            const nonBumiPercent = (100.00 - bumiPercent).toFixed(2);
+                                                            setData('vendor_non_bumiputera_ownership_percent', nonBumiPercent);
+                                                        }
                                                     }
-                                                    required
                                                 />
                                             </div>
                                             <div>
                                                 <InputLabel
-                                                    htmlFor="vendor_name"
+                                                    htmlFor="vendor_non_bumiputera_ownership_percent"
                                                     value={
                                                         <>
                                                             Peratus Pemilikan Bukan Bumiputera<span className="text-red-500">*</span>
@@ -516,25 +673,25 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <TextInput
-                                                    id="vendor_name"
-                                                    name="vendor_name"
-                                                    value={data.vendor_name}
+                                                    id="vendor_non_bumiputera_ownership_percent"
+                                                    name="vendor_non_bumiputera_ownership_percent"
+                                                    value={data.vendor_non_bumiputera_ownership_percent}
                                                     className="mt-1 block w-full readonly"
-                                                    // onChange={(e) =>
-                                                    //     setData('vendor_name', e.target.value)
-                                                    // }
-                                                    readonly
-                                                    
+                                                    onChange={(e) =>
+                                                        setData('vendor_non_bumiputera_ownership_percent', e.target.value)
+                                                    }
+                                                    disabled
                                                 />
                                             </div>
-                                            
                                             <InputError
-                                                message={errors.vendor_name}
+                                                message={errors.vendor_non_bumiputera_ownership_percent}
                                                 className="mt-2"
                                             />
                                         </div>
                                         )}
                                     </div>
+                                    </>
+                                    )}
                                 </div>
                             )}
 
@@ -547,7 +704,7 @@ export default function VendorDashboard() {
                                         <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
                                             <div className=''>
                                                 <InputLabel
-                                                    htmlFor="vendor_name"
+                                                    htmlFor="vendor_bank_name"
                                                     value={
                                                         <>
                                                             Bank<span className="text-red-500">*</span>
@@ -556,14 +713,14 @@ export default function VendorDashboard() {
                                                 />
                                                 <Select
                                                     onValueChange={(value) =>
-                                                        setData('allottee_bank_name', value)
+                                                        setData('vendor_bank_name', value)
                                                 }>
                                                     <SelectTrigger className="mt-1">
                                                         <SelectValue placeholder="Sila pilih bank" />
                                                     </SelectTrigger>
                                                     <SelectContent 
-                                                        id="allottee_bank_name"
-                                                        name="allottee_bank_name"
+                                                        id="vendor_bank_name"
+                                                        name="vendor_bank_name"
                                                     >
                                                         <SelectItem value="Maybank">Maybank</SelectItem>
                                                         <SelectItem value="Maybank Islamic">Maybank Islamic</SelectItem>
@@ -585,13 +742,13 @@ export default function VendorDashboard() {
                                                     </SelectContent>
                                                 </Select>
                                                 <InputError
-                                                    message={errors.vendor_name}
+                                                    message={errors.vendor_bank_name}
                                                     className="mt-2"
                                                 />
                                             </div>
                                             <div className=''>
                                                 <InputLabel
-                                                    htmlFor="vendor_name"
+                                                    htmlFor="vendor_bank_account_number"
                                                     value={
                                                         <>
                                                             No. Akaun Bank<span className="text-red-500">*</span>
@@ -599,22 +756,47 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <TextInput
-                                                    id="vendor_name"
-                                                    name="vendor_name"
-                                                    value={data.vendor_name}
+                                                    id="vendor_bank_account_number"
+                                                    name="vendor_bank_account_number"
+                                                    value={data.vendor_bank_account_number}
                                                     className="mt-1 block w-full uppercase"
                                                     onChange={(e) =>
-                                                        setData('vendor_name', e.target.value.toUpperCase())
+                                                        setData('vendor_bank_account_number', e.target.value.toUpperCase())
                                                     }
                                                 />
                                                 <InputError
-                                                    message={errors.vendor_name}
+                                                    message={errors.vendor_bank_account_number}
                                                     className="mt-2"
                                                 />
                                             </div>
+                                            {(vendorType === 'gov_entity') && (
+                                                <div className=''>
+                                                    <InputLabel
+                                                        htmlFor="vendor_bank_entity_registration_num"
+                                                        value={
+                                                            <>
+                                                                No. Pendaftaran Entiti di Bank<span className="text-red-500">*</span>
+                                                            </>
+                                                        }
+                                                    />
+                                                    <TextInput
+                                                        id="vendor_bank_entity_registration_num"
+                                                        name="vendor_bank_entity_registration_num"
+                                                        value={data.vendor_bank_entity_registration_num}
+                                                        className="mt-1 block w-full uppercase"
+                                                        onChange={(e) =>
+                                                            setData('vendor_bank_entity_registration_num', e.target.value.toUpperCase())
+                                                        }
+                                                    />
+                                                    <InputError
+                                                        message={errors.vendor_bank_entity_registration_num}
+                                                        className="mt-2"
+                                                    />
+                                                </div>
+                                            )}
                                             <div className=''>
                                                 <InputLabel
-                                                    htmlFor="vendor_bank_statement"
+                                                    htmlFor="vendor_bank_account_statement_address"
                                                     value={
                                                         <>
                                                             Muat Naik Penyata Akaun Bank<span className="text-red-500">*</span>
@@ -622,17 +804,17 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <FileInput
-                                                    id="vendor_bank_statement"
-                                                    name="vendor_bank_statement"
+                                                    id="vendor_bank_account_statement_address"
+                                                    name="vendor_bank_account_statement_address"
                                                     accept=".pdf,.jpg,.jpeg,.png"
-                                                    maxSize={5}
+                                                    maxSize={2}
                                                     showPreview={true}
                                                     onChange={(e) =>
-                                                        setData('vendor_bank_statement', e.target.files[0])
+                                                        setData('vendor_bank_account_statement_address', e.target.files[0])
                                                     }
                                                 />
                                                 <InputError
-                                                    message={errors.vendor_bank_statement}
+                                                    message={errors.vendor_bank_account_statement_address}
                                                     className="mt-2"
                                                 />
                                             </div>
@@ -642,31 +824,55 @@ export default function VendorDashboard() {
                                         <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
                                             <div className=''>
                                                 <InputLabel
-                                                    htmlFor="vendor_name"
+                                                    htmlFor="vendor_sst_number"
                                                     value={
                                                         <>
-                                                            No. Pendaftaran SST<span className="text-red-500">*</span>
+                                                            No. Pendaftaran SST
                                                         </>
                                                     }
                                                 />
                                                 <TextInput
-                                                    id="vendor_name"
-                                                    name="vendor_name"
-                                                    value={data.vendor_name}
+                                                    id="vendor_sst_number"
+                                                    name="vendor_sst_number"
+                                                    value={data.vendor_sst_number}
                                                     className="mt-1 block w-full uppercase"
                                                     onChange={(e) =>
-                                                        setData('vendor_name', e.target.value.toUpperCase())
+                                                        setData('vendor_sst_number', e.target.value.toUpperCase())
                                                     }
                                                 />
                                                 <InputError
-                                                    message={errors.vendor_name}
+                                                    message={errors.vendor_sst_number}
                                                     className="mt-2"
                                                 />
                                             </div>
-                                        </div>                             
+                                        </div>     
+                                        <p className='text-sm font-bold underline mt-8'>Maklumat Berkaitan Lembaga Hasil Dalam Negeri (LHDN)</p>
+                                        <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_tax_identification_num"
+                                                    value={
+                                                        <>
+                                                            No. TIN (Tax Identification Number)<span className="text-red-500">*</span>
+                                                        </>
+                                                    }
+                                                />
+                                                <TextInput
+                                                    id="vendor_tax_identification_num"
+                                                    name="vendor_tax_identification_num"
+                                                    value={data.vendor_tax_identification_num}
+                                                    className="mt-1 block w-full uppercase"
+                                                    onChange={(e) =>
+                                                        setData('vendor_tax_identification_num', e.target.value.toUpperCase())
+                                                    }
+                                                />
+                                                <InputError
+                                                    message={errors.vendor_tax_identification_num}
+                                                    className="mt-2"
+                                                />
+                                            </div>
+                                        </div>                                  
                                     </div>
-
-
                                 </div>
                             )}
 
@@ -675,13 +881,13 @@ export default function VendorDashboard() {
                             {currentPart === 3 && (
                                 <div>
                                     <p className='font-bold'>Bahagian 3 : Maklumat Lesen / Persijilan Vendor</p>
-                                    {/* ================ PKK ==================================================== */}
+                                    {/* ================ MOF ==================================================== */}
                                     <div className='mt-4 border p-4 rounded-lg hover:shadow-lg transition-shadow'>
-                                        <p className='text-sm font-bold underline'>Pusat Khidmat Kontraktor (Jika Berkaitan)</p>
+                                        <p className='text-sm font-bold underline'>ePerolehan / Sijil Kementerian Kewangan (MOF) (Jika Berkaitan)</p>
                                             <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MOF_reg_num"
                                                         value={
                                                             <>
                                                                 No. Pendaftaran
@@ -689,68 +895,240 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
+                                                        id="vendor_MOF_reg_num"
+                                                        name="vendor_MOF_reg_num"
+                                                        value={data.vendor_MOF_reg_num}
                                                         className="mt-1 block w-full uppercase"
                                                         onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
+                                                            setData('vendor_MOF_reg_num', e.target.value.toUpperCase())
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_MOF_reg_num}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MOF_start_date"
                                                         value={
                                                             <>
                                                                 Tarikh Mula
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openMOFStart} onOpenChange={setOpenMOFStart} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_MOF_start_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_MOF_start_date ? format(data.vendor_MOF_start_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_MOF_start_date ? new Date(data.vendor_MOF_start_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_MOF_start_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenMOFStart(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_MOF_start_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MOF_expiry_date"
                                                         value={
                                                             <>
                                                                 Tarikh Tamat
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openMOFExpiry} onOpenChange={setOpenMOFExpiry} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_MOF_expiry_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_MOF_expiry_date ? format(data.vendor_MOF_expiry_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_MOF_expiry_date ? new Date(data.vendor_MOF_expiry_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_MOF_expiry_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenMOFExpiry(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_MOF_expiry_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_bank_statement"
+                                                        htmlFor="vendor_MOF_attachment_address"
+                                                        value={
+                                                            <>
+                                                                Muat Naik Sijil MOF
+                                                            </>
+                                                        }
+                                                    />
+                                                    <FileInput
+                                                        id="vendor_MOF_attachment_address"
+                                                        name="vendor_MOF_attachment_address"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        maxSize={2}
+                                                        showPreview={true}
+                                                        onChange={(e) =>
+                                                            setData('vendor_MOF_attachment_address', e.target.files[0])
+                                                        }
+                                                    />
+                                                    <InputError
+                                                        message={errors.vendor_MOF_attachment_address}
+                                                        className="mt-2"
+                                                    />
+                                                </div>
+                                            </div>                            
+                                    </div>
+
+                                    {/* ================ PKK ==================================================== */}
+                                    <div className='mt-4 border p-4 rounded-lg hover:shadow-lg transition-shadow'>
+                                        <p className='text-sm font-bold underline'>Pusat Khidmat Kontraktor (Jika Berkaitan)</p>
+                                            <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
+                                                <div className=''>
+                                                    <InputLabel
+                                                        htmlFor="vendor_PKK_reg_num"
+                                                        value={
+                                                            <>
+                                                                No. Pendaftaran
+                                                            </>
+                                                        }
+                                                    />
+                                                    <TextInput
+                                                        id="vendor_PKK_reg_num"
+                                                        name="vendor_PKK_reg_num"
+                                                        value={data.vendor_PKK_reg_num}
+                                                        className="mt-1 block w-full uppercase"
+                                                        onChange={(e) =>
+                                                            setData('vendor_PKK_reg_num', e.target.value.toUpperCase())
+                                                        }
+                                                    />
+                                                    <InputError
+                                                        message={errors.vendor_PKK_reg_num}
+                                                        className="mt-2"
+                                                    />
+                                                </div>
+                                                <div className=''>
+                                                    <InputLabel
+                                                        htmlFor="vendor_PKK_start_date"
+                                                        value={
+                                                            <>
+                                                                Tarikh Mula
+                                                            </>
+                                                        }
+                                                    />
+                                                    <Popover open={openPKKStart} onOpenChange={setOpenPKKStart} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_PKK_start_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_PKK_start_date ? format(data.vendor_PKK_start_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_PKK_start_date ? new Date(data.vendor_PKK_start_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_PKK_start_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenPKKStart(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                    <InputError
+                                                        message={errors.vendor_PKK_start_date}
+                                                        className="mt-2"
+                                                    />
+                                                </div>
+                                                <div className=''>
+                                                    <InputLabel
+                                                        htmlFor="vendor_PKK_end_date"
+                                                        value={
+                                                            <>
+                                                                Tarikh Tamat
+                                                            </>
+                                                        }
+                                                    />
+                                                    <Popover open={openPKKExpiry} onOpenChange={setOpenPKKExpiry} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_PKK_end_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_PKK_end_date ? format(data.vendor_PKK_end_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_PKK_end_date ? new Date(data.vendor_PKK_end_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_PKK_end_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenPKKExpiry(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                    <InputError
+                                                        message={errors.vendor_PKK_end_date}
+                                                        className="mt-2"
+                                                    />
+                                                </div>
+                                                <div className=''>
+                                                    <InputLabel
+                                                        htmlFor="vendor_PKK_attachment_address"
                                                         value={
                                                             <>
                                                                 Muat Naik Sijil PKK
@@ -758,17 +1136,17 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <FileInput
-                                                        id="vendor_bank_statement"
-                                                        name="vendor_bank_statement"
+                                                        id="vendor_PKK_attachment_address"
+                                                        name="vendor_PKK_attachment_address"
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         maxSize={5}
                                                         showPreview={true}
                                                         onChange={(e) =>
-                                                            setData('vendor_bank_statement', e.target.files[0])
+                                                            setData('vendor_PKK_attachment_address', e.target.files[0])
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_bank_statement}
+                                                        message={errors.vendor_PKK_attachment_address}
                                                         className="mt-2"
                                                     />
                                                 </div>
@@ -844,7 +1222,7 @@ export default function VendorDashboard() {
                                             <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_CIDB_reg_num"
                                                         value={
                                                             <>
                                                                 No. Pendaftaran
@@ -852,68 +1230,104 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
+                                                        id="vendor_CIDB_reg_num"
+                                                        name="vendor_CIDB_reg_num"
+                                                        value={data.vendor_CIDB_reg_num}
                                                         className="mt-1 block w-full uppercase"
                                                         onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
+                                                            setData('vendor_CIDB_reg_num', e.target.value.toUpperCase())
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_CIDB_reg_num}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_CIDB_start_date"
                                                         value={
                                                             <>
                                                                 Tarikh Mula
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openCIDBStart} onOpenChange={setOpenCIDBStart} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_CIDB_start_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_CIDB_start_date ? format(data.vendor_CIDB_start_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_CIDB_start_date ? new Date(data.vendor_CIDB_start_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_CIDB_start_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenCIDBStart(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_CIDB_start_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_CIDB_end_date"
                                                         value={
                                                             <>
                                                                 Tarikh Tamat
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openCIDBExpiry} onOpenChange={setOpenCIDBExpiry} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_CIDB_end_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_CIDB_end_date ? format(data.vendor_CIDB_end_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_CIDB_end_date ? new Date(data.vendor_CIDB_end_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_CIDB_end_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenCIDBExpiry(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_CIDB_end_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_bank_statement"
+                                                        htmlFor="vendor_CIDB_attachment_address"
                                                         value={
                                                             <>
                                                                 Muat Naik Sijil CIDB
@@ -921,17 +1335,17 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <FileInput
-                                                        id="vendor_bank_statement"
-                                                        name="vendor_bank_statement"
+                                                        id="vendor_CIDB_attachment_address"
+                                                        name="vendor_CIDB_attachment_address"
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         maxSize={5}
                                                         showPreview={true}
                                                         onChange={(e) =>
-                                                            setData('vendor_bank_statement', e.target.files[0])
+                                                            setData('vendor_CIDB_attachment_address', e.target.files[0])
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_bank_statement}
+                                                        message={errors.vendor_CIDB_attachment_address}
                                                         className="mt-2"
                                                     />
                                                 </div>
@@ -1041,7 +1455,7 @@ export default function VendorDashboard() {
                                             <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MPOB_license_num"
                                                         value={
                                                             <>
                                                                 No. Lesen MPOB
@@ -1049,68 +1463,104 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
+                                                        id="vendor_MPOB_license_num"
+                                                        name="vendor_MPOB_license_num"
+                                                        value={data.vendor_MPOB_license_num}
                                                         className="mt-1 block w-full uppercase"
                                                         onChange={(e) =>
-                                                            setData('vendor_MPOB_license_number', e.target.value.toUpperCase())
+                                                            setData('vendor_MPOB_license_num', e.target.value.toUpperCase())
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_MPOB_license_number}
+                                                        message={errors.vendor_MPOB_license_num}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MPOB_start_date"
                                                         value={
                                                             <>
                                                                 Tarikh Mula
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openMPOBStart} onOpenChange={setOpenMPOBStart} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_MPOB_start_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_MPOB_start_date ? format(data.vendor_MPOB_start_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_MPOB_start_date ? new Date(data.vendor_MPOB_start_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_MPOB_start_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenMPOBStart(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_MPOB_start_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_name"
+                                                        htmlFor="vendor_MPOB_end_date"
                                                         value={
                                                             <>
                                                                 Tarikh Tamat
                                                             </>
                                                         }
                                                     />
-                                                    <TextInput
-                                                        id="vendor_name"
-                                                        name="vendor_name"
-                                                        value={data.vendor_name}
-                                                        className="mt-1 block w-full uppercase"
-                                                        onChange={(e) =>
-                                                            setData('vendor_name', e.target.value.toUpperCase())
-                                                        }
-                                                    />
+                                                    <Popover open={openMPOBExpiry} onOpenChange={setOpenMPOBExpiry} modal={false}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                                    !data.vendor_MPOB_end_date && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                { data.vendor_MPOB_end_date ? format(data.vendor_MPOB_end_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                            <Calendar
+                                                            mode="single"
+                                                            selected={data.vendor_MPOB_end_date ? new Date(data.vendor_MPOB_end_date) : undefined}
+                                                            onSelect={selectedDate => {
+                                                                    setData('vendor_MPOB_end_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                                    setOpenMPOBExpiry(false);
+                                                                }}
+                                                            captionLayout={dropdown}
+                                                            fromYear={1900}
+                                                            toYear={2100}
+                                                            className="rounded-lg border shadow-sm"
+                                                        />
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     <InputError
-                                                        message={errors.vendor_name}
+                                                        message={errors.vendor_MPOB_end_date}
                                                         className="mt-2"
                                                     />
                                                 </div>
                                                 <div className=''>
                                                     <InputLabel
-                                                        htmlFor="vendor_bank_statement"
+                                                        htmlFor="vendor_MPOB_attachment_address"
                                                         value={
                                                             <>
                                                                 Muat Naik Lesen MPOB
@@ -1118,17 +1568,17 @@ export default function VendorDashboard() {
                                                         }
                                                     />
                                                     <FileInput
-                                                        id="vendor_bank_statement"
-                                                        name="vendor_bank_statement"
+                                                        id="vendor_MPOB_attachment_address"
+                                                        name="vendor_MPOB_attachment_address"
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         maxSize={5}
                                                         showPreview={true}
                                                         onChange={(e) =>
-                                                            setData('vendor_bank_statement', e.target.files[0])
+                                                            setData('vendor_MPOB_attachment_address', e.target.files[0])
                                                         }
                                                     />
                                                     <InputError
-                                                        message={errors.vendor_bank_statement}
+                                                        message={errors.vendor_MPOB_attachment_address}
                                                         className="mt-2"
                                                     />
                                                 </div>
@@ -1136,7 +1586,7 @@ export default function VendorDashboard() {
                                         <div className="grid flex-1 gap-6 md:grid-cols-2 my-2">
                                             <div className=''>
                                                 <InputLabel
-                                                    htmlFor="vendor_MPOB_license_cat"
+                                                    htmlFor="vendor_MPOB_license_category"
                                                     value={
                                                         <>
                                                             Lesen MPOB
@@ -1144,9 +1594,9 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <RadioGroup
-                                                    name="vendor_MPOB_license_cat"
-                                                    value={data.vendor_MPOB_license_cat}
-                                                    onChange={(value) => setData('vendor_MPOB_license_cat', value)}
+                                                    name="vendor_MPOB_license_category"
+                                                    value={data.vendor_MPOB_license_category}
+                                                    onChange={(value) => setData('vendor_MPOB_license_category', value)}
                                                     options={[
                                                         { value: 'NN', label: 'NN' },
                                                         { value: 'NS', label: 'NS' },
@@ -1158,7 +1608,7 @@ export default function VendorDashboard() {
                                                     className="grid-cols-3"
                                                 />
                                                 <InputError
-                                                    message={errors.vendor_MPOB_license_cat}
+                                                    message={errors.vendor_MPOB_license_category}
                                                     className="mt-2"
                                                 />
                                             </div>
@@ -1208,11 +1658,13 @@ export default function VendorDashboard() {
                                                                     <p className="text-sm text-gray-600">Kewarganegaraan</p>
                                                                     <p className="font-medium">
                                                                         { (director.vendor_board_citizenship === 'malaysian') ? 'Warganegara' : 'Bukan Warganegara' }
-                                                                        </p>
+                                                                    </p>
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-sm text-gray-600">Etnik</p>
-                                                                    <p className="font-medium">{director.vendor_board_ethnic}</p>
+                                                                    <p className="font-medium">
+                                                                        { (director.vendor_board_ethnic === 'bumiputera') ? 'Bumiputera' : 'Bukan Bumiputera' }
+                                                                    </p>
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-sm text-gray-600">Jawatan</p>
@@ -1266,7 +1718,7 @@ export default function VendorDashboard() {
                             )} */}
                             {(currentPart === totalParts) && (
                                 <PrimaryButton
-                                    onClick={handleNext}
+                                    onClick={submit}
                                     // disabled={currentPart === totalParts}
                                     className="px-4 py-2 bg-black text-white rounded disabled:opacity-50"
                                 >

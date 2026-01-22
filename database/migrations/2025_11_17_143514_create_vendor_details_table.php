@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('vendor_name');
             $table->string('vendor_contact_person');
             $table->string('vendor_contact_person_phone');
-            $table->string('vemodr_contact_person_designation');
+            $table->string('vendor_contact_person_designation');
             $table->string('vendor_phone');
             $table->string('vendor_address');
             $table->string('vendor_bumiputera_status'); //bumiputera or non bumiputera
@@ -36,6 +36,9 @@ return new class extends Migration
             $table->string('vendor_paid_up_capital')->nullable();
             $table->string('vendor_bumiputera_ownership_percent')->nullable();
             $table->string('vendor_non_bumiputera_ownership_percent')->nullable();
+            $table->string('vendor_bank_name')->nullable();
+            $table->string('vendor_bank_account_number')->nullable();
+            $table->string('vendor_bank_account_statement_address')->nullable();
             $table->string('vendor_MOF_reg_num')->nullable();
             $table->string('vendor_MOF_start_date')->nullable();
             $table->string('vendor_MOF_expiry_date')->nullable();
@@ -56,6 +59,11 @@ return new class extends Migration
             $table->string('vendor_CIDB_CE_cat_grade')->nullable();
             $table->string('vendor_CIDB_ME_cat_grade')->nullable();
             $table->string('vendor_CIDB_attachment_address')->nullable();
+            $table->string('vendor_MPOB_license_num')->nullable();
+            $table->string('vendor_MPOB_start_date')->nullable();
+            $table->string('vendor_MPOB_end_date')->nullable();
+            $table->string('vendor_MPOB_license_category')->nullable();
+            $table->string('vendor_MPOB_attachment_address')->nullable();
         });
     }
 

@@ -33,6 +33,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'vendor' => auth()->guard('vendor')->check() 
+                    ? auth()->guard('vendor')->user() 
+                    : null, // Vendor user (vendor guard)
             ],
         ];
     }
