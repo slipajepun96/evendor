@@ -7,6 +7,7 @@ import ValueView from '@/Components/ValueView';
 import { useState, useEffect } from 'react';
 import VendorApprovalAttachmentViewer from './Partials/VendorApprovalAttachmentViewer';
 import SecondaryButton from '@/Components/SecondaryButton';
+import VendorApprovalApprove from './Partials/VendorApprovalApprove';
 
 
 export default function VendorApprovalView({ unapproved_vendor, approved_vendor , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url }) 
@@ -55,7 +56,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
 
                     {/* status dan butiran permohonan */}
                     <div className='flex flex-row gap-1'>
-                        <PrimaryButton>Luluskan</PrimaryButton>
+                        <VendorApprovalApprove vendor_id={unapproved_vendor.id} vendor_name={unapproved_vendor.vendor_name} />
                         <SecondaryButton>Tolak Permohonan</SecondaryButton>
                         <PrimaryButton>Cetak</PrimaryButton>
                     </div>

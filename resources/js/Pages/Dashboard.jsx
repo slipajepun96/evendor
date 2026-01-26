@@ -4,6 +4,7 @@ import { BadgeCheck, Clock } from 'lucide-react';
 const now = new Date();
 import { Link, useForm } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
+import DataTable from '@/Components/DataTable';
 
 const hours = now.getHours();
 console.log(`Current hour: ${hours}`);
@@ -11,6 +12,60 @@ console.log(`Current hour: ${hours}`);
 
 export default function Dashboard({ unapproved_vendors, approved_vendors }) 
 {
+    const columns = [
+        // { Header: 'Nama', accessor: 'allottee_name' },
+        // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
+        {
+            Header: 'Nama Vendor',
+            accessor: ['vendor_name', 'vendor_id_num'],
+            Cell: ({ row }) => (
+                <div className="flex flex-col">
+                    <div className='font-semibold'>{row.vendor_name}</div>
+                    <div className='text-sm'>{row.vendor_id_num}</div> 
+                </div>
+            ),
+        },
+        {
+            Header: 'Jenis Entiti',
+            accessor: ['vendor_type',],
+            Cell: ({ row }) => (
+                <div className="flex flex-col text-sm">
+                    {row.vendor_type === 'company' && ('Syarikat')}
+                    {row.vendor_type === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
+                    {row.vendor_type === 'cooperation' && ('Koperasi')}
+                    {row.vendor_type === 'organisation' && ('Pertubuhan / Kelab')}
+                <p> </p>
+                    {row.vendor_company_type === 'bhd' && ('Berhad')}
+                    {row.vendor_company_type === 'sdn-bhd' && ('Sendirian Berhad')}
+                    {row.vendor_company_type === 'partnership' && ('Perkongsian')}
+                    {row.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
+                </div>
+            ),
+        },
+        { Header: 'No. Telefon', accessor: 'vendor_phone' },
+        {
+            Header: 'Tindakan',
+            accessor: 'actions',
+            Cell: ({ row }) => (
+                <div className="flex space-x-2 gap-2">
+                    {/* <AllotteeEdit allottee={row} /> */}
+                    <Link href={route('vendor-approval.view', row.id)}>
+                        <PrimaryButton
+                            className="px-2 py-1 text-white"
+                        >
+                            Lihat Butiran
+                        </PrimaryButton>
+                    </Link>
+                    {/* <PrimaryButton
+                        className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
+                        onClick={() => handleDelete(row.id)}
+                    >
+                        Tolak Permohonan
+                    </PrimaryButton> */}
+                </div>
+            ),
+        },
+    ];
     const number_of_unapproved_vendors = unapproved_vendors.length;
     const number_of_approved_vendors = approved_vendors.length;
     const user = usePage().props.auth.user;
@@ -55,6 +110,8 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                             </div>
                         </div>
                     </div>
+                    <DataTable columns={columns} data={approved_vendors} className='mt-4'/>
+                    {/* {approved_vendors} */}
                 </div>
             </div>
         </AuthenticatedLayout>

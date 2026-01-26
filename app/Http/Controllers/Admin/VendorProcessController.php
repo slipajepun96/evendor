@@ -71,5 +71,25 @@ class VendorProcessController extends Controller
             ]);
        
     }
+
+    public function approveVendor(Request $request) 
+    {
+        $validated = $request->validate([
+            'vendor_id' => 'required|exists:vendor_details,id',
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        $vendor = VendorDetails::findOrFail($validated['vendor_id']);
+        if($validated['status'] === 'approved')
+        {
+            $vendor->is_approved = 1 ;
+        } else if($validated['status'] === 'rejected') 
+        {
+            $vendor->is_approved = 2 ;
+        }
+
+        $vendor->save();
+        return redirect()->route('vendor-approval.index')->with('success', 'Vendor status updated successfully.');
+    }
         
 }

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     //vendor verification
     Route::get('/vendor-approval', [VendorProcessController::class, 'showVendorApprovalPage'])->name('vendor-approval.index');
     Route::get('/vendor-approval/view/{vendor_id}', [VendorProcessController::class, 'showVendorApprovalView'])->name('vendor-approval.view');
+    Route::post('/vendor-approval/approve', [VendorProcessController::class, 'approveVendor'])->name('vendor-approval.approve');
 
 });
 
