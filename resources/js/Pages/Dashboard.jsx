@@ -110,7 +110,11 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                             </div>
                         </div>
                     </div>
-                    <DataTable columns={columns} data={approved_vendors} className='mt-4'/>
+                    <div className='bg-white p-3 mt-8 rounded-2xl shadow-lg '>
+                        <h2 className="text-2xl font-semibold text-gray-900">Senarai Vendor Disahkan</h2>
+                        <DataTable columns={columns} data={approved_vendors} className='mt-4'/>
+                    </div>
+
                     {/* {approved_vendors} */}
                 </div>
             </div>

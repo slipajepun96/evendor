@@ -81,14 +81,12 @@ class VendorController extends Controller
     {
 
         $vendor = Auth::guard('vendor')->user()->vendor_contact_person;
-        $completed_registration = false;
 
-        //check is vendor has completed registration
-        $completed_registration_status = VendorDetails::where('vendor_account_id', Auth::guard('vendor')->user()->id)->where('is_active', '1')->exists();
+        $vendor_details = VendorDetails::where('vendor_account_id', Auth::guard('vendor')->user()->id)->first();
 
         return Inertia::render('Vendor/VendorDashboard', [
             'vendor' => $vendor,
-            'completed_registration_status' => $completed_registration_status,
+            'vendor_details' => $vendor_details,
         ]);
     }
 
