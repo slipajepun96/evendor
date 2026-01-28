@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use App\Models\Vendor;
 use App\Models\VendorDetails;
+use App\Models\VendorApplication;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -83,10 +84,13 @@ class VendorController extends Controller
         $vendor = Auth::guard('vendor')->user()->vendor_contact_person;
 
         $vendor_details = VendorDetails::where('vendor_account_id', Auth::guard('vendor')->user()->id)->first();
+        // $vendor_application = VendorApplication::where('vendor_id', Auth::guard('vendor')->user()->id)->first();
+        $vendor_applications = VendorApplication::where('vendor_id', Auth::guard('vendor')->user()->id)->orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Vendor/VendorDashboard', [
             'vendor' => $vendor,
             'vendor_details' => $vendor_details,
+            'vendor_applications' => $vendor_applications,
         ]);
     }
 
@@ -309,5 +313,34 @@ class VendorController extends Controller
                 ->withInput();
         }
 
+    }
+
+    public function submitVendorApplication(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'vendor_details_id' => 'required|string',
+            'vendor_id' => 'required|string',
+        ]);
+
+        $vendor_details_json = json_encode(VendorDetails::find($validated['vendor_details_id']));
+
+        $vendor_application = new VendorApplication();
+        $vendor_application->vendor_details_id = $validated['vendor_details_id'];
+        $vendor_application->vendor_id = $validated['vendor_id'];
+        $vendor_application->application_date = now();
+        $vendor_application->application_status = 'pending';
+        $vendor_application->application_data_snapshot = $vendor_details_json;
+        $vendor_application->save();
+            // 'application_date',
+            // 'application_status',
+            // 'application_approved_rejected_date',
+            // 'application_rejected_reason',
+            // 'application_approved_rejected_by',
+            // 'application_approved_remark',
+            // 'application_cert_uuid',
+            // 'application_cert_address',
+            // 'application_data_snapshot',
+
+        return redirect()->route('vendor.dashboard')->with('success', 'Vendor application submitted successfully!');
     }
 }

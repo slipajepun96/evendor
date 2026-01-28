@@ -9,14 +9,14 @@ const hours = now.getHours();
 // console.log(`Current hour: ${hours}`);
 
 
-export default function VendorDashboard({ vendor, vendor_details }) {
+export default function VendorDashboard({ vendor, vendor_details, vendor_applications }) {
     // const { vendor } = usePage().props.auth;
     console.log(vendor_details);
 
-    let vendor_profile_completed = false;
-    if (vendor_details) {
-        vendor_profile_completed = true;
-    }
+    const vendor_profile_completed = !!vendor_details;
+    const vendor_application_status = vendor_applications.length > 0 ? vendor_applications[0].status : null;
+    
+    // console.log((vendor_application_status === null));
 
 
     return (
@@ -34,6 +34,7 @@ export default function VendorDashboard({ vendor, vendor_details }) {
                         <div className="p-4 text-gray-900 font-semibold">
                             {hours == 0 && hours == 1 ? "Selamat Tengah Malam" : hours >= 2 && hours <= 11 ? "Selamat Pagi" : hours >= 12 && hours <= 13 ? "Selamat Tengah Hari" : hours >= 14 && hours <= 18 ? "Selamat Petang" : "Selamat Malam"} , {vendor}!
                         </div>
+                        {/* {vendor_applications[0].application_status} */}
 
                         {/* {vendor_details.vendor_name} */}
                         <div className="flex flex-row gap-2 ml-4 mr-4 mb-4">
@@ -69,7 +70,7 @@ export default function VendorDashboard({ vendor, vendor_details }) {
                             </div>
                             ) }
 
-                            {vendor_profile_completed ? (
+                            {vendor_profile_completed && (vendor_application_status === null) && (
                             <div className='bg-red-400 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
@@ -77,17 +78,31 @@ export default function VendorDashboard({ vendor, vendor_details }) {
                                     <div className='flex w-full justify-between'>
                                         <div>
                                             <p className='text-2xl font-bold text-white'>Tiada</p>
-                                            <VendorApplication />
+                                            <VendorApplication vendor_details_id={vendor_details?.id} vendor_id={vendor_details?.vendor_account_id} />
+                                       </div>
+                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                    </div>
+                                </div>
+                            </div>
+                            ) }
+                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'pending' ) ? (
+                            <div className='bg-amber-300 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
+                                <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                                <div className='relative z-10'>
+                                    <p className='font-bold text-gray-700'>Permohonan Vendor</p>
+                                    <div className='flex w-full justify-between'>
+                                        <div>
+                                            <p className='text-2xl font-bold text-gray-700'>Dalam Proses</p>
                                        </div>
                                         
 
-                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                        <p className='text-4xl font-bold'></p>
                                     </div>
                                 </div>
                             </div>
                             ) : (
                                 <div></div>
-                            ) } 
+                            )} 
                             
                             {/* <div className='bg-amber-300 h-24 w-1/4 p-4 rounded-xl '>
                                 <p className='font-bold text-amber-800'>Vendor Dalam Proses</p>
@@ -104,7 +119,7 @@ export default function VendorDashboard({ vendor, vendor_details }) {
                         </div>
                     </div>
 
-                    <div className="overflow-hidden bg-white shadow-lg sm:rounded-2xl mt-4">
+                    <div className="overflow-hidden bg-white shadow-lg rounded-2xl mt-4">
                         <div className="p-4 text-gray-900 font-semibold">
                             Tender / Sebut Harga Yang Sedang Dibuka
                         </div>

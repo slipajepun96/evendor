@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 //vendor
 Route::middleware('vendor')->group(function () {
     Route::get('/vendor', [VendorController::class, 'vendorDashboard'])->name('vendor.dashboard');
+    Route::post('/vendor/submit-application', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit-application');
 
     //form
     Route::get('/vendor/complete-registration', [VendorController::class, 'showVendorCompleteRegistrationForm'])->name('vendor.complete-registration');

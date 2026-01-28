@@ -14,45 +14,32 @@ import {
     DialogDescription
 } from '@/Components/ui/dialog';
 import { useForm } from '@inertiajs/react';
-import RadioGroup from '@/Components/RadioGroup';
-// import { Input } from '@/Components/ui/input';
-// import { Label } from '@/Components/ui/label';
 
-
-export default function VendorApplication({ }) {
+export default function VendorApplication({vendor_details_id, vendor_id, }) {
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        vendor_board_name: '',
-        vendor_board_ic_num: '',
-        vendor_board_citizenship: '',
-        vendor_board_ethnic: '',
-        vendor_board_position: '',
-        vendor_board_address: '',
-        vendor_board_phone_num: '',
+        vendor_details_id: vendor_details_id,
+        vendor_id: vendor_id,
     });
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const submit = (e) => {
         e.preventDefault();
-        console.log('Board data:', data);
 
         // Call the parent callback to add the board member
-        if (onAddBoard) {
-            onAddBoard({
-                id: Date.now(), // Generate unique ID
-                ...data
-            });
-        }
+        post(route('vendor.submit-application'), {
+            onSuccess: () => {
+                reset(
+                    'vendor_details_id',
+                    'vendor_id',
+                );
+            },
+        });
 
         // Reset form and close dialog
         reset(
-            'vendor_board_name',
-            'vendor_board_ic_num',
-            'vendor_board_citizenship',
-            'vendor_board_ethnic',
-            'vendor_board_position',
-            'vendor_board_address',
-            'vendor_board_phone_num',
+            'vendor_details_id',
+            'vendor_id',
         );
         setIsDialogOpen(false);
     };
