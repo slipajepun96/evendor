@@ -4,46 +4,33 @@ import DataTable from '@/Components/DataTable';
 import PrimaryButton from '@/Components/PrimaryButton';
 
 
-export default function VendorApprovalIndex({ unapproved_vendors}) 
+export default function VendorApprovalIndex({ unapproved_vendors }) 
 {
+    console.log(unapproved_vendors);
     const columns = [
         // { Header: 'Nama', accessor: 'allottee_name' },
         // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
         {
             Header: 'Nama Vendor',
-            accessor: ['vendor_name', 'vendor_id_num'],
-            Cell: ({ row }) => (
-                <div className="flex flex-col">
-                    <div className='font-semibold'>{row.vendor_name}</div>
-                    <div className='text-sm'>{row.vendor_id_num}</div> 
-                </div>
-            ),
+            accessor: ['id'],
+            Cell: ({ row }) => {
+                const dataSnapshot = JSON.parse(row.application_data_snapshot);
+                return (
+                    <div className="flex flex-col">
+                        
+                        <div className='font-semibold'>{dataSnapshot.vendor_name}</div>
+                        <div className='font-base text-sm'> Application ID : {row.id}</div>
+                        {/* <div className='font-semibold'>{vendorName}</div> */}
+                    </div>
+                );
+            },
         },
-        {
-            Header: 'Jenis Entiti',
-            accessor: ['vendor_type',],
-            Cell: ({ row }) => (
-                <div className="flex flex-col text-sm">
-                    {row.vendor_type === 'company' && ('Syarikat')}
-                    {row.vendor_type === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
-                    {row.vendor_type === 'cooperation' && ('Koperasi')}
-                    {row.vendor_type === 'organisation' && ('Pertubuhan / Kelab')}
-                <p> </p>
-                    {row.vendor_company_type === 'bhd' && ('Berhad')}
-                    {row.vendor_company_type === 'sdn-bhd' && ('Sendirian Berhad')}
-                    {row.vendor_company_type === 'partnership' && ('Perkongsian')}
-                    {row.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
-                </div>
-            ),
-        },
-        { Header: 'No. Telefon', accessor: 'vendor_phone' },
         {
             Header: 'Tindakan',
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2 gap-2">
-                    {/* <AllotteeEdit allottee={row} /> */}
-                    <Link href={route('vendor-approval.view', row.id)}>
+                    <Link href={route('vendor-approval.view', row.vendor_id)}>
                         <PrimaryButton
                             className="px-2 py-1 text-white"
                         >
@@ -79,3 +66,6 @@ export default function VendorApprovalIndex({ unapproved_vendors})
         </AuthenticatedLayout>
     );
 }
+
+
+

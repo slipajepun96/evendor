@@ -10,8 +10,11 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import VendorApprovalApprove from './Partials/VendorApprovalApprove';
 
 
-export default function VendorApprovalView({ unapproved_vendor, approved_vendor , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url }) 
+export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id }) 
 {
+    //json parse
+    const parsedSnapshot = JSON.parse(unapproved_vendor.application_data_snapshot);
+    console.log('parsedSnapshot:', parsedSnapshot);
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -38,7 +41,6 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
     };
 
         const [isDialogOpen, setIsDialogOpen] = useState(false);
-    
 
     return (
         <AuthenticatedLayout
@@ -56,7 +58,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
 
                     {/* status dan butiran permohonan */}
                     <div className='flex flex-row gap-1'>
-                        <VendorApprovalApprove vendor_id={unapproved_vendor.id} vendor_name={unapproved_vendor.vendor_name} />
+                        <VendorApprovalApprove vendor_application_id={unapproved_vendor.id} vendor_name={unapproved_vendor.application_data_snapshot.vendor_name} />
                         <SecondaryButton>Tolak Permohonan</SecondaryButton>
                         <PrimaryButton>Cetak</PrimaryButton>
                     </div>
@@ -65,26 +67,11 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
 
                     <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg p-3 mt-4'>
 
-                        <div className='font-bold text-4xl'>{unapproved_vendor.vendor_name}</div>
+                        <div className='font-bold text-4xl'>{parsedSnapshot['vendor_name']}</div>
 
                         {/* part 0 : butiran permohonan */}
                         <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
-                            <div className=''>
-                                <InputLabel
-                                    htmlFor="vendor_status"
-                                    value={
-                                        <>
-                                            Jenis Permohonan
-                                        </>
-                                    }
-                                />
-                                {!approved_vendor && (
-                                    <p className='inline-block bg-amber-300 border-amber-700 text-gray-600 font-bold text-xs uppercase px-1 py-0.5 rounded-md'>Permohonan Baru</p>
-                                )}
-                                {approved_vendor && (
-                                    <p className='inline-block bg-lime-300 border-lime-500 text-gray-600 font-bold text-xs uppercase px-1 py-0.5 rounded-sm'>Kemaskini</p>
-                                )}
-                            </div>
+                        
                             <div className=''>
                                 <InputLabel
                                     htmlFor="is_approved"
@@ -95,10 +82,10 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                             
-                                {unapproved_vendor.is_approved === 0 && (
+                                {parsedSnapshot['is_approved'] === 0 && (
                                     <p className='inline-block bg-amber-300 border-amber-700 text-gray-600 font-bold text-xs uppercase px-1 py-0.5 rounded-md'>Belum Diluluskan</p>
                                 )}
-                                {unapproved_vendor.is_approved === 1 && (
+                                {parsedSnapshot['is_approved'] === 1 && (
                                     <p className='inline-block bg-lime-300 border-lime-500 text-gray-600 font-bold text-xs uppercase px-1 py-0.5 rounded-sm'>Belum Diluluskan</p>
                                 )}
                             </div>
@@ -111,7 +98,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={formatDateTime(unapproved_vendor.created_at)} />
+                                <ValueView value={formatDateTime(parsedSnapshot['created_at'])} />
                             </div>
                         </div>
 
@@ -127,7 +114,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_id_num} />
+                                <ValueView value={parsedSnapshot['vendor_id_num']} />
                             </div>
                             <div>
                                 <InputLabel
@@ -139,14 +126,14 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='text-md font-semibold'>
-                                    {unapproved_vendor.vendor_type === 'company' && ('Syarikat ')}
-                                    {unapproved_vendor.vendor_type === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
-                                    {unapproved_vendor.vendor_type === 'cooperation' && ('Koperasi')}
-                                    {unapproved_vendor.vendor_type === 'organisation' && ('Pertubuhan / Kelab')}
-                                    {unapproved_vendor.vendor_company_type === 'bhd' && ('Berhad')}
-                                    {unapproved_vendor.vendor_company_type === 'sdn-bhd' && ('Sendirian Berhad')}
-                                    {unapproved_vendor.vendor_company_type === 'partnership' && ('Perkongsian')}
-                                    {unapproved_vendor.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
+                                    {parsedSnapshot['vendor_type'] === 'company' && ('Syarikat ')}
+                                    {parsedSnapshot['vendor_type'] === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
+                                    {parsedSnapshot['vendor_type'] === 'cooperation' && ('Koperasi')}
+                                    {parsedSnapshot['vendor_type'] === 'organisation' && ('Pertubuhan / Kelab')}
+                                    {parsedSnapshot['vendor_company_type'] === 'bhd' && ('Berhad')}
+                                    {parsedSnapshot['vendor_company_type'] === 'sdn-bhd' && ('Sendirian Berhad')}
+                                    {parsedSnapshot['vendor_company_type'] === 'partnership' && ('Perkongsian')}
+                                    {parsedSnapshot['vendor_company_type'] === 'sole-ownership' && ('Milikan Tunggal')}
                                 </div>
                             </div>
                             <div>
@@ -158,7 +145,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={formatDate(unapproved_vendor.vendor_establishment_date)} />
+                                <ValueView value={formatDate(parsedSnapshot['vendor_establishment_date'])} />
                             </div>
                         </div>
                         <div className='grid flex-1 gap-2 md:grid-cols-1 my-2'>
@@ -172,7 +159,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_address} />
+                                <ValueView value={parsedSnapshot['vendor_address']} />
                             </div>
                         </div>
                         <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
@@ -185,7 +172,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_website} />
+                                <ValueView value={parsedSnapshot['vendor_website']} />
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -196,7 +183,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_email} />
+                                <ValueView value={parsedSnapshot['vendor_email']} />
                             </div>
                             <div>
                                 <InputLabel
@@ -207,7 +194,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_phone} />
+                                <ValueView value={parsedSnapshot['vendor_phone']} />
                             </div>
                         </div>
                         <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
@@ -220,7 +207,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={`${unapproved_vendor.vendor_bumiputera_ownership_percent}%`} />
+                                <ValueView value={`${parsedSnapshot['vendor_bumiputera_ownership_percent']}%`} />
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -231,7 +218,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={`${unapproved_vendor.vendor_non_bumiputera_ownership_percent}%`} />
+                                <ValueView value={`${parsedSnapshot['vendor_non_bumiputera_ownership_percent']}%`} />
                             </div>
                             
                         </div>
@@ -248,7 +235,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_contact_person} />
+                                <ValueView value={parsedSnapshot['vendor_contact_person']} />
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -259,7 +246,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_contact_person_designation} />
+                                <ValueView value={parsedSnapshot['vendor_contact_person_designation']} />
                             </div>
                             <div>
                                 <InputLabel
@@ -270,7 +257,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_contact_person_phone} />
+                                <ValueView value={parsedSnapshot['vendor_contact_person_phone']} />
                             </div>
                         </div>
 
@@ -286,7 +273,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_bank_name} /> {!unapproved_vendor.vendor_bank_name && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_bank_name']} /> {!parsedSnapshot['vendor_bank_name'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -297,7 +284,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_bank_account_number} />
+                                <ValueView value={parsedSnapshot['vendor_bank_account_number']} />
                             </div>
                             <div>
                                 <InputLabel
@@ -308,7 +295,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                {unapproved_vendor.vendor_bank_account_statement_address ? (
+                                {parsedSnapshot['vendor_bank_account_statement_address'] ? (
                                     <VendorApprovalAttachmentViewer title="Penyata Kewangan Terkini" attachment_address={bank_statements_attachment_url} />
                                 ) : (
                                     <div> - </div>
@@ -325,7 +312,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_sst_number} /> {!unapproved_vendor.vendor_sst_number && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_sst_number']} /> {!parsedSnapshot['vendor_sst_number'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -336,7 +323,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_tax_identification_num} />{!unapproved_vendor.vendor_tax_identification_num && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_tax_identification_num']} />{!parsedSnapshot['vendor_tax_identification_num'] && (<span className=''> -</span>)}
                             </div>
                         </div>
 
@@ -355,7 +342,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_MOF_reg_num} /> {!unapproved_vendor.vendor_MOF_reg_num && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_MOF_reg_num']} /> {!parsedSnapshot['vendor_MOF_reg_num'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -367,7 +354,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={formatDate(unapproved_vendor.vendor_MOF_start_date)} />{!unapproved_vendor.vendor_MOF_start_date && (<span className=''>-</span>)} {unapproved_vendor.vendor_MOF_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(unapproved_vendor.vendor_MOF_expiry_date)} />{!unapproved_vendor.vendor_MOF_expiry_date && (<span className=''></span>)}
+                                    <ValueView value={formatDate(parsedSnapshot['vendor_MOF_start_date'])} />{!parsedSnapshot['vendor_MOF_start_date'] && (<span className=''>-</span>)} {parsedSnapshot['vendor_MOF_start_date'] && (<span className=''>-</span>)}<ValueView value={formatDate(parsedSnapshot['vendor_MOF_expiry_date'])} />{!parsedSnapshot['vendor_MOF_expiry_date'] && (<span className=''></span>)}
                                 </div>
                             </div>
                             <div>
@@ -379,8 +366,8 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                {unapproved_vendor.vendor_MOF_attachment_address ? (
-                                                                    <VendorApprovalAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={MOF_attachment_url} />
+                                {parsedSnapshot['vendor_MOF_attachment_address'] ? (
+                                    <VendorApprovalAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={MOF_attachment_url} />
                                 ) : (
                                     <div> - </div>
                                 ) }
@@ -400,7 +387,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_PKK_reg_num} /> {!unapproved_vendor.vendor_PKK_reg_num && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_PKK_reg_num']} /> {!parsedSnapshot['vendor_PKK_reg_num'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -412,7 +399,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={formatDate(unapproved_vendor.vendor_PKK_start_date)} />{!unapproved_vendor.vendor_PKK_start_date && (<span className=''>-</span>)} {unapproved_vendor.vendor_PKK_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(unapproved_vendor.vendor_PKK_end_date)} />{!unapproved_vendor.vendor_PKK_end_date && (<span className=''></span>)}
+                                    <ValueView value={formatDate(parsedSnapshot['vendor_PKK_start_date'])} />{!parsedSnapshot['vendor_PKK_start_date'] && (<span className=''>-</span>)} {parsedSnapshot['vendor_PKK_start_date'] && (<span className=''>-</span>)}<ValueView value={formatDate(parsedSnapshot['vendor_PKK_end_date'])} />{!parsedSnapshot['vendor_PKK_end_date'] && (<span className=''></span>)}
                                 </div>
                             </div>
                             <div className=''>
@@ -425,7 +412,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={unapproved_vendor.vendor_PKK_class} />{!unapproved_vendor.vendor_PKK_class && (<span className=''>-</span>)} <ValueView value={unapproved_vendor.vendor_PKK_head} />{!unapproved_vendor.vendor_PKK_head && (<span className=''></span>)}
+                                    <ValueView value={parsedSnapshot['vendor_PKK_class']} />{!parsedSnapshot['vendor_PKK_class'] && (<span className=''>-</span>)} <ValueView value={parsedSnapshot['vendor_PKK_head']} />{!parsedSnapshot['vendor_PKK_head'] && (<span className=''></span>)}
                                 </div>
                             </div>
                             <div>
@@ -437,7 +424,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                {unapproved_vendor.vendor_PKK_attachment_address ? (
+                                {parsedSnapshot['vendor_PKK_attachment_address'] ? (
                                     <VendorApprovalAttachmentViewer title="Sijil PKK" attachment_address={PKK_attachment_url} />
                                 ) : (
                                     <div> - </div>
@@ -459,7 +446,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_CIDB_reg_num} /> {!unapproved_vendor.vendor_CIDB_reg_num && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_CIDB_reg_num']} /> {!parsedSnapshot['vendor_CIDB_reg_num'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -471,7 +458,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={formatDate(unapproved_vendor.vendor_CIDB_start_date)} />{!unapproved_vendor.vendor_CIDB_start_date && (<span className=''>-</span>)} {unapproved_vendor.vendor_CIDB_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(unapproved_vendor.vendor_CIDB_end_date)} />{!unapproved_vendor.vendor_CIDB_end_date && (<span className=''></span>)}
+                                    <ValueView value={formatDate(parsedSnapshot['vendor_CIDB_start_date'])} />{!parsedSnapshot['vendor_CIDB_start_date'] && (<span className=''>-</span>)} {parsedSnapshot['vendor_CIDB_start_date'] && (<span className=''>-</span>)}<ValueView value={formatDate(parsedSnapshot['vendor_CIDB_end_date'])} />{!parsedSnapshot['vendor_CIDB_end_date'] && (<span className=''></span>)}
                                 </div>
                             </div>
                             <div>
@@ -483,7 +470,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                {unapproved_vendor.vendor_CIDB_attachment_address ? (
+                                {parsedSnapshot['vendor_CIDB_attachment_address'] ? (
                                     <VendorApprovalAttachmentViewer title="Sijil CIDB" attachment_address={CIDB_attachment_url} />
                                 ) : (
                                     <div> - </div>
@@ -500,7 +487,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_CIDB_B_cat_grade} /> {!unapproved_vendor.vendor_CIDB_B_cat_grade && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_CIDB_B_cat_grade']} /> {!parsedSnapshot['vendor_CIDB_B_cat_grade'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -511,7 +498,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_CIDB_CE_cat_grade} /> {!unapproved_vendor.vendor_CIDB_CE_cat_grade && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_CIDB_CE_cat_grade']} /> {!parsedSnapshot['vendor_CIDB_CE_cat_grade'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -522,7 +509,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_CIDB_ME_cat_grade} /> {!unapproved_vendor.vendor_CIDB_ME_cat_grade && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_CIDB_ME_cat_grade']} /> {!parsedSnapshot['vendor_CIDB_ME_cat_grade'] && (<span className=''> -</span>)}
                             </div>
                         </div>
                         </>
@@ -540,7 +527,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                <ValueView value={unapproved_vendor.vendor_MPOB_license_num} /> {!unapproved_vendor.vendor_MPOB_license_num && (<span className=''> -</span>)}
+                                <ValueView value={parsedSnapshot['vendor_MPOB_license_num']} /> {!parsedSnapshot['vendor_MPOB_license_num'] && (<span className=''> -</span>)}
                             </div>
                             <div className=''>
                                 <InputLabel
@@ -552,7 +539,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={formatDate(unapproved_vendor.vendor_MPOB_start_date)} />{!unapproved_vendor.vendor_MPOB_start_date && (<span className=''>-</span>)} {unapproved_vendor.vendor_MPOB_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(unapproved_vendor.vendor_MPOB_end_date)} />{!unapproved_vendor.vendor_MPOB_end_date && (<span className=''></span>)}
+                                    <ValueView value={formatDate(parsedSnapshot['vendor_MPOB_start_date'])} />{!parsedSnapshot['vendor_MPOB_start_date'] && (<span className=''>-</span>)} {parsedSnapshot['vendor_MPOB_start_date'] && (<span className=''>-</span>)}<ValueView value={formatDate(parsedSnapshot['vendor_MPOB_end_date'])} />{!parsedSnapshot['vendor_MPOB_end_date'] && (<span className=''></span>)}
                                 </div>
                             </div>
                             <div className=''>
@@ -565,7 +552,7 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                     }
                                 />
                                 <div className='flex items-center'>
-                                    <ValueView value={unapproved_vendor.vendor_MPOB_license_category} />{!unapproved_vendor.vendor_MPOB_license_category && (<span className=''>-</span>)}
+                                    <ValueView value={parsedSnapshot['vendor_MPOB_license_category']} />{!parsedSnapshot['vendor_MPOB_license_category'] && (<span className=''>-</span>)}
                                 </div>
                             </div>
                             <div>
@@ -577,8 +564,10 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
                                         </>
                                     }
                                 />
-                                {unapproved_vendor.vendor_MPOB_attachment_address ? (
+                                
+                                {parsedSnapshot['vendor_MPOB_attachment_address'] ? (
                                     <VendorApprovalAttachmentViewer title="Lesen MPOB" attachment_address={MPOB_attachment_url} />
+                                    
                                 ) : (
                                     <div> - </div>
                                 ) }
@@ -589,7 +578,6 @@ export default function VendorApprovalView({ unapproved_vendor, approved_vendor 
 
 
                 </div>
-                {/* {JSON.stringify(unapproved_vendor)} */}
             </div>
         </AuthenticatedLayout>
     );

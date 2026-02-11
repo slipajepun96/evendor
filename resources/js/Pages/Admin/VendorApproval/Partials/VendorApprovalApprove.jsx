@@ -17,10 +17,10 @@ import { useForm } from '@inertiajs/react';
 
 
 
-export default function VendorApprovalApprove({vendor_id , vendor_name}) {
+export default function VendorApprovalApprove({vendor_application_id , vendor_name}) {
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        vendor_id: vendor_id,
+        vendor_application_id: vendor_application_id,
     });
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -48,11 +48,10 @@ export default function VendorApprovalApprove({vendor_id , vendor_name}) {
     const handleApprove = (e) => {
         e.preventDefault();
 
+        console.log('approving...');
         post(route('vendor-approval.approve', {
-            // data: {
-                vendor_id: data.vendor_id,
-                status: 'approved',
-            // }
+                vendor_application_id: data.vendor_application_id,
+                application_status: 'approved',
         }))
     }
 
@@ -60,8 +59,8 @@ export default function VendorApprovalApprove({vendor_id , vendor_name}) {
         e.preventDefault();
 
         post(route('vendor-approval.approve', {
-            vendor_id: data.vendor_id,
-            status: 'rejected',
+            vendor_application_id: data.vendor_application_id,
+            application_status: 'rejected',
         }))
     }
 
@@ -88,7 +87,7 @@ export default function VendorApprovalApprove({vendor_id , vendor_name}) {
                 <div className="mt-4">
                     Luluskan permohonan {vendor_name} untuk menjadi vendor ? 
 
-                    <form action="" className='flex gap-2'>
+                    <form action="" className='flex gap-2 mt-2'>
                         <PrimaryButton onClick={handleApprove} disabled={processing}>Lulus</PrimaryButton>
                         <SecondaryButton onClick={handleReject} disabled={processing} className='border-red-300 text-red-500 border-2 '>Tolak</SecondaryButton>
                     </form>

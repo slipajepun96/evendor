@@ -36,4 +36,20 @@ class VendorApplication extends Model
             'application_cert_address',
             'application_data_snapshot',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'application_data_snapshot' => 'array',
+        ];
+    }
+
+
 }
+
+

@@ -166,42 +166,42 @@ class VendorController extends Controller
                 if ($request->hasFile('vendor_bank_account_statement_address')) {
                     // Delete old file if exists
                     if ($vendor->vendor_bank_account_statement_address) {
-                        Storage::disk('public')->delete($vendor->vendor_bank_account_statement_address);
+                        Storage::disk('local')->delete($vendor->vendor_bank_account_statement_address);
                     }
                     $validated['vendor_bank_account_statement_address'] = $request->file('vendor_bank_account_statement_address')
-                        ->store('vendor/bank_statements', 'public');
+                        ->store('vendor/bank_statements', 'local');
                 }
 
                 if ($request->hasFile('vendor_MOF_attachment_address')) {
                     if ($vendor->vendor_MOF_attachment_address) {
-                        Storage::disk('public')->delete($vendor->vendor_MOF_attachment_address);
+                        Storage::disk('local')->delete($vendor->vendor_MOF_attachment_address);
                     }
                     $validated['vendor_MOF_attachment_address'] = $request->file('vendor_MOF_attachment_address')
-                        ->store('vendor/mof_certificates', 'public');
+                        ->store('vendor/mof_certificates', 'local');
                 }
 
                 if ($request->hasFile('vendor_PKK_attachment_address')) {
                     if ($vendor->vendor_PKK_attachment_address) {
-                        Storage::disk('public')->delete($vendor->vendor_PKK_attachment_address);
+                        Storage::disk('local')->delete($vendor->vendor_PKK_attachment_address);
                     }
                     $validated['vendor_PKK_attachment_address'] = $request->file('vendor_PKK_attachment_address')
-                        ->store('vendor/pkk_certificates', 'public');
+                        ->store('vendor/pkk_certificates', 'local');
                 }
 
                 if ($request->hasFile('vendor_CIDB_attachment_address')) {
                     if ($vendor->vendor_CIDB_attachment_address) {
-                        Storage::disk('public')->delete($vendor->vendor_CIDB_attachment_address);
+                        Storage::disk('local')->delete($vendor->vendor_CIDB_attachment_address);
                     }
                     $validated['vendor_CIDB_attachment_address'] = $request->file('vendor_CIDB_attachment_address')
-                        ->store('vendor/cidb_certificates', 'public');
+                        ->store('vendor/cidb_certificates', 'local');
                 }
 
                 if ($request->hasFile('vendor_MPOB_attachment_address')) {
                     if ($vendor->vendor_MPOB_attachment_address) {
-                        Storage::disk('public')->delete($vendor->vendor_MPOB_attachment_address);
+                        Storage::disk('local')->delete($vendor->vendor_MPOB_attachment_address);
                     }
                     $validated['vendor_MPOB_attachment_address'] = $request->file('vendor_MPOB_attachment_address')
-                        ->store('vendor/mpob_licenses', 'public');
+                        ->store('vendor/mpob_licenses', 'local');
                 }
 
                 //add vendor details
@@ -292,7 +292,7 @@ class VendorController extends Controller
                 
                 foreach ($fileFields as $field) {
                     if (isset($validated[$field])) {
-                        Storage::disk('public')->delete($validated[$field]);
+                        Storage::disk('local')->delete($validated[$field]);
                     }
                 }
                 
@@ -322,7 +322,9 @@ class VendorController extends Controller
             'vendor_id' => 'required|string',
         ]);
 
+
         $vendor_details_json = json_encode(VendorDetails::find($validated['vendor_details_id']));
+        // dd($vendor_details_json);
 
         $vendor_application = new VendorApplication();
         $vendor_application->vendor_details_id = $validated['vendor_details_id'];
