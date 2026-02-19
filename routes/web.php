@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/vendor-approval', [VendorProcessController::class, 'showVendorApprovalPage'])->name('vendor-approval.index');
     Route::get('/vendor-approval/view/{vendor_id}', [VendorProcessController::class, 'showVendorApprovalView'])->name('vendor-approval.view');
     Route::post('/vendor-approval/approve', [VendorProcessController::class, 'approveVendor'])->name('vendor-approval.approve');
+    Route::get('/vendor-approval/test-approve-pdf', [VendorProcessController::class, 'approveVendorTest'])->name('vendor-approval.test-approve-pdf');
     Route::get('/vendor-approval/file/{path}', [VendorProcessController::class, 'serveVendorFile'])->middleware('signed')->name('admin.vendor.file');
 
 });

@@ -45,12 +45,14 @@ export default function VendorApprovalApprove({vendor_application_id , vendor_na
     //     });
     // };
 
+    // console.log('vendor_application_id', vendor_application_id);
+
     const handleApprove = (e) => {
         e.preventDefault();
 
         console.log('approving...');
         post(route('vendor-approval.approve', {
-                vendor_application_id: data.vendor_application_id,
+                vendor_application_id: vendor_application_id,
                 application_status: 'approved',
         }))
     }

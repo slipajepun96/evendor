@@ -7,6 +7,7 @@ use Illuminate\Validation\Rules;
 use App\Models\Vendor;
 use App\Models\VendorDetails;
 use App\Models\VendorApplication;
+use App\Models\VendorCertificate;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -18,6 +19,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\LaravelPdf\Facades\Pdf;
+use function Spatie\LaravelPdf\Support\pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class VendorProcessController extends Controller
 {
@@ -84,22 +88,60 @@ class VendorProcessController extends Controller
 
     public function approveVendor(Request $request) 
     {
+        // dd($request->all());
         $validated = $request->validate([
-            'vendor_id' => 'required|exists:vendor_details,id',
-            'status' => 'required|in:approved,rejected',
+            'vendor_application_id' => 'required|exists:vendor_applications,id',
+            'application_status' => 'required|in:approved,rejected',
         ]);
 
-        $vendor = VendorDetails::findOrFail($validated['vendor_id']);
-        if($validated['status'] === 'approved')
-        {
-            $vendor->is_approved = 1 ;
-        } else if($validated['status'] === 'rejected') 
-        {
-            $vendor->is_approved = 2 ;
-        }
+        // dd($validated);
 
-        $vendor->save();
+        $application = VendorApplication::findOrFail($validated['vendor_application_id']);
+        $application->application_status = $validated['application_status'];
+        $application->application_approved_rejected_by = Auth::id();
+        $application->application_approved_rejected_date = now();
+        $application->save();
+        // dd($application->vendor_id);
+
+        $vendor_detail = VendorDetails::where('vendor_account_id', $application->vendor_id)->firstOrFail();
+        $vendor_detail->is_approved = match($application->application_status) {
+            'approved' => 1,
+            'rejected' => 2,
+        };
+        $vendor_detail->save();
+
+        $vendor_details_json = json_encode(VendorDetails::find($vendor_detail->id));
+
+        //generate cert
+        $certificate = new VendorCertificate();
+        $certificate->vendor_id = $application->vendor_id;
+        $certificate->cert_start_date = now()->toDateString();
+        $certificate->cert_end_date = now()->addYear(2)->toDateString();
+        $certificate->cert_validity_period = '2';
+        $certificate->cert_data_snapshot = $application->application_data_snapshot;
+        $certificate->cert_status = 'approved';
+        // dd($certificate);
+        $certificate->save();
+
+        // Save PDF to public/vendor/certificates/
+        $pdfPath = 'vendor/certificates/' . $certificate->id . '.pdf';
+
+        Pdf::view('pdf.vendor_cert', ['certificate' => $certificate])->save(storage_path('app/public/' . $pdfPath));
+
         return redirect()->route('vendor-approval.index')->with('success', 'Vendor status updated successfully.');
+    }
+
+    public function approveVendorTest()
+    {
+        $certificate = VendorCertificate::first();
+        $vendor_json = json_decode($certificate->cert_data_snapshot, true);
+        $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
+        $qrCode = QrCode::size(100)->generate($cert_url);
+        return pdf()
+        ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])
+        ->name('vendor_certificate.pdf');
+
+
     }
 
     public function serveVendorFile($path)
