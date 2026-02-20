@@ -21,6 +21,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\LaravelPdf\Facades\Pdf;
 use function Spatie\LaravelPdf\Support\pdf;
+use Spatie\LaravelPdf\Enums\Format;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class VendorProcessController extends Controller
@@ -139,6 +140,7 @@ class VendorProcessController extends Controller
         $qrCode = QrCode::size(100)->generate($cert_url);
         return pdf()
         ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])
+        ->format(Format::A4)
         ->name('vendor_certificate.pdf');
 
 
