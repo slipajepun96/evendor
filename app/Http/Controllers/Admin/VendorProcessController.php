@@ -124,10 +124,20 @@ class VendorProcessController extends Controller
         // dd($certificate);
         $certificate->save();
 
+        //generate and save pdf
+        $vendor_json = json_decode($certificate->cert_data_snapshot, true);
+        $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
+        $qrCode = QrCode::size(100)->generate($cert_url);
+
+        // return pdf()
+        // ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])
+        // ->format(Format::A4)
+        // ->name('vendor_certificate.pdf');
+
         // Save PDF to public/vendor/certificates/
         $pdfPath = 'vendor/certificates/' . $certificate->id . '.pdf';
 
-        Pdf::view('pdf.vendor_cert', ['certificate' => $certificate])->save(storage_path('app/public/' . $pdfPath));
+        Pdf::view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])->format(Format::A4)->save(storage_path('app/public/' . $pdfPath));
 
         return redirect()->route('vendor-approval.index')->with('success', 'Vendor status updated successfully.');
     }

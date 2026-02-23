@@ -207,7 +207,7 @@
                         </div>
                         <div class="mt-2">
                             <div class="text-xs font-medium">Tempoh Sah Laku</div>
-                            @if($vendor_json['vendor_MOF_start_date'] && $vendor_json['vendor_MOF_end_date'])
+                            @if($vendor_json['vendor_MOF_start_date'] && $vendor_json['vendor_MOF_expiry_date'])
                                 <div class="font-bold">{{ $vendor_json['vendor_MOF_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_MOF_expiry_date'] ?? 'N/A' }}</div>
                             @else
                                 <div class="font-bold">N/A</div>
