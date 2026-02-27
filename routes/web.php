@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/vendor/view/{vendor_id}', [DashboardController::class, 'viewVendorDetails'])->name('vendor.view');
+
     //vendor verification
     Route::get('/vendor-approval', [VendorProcessController::class, 'showVendorApprovalPage'])->name('vendor-approval.index');
     Route::get('/vendor-approval/view/{vendor_id}', [VendorProcessController::class, 'showVendorApprovalView'])->name('vendor-approval.view');
@@ -38,6 +40,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware('vendor')->group(function () {
     Route::get('/vendor', [VendorController::class, 'vendorDashboard'])->name('vendor.dashboard');
     Route::post('/vendor/submit-application', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit-application');
+
+    Route::get('/vendor/cert/{vendor_id}', [VendorController::class, 'downloadVendorCert'])->name('vendor.download-cert');
 
     //form
     Route::get('/vendor/complete-registration', [VendorController::class, 'showVendorCompleteRegistrationForm'])->name('vendor.complete-registration');

@@ -4,6 +4,8 @@ import { Head, usePage, Link } from '@inertiajs/react';
 import { BadgeCheck } from 'lucide-react';
 import VendorApplication from './Partials/VendorApplication';
 const now = new Date();
+import PrimaryButton from '@/Components/PrimaryButton';
+import { Download } from 'lucide-react';
 
 const hours = now.getHours();
 // console.log(`Current hour: ${hours}`);
@@ -11,7 +13,6 @@ const hours = now.getHours();
 
 export default function VendorDashboard({ vendor, vendor_details, vendor_applications }) {
     // const { vendor } = usePage().props.auth;
-    console.log(vendor_details);
 
     const vendor_profile_completed = !!vendor_details;
     const vendor_application_status = vendor_applications.length > 0 ? vendor_applications[0].status : null;
@@ -37,9 +38,9 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                         {/* {vendor_applications[0].application_status} */}
 
                         {/* {vendor_details.vendor_name} */}
-                        <div className="flex flex-row gap-2 ml-4 mr-4 mb-4">
+                        <div className="md:flex md:flex-row flex-col gap-2 ml-4 mr-4 mb-4">
                             {!vendor_details ? (
-                            <div className='bg-yellow-300 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
+                            <div className='bg-yellow-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-green-800'>Status Profail</p>
@@ -55,7 +56,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                 </div>
                             </div>
                             ) : (
-                            <div className='bg-lime-300 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
+                            <div className='bg-lime-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-lime-400/20 to-green-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-green-800'>Status Profail</p>
@@ -71,7 +72,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             ) }
 
                             {vendor_profile_completed && (vendor_application_status === null) && (
-                            <div className='bg-red-400 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
+                            <div className='bg-red-400 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-50'>Permohonan Vendor</p>
@@ -85,8 +86,9 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                 </div>
                             </div>
                             ) }
-                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'pending' ) ? (
-                            <div className='bg-amber-300 h-30 w-full md:w-1/4 p-4 rounded-xl relative'>
+
+                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'pending' ) && (
+                            <div className='bg-amber-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-700'>Permohonan Vendor</p>
@@ -100,9 +102,26 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                     </div>
                                 </div>
                             </div>
-                            ) : (
-                                <div></div>
-                            )} 
+                            )}
+
+                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' ) && (
+                            <div className='bg-lime-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                                <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                                <div className='relative z-10'>
+                                    <p className='font-bold text-gray-700'>Permohonan Vendor</p>
+                                    <div className='flex w-full justify-between'>
+                                        <div>
+                                            <p className='text-2xl font-bold text-gray-700'>Diluluskan</p>
+                                            <p className='uppercase text-xs font-semibold'>Tamat Pada {vendor_applications[0].approved_at}</p>
+                                       </div>
+                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            )}
+                            
+                               
                             
                             {/* <div className='bg-amber-300 h-24 w-1/4 p-4 rounded-xl '>
                                 <p className='font-bold text-amber-800'>Vendor Dalam Proses</p>
@@ -119,22 +138,26 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                         </div>
                     </div>
 
-                    <div className="overflow-hidden bg-white shadow-lg rounded-2xl mt-4">
-                        <div className="p-4 text-gray-900 font-semibold">
-                            Tender / Sebut Harga Yang Sedang Dibuka
-                        </div>
-                             - akan datang-
+                    <div className="overflow-hidden bg-white shadow-lg rounded-2xl mt-4 p-4">
+                        <p className=" text-gray-900 font-semibold">
+                            Perakuan Pendaftaran Vendor
+                        </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Perakuan Pendaftaran Vendor ini perlu dibawa semasa membeli borang tender/sebut harga dan ianya perlu dilampirkan bersama borang tender/sebutharga semasa penghantaran borang tersebut.
+                        </p>
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = route('vendor.download-cert', { vendor_id: vendor_details?.vendor_account_id });
+                            }}
+                            className="btn btn-primary"
+                        >
+                            <PrimaryButton className="gap-2"><Download /> Muat Turun Perakuan Pendaftaran Vendor</PrimaryButton>
+                        </button>
 
-                        {/* <div className="flex flex-row gap-2 ml-4 mr-4 mb-4">
-                            <div className='bg-lime-300 h-24 w-1/2 p-4 rounded-xl '>
-                                <p className='font-bold text-lime-800'>Tender</p>
-                                <p className='justify-self-end text-4xl font-bold'>27</p>
-                            </div>
-                            <div className='bg-lime-300 h-24 w-1/2 p-4 rounded-xl '>
-                                <p className='font-bold text-lime-800'>Sebut Harga</p>
-                                <p className='justify-self-end text-4xl font-bold'>27</p>
-                            </div>
-                        </div> */}
+
+
+                        
                     </div>
                 </div>
             </div>

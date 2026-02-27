@@ -7,6 +7,7 @@ use Illuminate\Validation\Rules;
 use App\Models\Vendor;
 use App\Models\VendorDetails;
 use App\Models\VendorApplication;
+use App\Models\VendorCertificate;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -345,4 +346,49 @@ class VendorController extends Controller
 
         return redirect()->route('vendor.dashboard')->with('success', 'Vendor application submitted successfully!');
     }
+
+    public function downloadVendorCert($vendor_id)
+    {
+        if($vendor_id && VendorApplication::where('vendor_id', $vendor_id)
+            ->where('application_status', 'approved')
+            ->where('created_at', '>=', now()->subYears(2))
+            ->where('created_at', '<=', now())
+            ->exists())
+        {
+            try{
+                $vendor_cert = VendorCertificate::where('vendor_id', $vendor_id)->firstOrFail();
+            
+                $address = str_replace('app/private/', '', $vendor_cert->cert_pdf_address);
+
+                
+                if (!Storage::disk('local')->exists($address)) {
+                    abort(404, 'Certificate file not found at: ' . $address);
+                }
+                // dd(Storage::disk('local')->download($address, 'vendor-certificate.pdf'));
+
+                // return Storage::disk('local')->download('test.pdf');
+                // return Storage::download('test.pdf');
+                return Storage::disk('local')->download($address, 'vendor-certificate.pdf');
+                
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                abort(404, 'Vendor certificate record not found');
+            } catch (\Exception $e) {
+                \Log::error('Certificate download error:', [
+                    'vendor_id' => $vendor_id,
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                abort(500, 'Error downloading certificate: ' . $e->getMessage());
+            } 
+        }
+        else {
+            dd('Vendor application not approved or does not exist');
+        }
+            
+        
+
+        // dd($vendor_id);
+    }
+
+        
 }

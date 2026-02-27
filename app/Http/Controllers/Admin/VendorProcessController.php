@@ -121,23 +121,44 @@ class VendorProcessController extends Controller
         $certificate->cert_validity_period = '2';
         $certificate->cert_data_snapshot = $application->application_data_snapshot;
         $certificate->cert_status = 'approved';
-        // dd($certificate);
+        
         $certificate->save();
 
-        //generate and save pdf
-        $vendor_json = json_decode($certificate->cert_data_snapshot, true);
-        $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
-        $qrCode = QrCode::size(100)->generate($cert_url);
+        // dd($certificate->id);
 
-        // return pdf()
-        // ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])
-        // ->format(Format::A4)
-        // ->name('vendor_certificate.pdf');
+        //cert area
+       
 
-        // Save PDF to public/vendor/certificates/
-        $pdfPath = 'vendor/certificates/' . $certificate->id . '.pdf';
+        try {
+            //generate and save pdf
+            $vendor_json = json_decode($certificate->cert_data_snapshot, true);
+            $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
+            $qrCode = QrCode::size(100)->generate($cert_url);
+            
+            // save pdf to private/vendor/certificates/
+            $pdfPath = 'app/private/vendor/certificates/' . $certificate->id . '.pdf';
+            
+            // Ensure directory exists
+            $directory = storage_path('app/private/vendor/certificates');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
 
-        Pdf::view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])->format(Format::A4)->save(storage_path('app/public/' . $pdfPath));
+            Pdf::view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])->format(Format::A4)->save(storage_path($pdfPath));
+
+            //save path
+            $cert = VendorCertificate::findOrFail($certificate->id);
+            $cert->cert_pdf_address = $pdfPath;
+            $cert->save();
+
+
+
+        } catch (\Exception $e) {
+            // Handle PDF generation errors
+            return redirect()->route('vendor-approval.index')->with('error', 'Failed to generate certificate PDF: ' . $e->getMessage());
+        }
+
+
 
         return redirect()->route('vendor-approval.index')->with('success', 'Vendor status updated successfully.');
     }

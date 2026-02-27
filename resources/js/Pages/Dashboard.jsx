@@ -12,6 +12,7 @@ console.log(`Current hour: ${hours}`);
 
 export default function Dashboard({ unapproved_vendors, approved_vendors }) 
 {
+    console.log(approved_vendors);
     const columns = [
         // { Header: 'Nama', accessor: 'allottee_name' },
         // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
@@ -49,7 +50,7 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
             Cell: ({ row }) => (
                 <div className="flex space-x-2 gap-2">
                     {/* <AllotteeEdit allottee={row} /> */}
-                    <Link href={route('vendor-approval.view', row.id)}>
+                    <Link href={route('vendor.view', row.vendor_account_id)}>
                         <PrimaryButton
                             className="px-2 py-1 text-white"
                         >
