@@ -390,5 +390,17 @@ class VendorController extends Controller
         // dd($vendor_id);
     }
 
+
+    public function checkVendorCert($cert_id)
+    {
+        $certDetails = VendorCertificate::find($cert_id);
+
+        return Inertia::render('Public/CheckCert', [
+            'certExists' => $certDetails ? true : false,
+            'cert_id' => $cert_id,
+            'certDetails' => $certDetails,
+        ]);
+    }
+
         
 }

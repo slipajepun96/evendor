@@ -13,21 +13,12 @@ export default function VendorAuthenticatedLayout({ header, children }) {
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-<div className="min-h-screen w-full relative">
-  {/* Radial Gradient Background from Bottom */}
-  <div
-    className="absolute inset-0 z-0"
-    style={{
-      background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #7c3aed 100%)",
-    }}
-  />
-  {/* Your Content/Components */}
-</div>
+
 
     return (
         <div  className="min-h-screen absolute inset-0 z-0"
                 style={{
-                background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #14b8a6 100%)",
+                background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #3ABCC2 100%)",
                 }}> 
             <nav className=" text-gray-900">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -132,6 +132,7 @@ class VendorProcessController extends Controller
         try {
             //generate and save pdf
             $vendor_json = json_decode($certificate->cert_data_snapshot, true);
+
             $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
             $qrCode = QrCode::size(100)->generate($cert_url);
             

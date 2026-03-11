@@ -101,10 +101,10 @@ export default function Login({ status, canResetPassword }) {
 
                         <main className="mt-6">
                             <section class="">
-                                <div class=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
-                                    <div class="flex flex-col justify-center">
-                                        <h1 class="mb-2 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">E-Vendor</h1>
-                                        <p class="mb-6 text-lg font-normal text-white lg:text-xl">PKPP Agro Sdn. Bhd.</p>
+                                <div className=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
+                                    <div className="flex flex-col justify-center">
+                                        <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">E-Vendor</h1>
+                                        <p className="mb-6 text-lg font-normal text-white lg:text-xl">PKPP Agro Sdn. Bhd.</p>
                                         <div className='grid grid-cols-3 gap-2'>
                                             <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
                                                 Selamat
@@ -121,7 +121,7 @@ export default function Login({ status, canResetPassword }) {
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-gray-800 rounded-lg md:shadow-xl">
+                                        <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-gray-800 rounded-lg md:shadow-xl">
                                             <h2 class="text-2xl font-bold text-white">
                                                 Log Masuk Pentadbir
                                             </h2>
@@ -158,7 +158,7 @@ export default function Login({ status, canResetPassword }) {
 
                                                     <InputError message={errors.password} className="mt-2" />
                                                 </div>
-                                                <div class="flex items-start">
+                                                <div className="flex items-start">
                                                     <div className="mt-4 block">
                                                         <label className="flex items-center">
                                                             <Checkbox

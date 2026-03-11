@@ -55,12 +55,18 @@ export default function Welcome({ auth, canResetPassword, status }) {
     return (
         <>
             <Head title="Welcome" />
-            <div className="bg-gray-50 text-black/50">
+            <div className="bg-gray-50 text-black/50" style={{
+                backgroundImage: `
+                    radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #3ABCC2 100%)
+                `,
+                backgroundSize: "100% 100%",
+                }}> 
+
                 <div className="relative flex min-h-screen flex-col items-center justify-center">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
 
                         <main className="mt-6">
-                            <section className="sm:bg-white md:bg-gray-50">
+                            <section className=" ">
                                 <div className=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                     <div className="flex flex-col justify-center">
                                         <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
@@ -81,7 +87,7 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl">
+                                        <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl md:border md:border-gray-200">
                                             <h2 className="text-2xl font-bold text-gray-900">
                                                 {formType === 'register' ? 'Daftar Sebagai Vendor' : formType === 'admin' ? 'Log Masuk Pentadbir' : 'Log Masuk Vendor'}
                                             </h2>
@@ -242,32 +248,58 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                     </div>
                                 </div>
                             </section>
+                            <div className='border border-gray-200 p-4 rounded-xl bg-white mb-8'>
+                                <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
+                                <div className='grid flex-1 gap-2 md:grid-cols-3 '>
+                                    Tiada tender atau sebut harga yang sedang aktif buat masa ini. 
+                                    {/* <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
+                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
+                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
+                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
+                                    </div>
+                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white '>
+                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
+                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
+                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
+                                    </div>
+                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
+                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
+                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
+                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
+                                    </div>
+                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
+                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
+                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
+                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
+                                    </div> */}
+                                </div>
+                                
+                            </div>
                         </main>
-
-                        <footer className="text-center text-sm text-black">
-                            {auth.user ? (
-                                <Link
-                                    href={route('dashboard')}
-                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
-                                >
-                                    Dashboard
-                                </Link>
-                            ) : (
-                                <>
-                                    <Link
-                                        href={route('login')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
-                                    >
-                                        Log Masuk Pentadbir Sistem
-                                    </Link>
-                                </>
-                            )}
-                            
-                        | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
-                        </footer>
                     </div>
                 </div>
             </div>
+            <footer className="text-center text-sm text-black border-t py-4">
+                {auth.user ? (
+                    <Link
+                        href={route('dashboard')}
+                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                    >
+                        Dashboard
+                    </Link>
+                ) : (
+                    <>
+                        <Link
+                            href={route('login')}
+                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
+                        >
+                            Log Masuk Pentadbir Sistem
+                        </Link>
+                    </>
+                )}
+                
+            | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+            </footer>
         </>
     );
 }
