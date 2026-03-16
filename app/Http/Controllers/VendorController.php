@@ -349,11 +349,10 @@ class VendorController extends Controller
 
     public function downloadVendorCert($vendor_id)
     {
-        if($vendor_id && VendorApplication::where('vendor_id', $vendor_id)
-            ->where('application_status', 'approved')
-            ->where('created_at', '>=', now()->subYears(2))
-            ->where('created_at', '<=', now())
-            ->exists())
+        $vendor_cert = VendorCertificate::where('vendor_id', $vendor_id)->where('cert_status', 'approved')->where('created_at', '>=', now()->subYears(2))->where('created_at', '<=', now())->first();
+
+        // dd($vendor_cert);
+        if($vendor_cert)
         {
             try{
                 $vendor_cert = VendorCertificate::where('vendor_id', $vendor_id)->firstOrFail();

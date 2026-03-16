@@ -9,6 +9,7 @@ use App\Models\VendorDetails;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\VendorCertificate;
+use App\Models\VendorApplication;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +25,13 @@ class DashboardController extends Controller
     public function adminDashboard(): Response
     {
 
-        $unapproved_vendors = VendorDetails::where('is_approved','0')->where('is_active', '1')->get();
-        $approved_vendors = VendorDetails::where('is_approved','1')->where('is_active', '1')->get();
-        
-        
+        $unapproved_vendors = VendorApplication::where('application_status','pending')->get();
+        $approved_vendors = VendorCertificate::where('cert_status','approved')->where('cert_end_date', '>=', now())->get()
+            ->map(function ($vendor) {
+                $vendor->cert_data_snapshot = json_decode($vendor->cert_data_snapshot, true);
+                return $vendor;
+            });
+
         return Inertia::render('Dashboard', [
             'unapproved_vendors' => $unapproved_vendors,
             'approved_vendors' => $approved_vendors,

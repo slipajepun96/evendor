@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/vendor-approval/approve', [VendorProcessController::class, 'approveVendor'])->name('vendor-approval.approve');
     Route::get('/vendor-approval/test-approve-pdf', [VendorProcessController::class, 'approveVendorTest'])->name('vendor-approval.test-approve-pdf');
     Route::get('/vendor-approval/file/{path}', [VendorProcessController::class, 'serveVendorFile'])->middleware('signed')->name('admin.vendor.file');
+    Route::get('/vendor/cert/{vendor_id}', [VendorController::class, 'downloadVendorCert'])->name('vendor.download-cert');
 
 });
 
@@ -42,7 +43,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware('vendor')->group(function () {
     Route::get('/vendor', [VendorController::class, 'vendorDashboard'])->name('vendor.dashboard');
     Route::post('/vendor/submit-application', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit-application');
-
     Route::get('/vendor/cert/{vendor_id}', [VendorController::class, 'downloadVendorCert'])->name('vendor.download-cert');
 
     //form

@@ -5,6 +5,7 @@ const now = new Date();
 import { Link, useForm } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DataTable from '@/Components/DataTable';
+import { Download } from 'lucide-react';
 
 const hours = now.getHours();
 console.log(`Current hour: ${hours}`);
@@ -12,51 +13,63 @@ console.log(`Current hour: ${hours}`);
 
 export default function Dashboard({ unapproved_vendors, approved_vendors }) 
 {
-    console.log(approved_vendors);
+    // console.log(approved_vendors[0].cert_data_snapshot['vendor_name']);
+
     const columns = [
-        // { Header: 'Nama', accessor: 'allottee_name' },
-        // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
         {
             Header: 'Nama Vendor',
             accessor: ['vendor_name', 'vendor_id_num'],
             Cell: ({ row }) => (
-                <div className="flex flex-col">
-                    <div className='font-semibold'>{row.vendor_name}</div>
-                    <div className='text-sm'>{row.vendor_id_num}</div> 
-                </div>
-            ),
+                
+                    <div className="flex flex-col">
+                        <div className='font-semibold'>{row.cert_data_snapshot['vendor_name']}</div>
+                        <div className='text-sm'>{row.cert_data_snapshot['vendor_id_num']}</div>
+                    </div>
+                )
         },
         {
             Header: 'Jenis Entiti',
             accessor: ['vendor_type',],
-            Cell: ({ row }) => (
-                <div className="flex flex-col text-sm">
-                    {row.vendor_type === 'company' && ('Syarikat')}
-                    {row.vendor_type === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
-                    {row.vendor_type === 'cooperation' && ('Koperasi')}
-                    {row.vendor_type === 'organisation' && ('Pertubuhan / Kelab')}
+            Cell: ({ row }) => {
+                const snap = row.cert_data_snapshot ?? {};
+                return (
+                    <div className="flex flex-col text-sm">
+                        {snap['vendor_type'] === 'company' && ('Syarikat')}
+                        {snap['vendor_type'] === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
+                        {snap['vendor_type'] === 'cooperation' && ('Koperasi')}
+                        {snap['vendor_type'] === 'organisation' && ('Pertubuhan / Kelab')}
                 <p> </p>
-                    {row.vendor_company_type === 'bhd' && ('Berhad')}
-                    {row.vendor_company_type === 'sdn-bhd' && ('Sendirian Berhad')}
-                    {row.vendor_company_type === 'partnership' && ('Perkongsian')}
-                    {row.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
+                    {snap['vendor_company_type'] === 'bhd' && ('Berhad')}
+                    {snap['vendor_company_type'] === 'sdn-bhd' && ('Sendirian Berhad')}
+                    {snap['vendor_company_type'] === 'partnership' && ('Perkongsian')}
+                    {snap['vendor_company_type'] === 'sole-ownership' && ('Milikan Tunggal')}
                 </div>
-            ),
+                )
+            }
         },
-        { Header: 'No. Telefon', accessor: 'vendor_phone' },
+        // { Header: 'No. Telefon', accessor: 'vendor_phone' },
         {
             Header: 'Tindakan',
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2 gap-2">
                     {/* <AllotteeEdit allottee={row} /> */}
-                    <Link href={route('vendor.view', row.vendor_account_id)}>
+                    <Link href={route('vendor.view', row.vendor_id)}>
                         <PrimaryButton
                             className="px-2 py-1 text-white"
                         >
                             Lihat Butiran
                         </PrimaryButton>
                     </Link>
+                    <button
+                        className="px-2 py-1 text-white"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = route('vendor.download-cert', { vendor_id: row.vendor_id });
+                        }}
+                    >
+                        <Download /> Perakuan
+                    </button>
                     {/* <PrimaryButton
                         className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleDelete(row.id)}
@@ -116,7 +129,7 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                         <DataTable columns={columns} data={approved_vendors} className='mt-4'/>
                     </div>
 
-                    {/* {approved_vendors} */}
+                    {/* {approved_vendors.id} */}
                 </div>
             </div>
         </AuthenticatedLayout>

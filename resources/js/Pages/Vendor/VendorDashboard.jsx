@@ -150,7 +150,6 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                 e.preventDefault();
                                 window.location.href = route('vendor.download-cert', { vendor_id: vendor_details?.vendor_account_id });
                             }}
-                            className="btn btn-primary"
                         >
                             <PrimaryButton className="gap-2"><Download /> Muat Turun Perakuan Pendaftaran Vendor</PrimaryButton>
                         </button>

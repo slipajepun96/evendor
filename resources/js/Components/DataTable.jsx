@@ -4,7 +4,7 @@ export default function DataTable({ columns, data, className = "", showSearch = 
     const [search, setSearch] = useState('');
 
     // Filter data based on search input
-    const filteredData = data.filter((row) =>
+    const filteredData = search === '' ? data : data.filter((row) =>
         columns.some((column) => {
             if (Array.isArray(column.accessor)) {
                 // If accessor is an array, check all fields in the array
