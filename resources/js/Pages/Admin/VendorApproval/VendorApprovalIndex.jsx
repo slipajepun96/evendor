@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 import PrimaryButton from '@/Components/PrimaryButton';
+import { ChevronLeft } from 'lucide-react';
 
 
 export default function VendorApprovalIndex({ unapproved_vendors }) 
@@ -51,9 +52,17 @@ export default function VendorApprovalIndex({ unapproved_vendors })
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Permohonan Menjadi Vendor
-                </h2>
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => window.history.back()}
+                        className="hover:bg-gray-100 rounded px-1 transition-colors"
+                    >
+                        <ChevronLeft className="w-7 h-7" />
+                    </button>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        Permohonan Menjadi Vendor
+                    </h2>
+                </div>
             }
         >
             <Head title="Permohonan Menjadi Vendor" />

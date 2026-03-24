@@ -18,7 +18,6 @@ export default function CheckCert({ certExists, cert_id, certDetails }) {
                 `,
                 backgroundSize: "100% 100%",
                 }}> 
-
                 <div className="relative flex min-h-screen flex-col items-center justify-center">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
 

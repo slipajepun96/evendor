@@ -105,20 +105,6 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex flex-col justify-center">
                                         <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">E-Vendor</h1>
                                         <p className="mb-6 text-lg font-normal text-white lg:text-xl">PKPP Agro Sdn. Bhd.</p>
-                                        <div className='grid grid-cols-3 gap-2'>
-                                            <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
-                                                Selamat
-                                            </div>
-                                            <div className='bg-blue-300 p-2 rounded-lg text-center text-blue-700 font-semibold'>
-                                                Terjamin
-                                            </div>
-                                            <div className='bg-yellow-300 p-2 rounded-lg text-center text-amber-500 font-semibold'>
-                                                Tepat
-                                            </div>
-                                        </div>
-                                        <div className='mt-4'>
-                                            Daftar sebagai vendor PKPP Agro Sdn. Bhd. sebagai kelayakan untuk menyertai sebut harga & tender yang dibuka oleh PKPP Agro Sdn. Bhd.
-                                        </div>
                                     </div>
                                     <div>
                                         <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-gray-800 rounded-lg md:shadow-xl">
@@ -168,7 +154,7 @@ export default function Login({ status, canResetPassword }) {
                                                                     setData('remember', e.target.checked)
                                                                 }
                                                             />
-                                                            <span className="ms-2 text-sm text-gray-600">
+                                                            <span className="ms-2 text-sm text-gray-200">
                                                                 Remember me
                                                             </span>
                                                         </label>

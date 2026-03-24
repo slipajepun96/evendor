@@ -50,7 +50,7 @@ export default function VendorApprovalView({ vendor, snapshot , bank_statements_
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => window.history.back()}
-                        className="hover:bg-gray-100 rounded p-1 transition-colors"
+                        className="hover:bg-gray-100 rounded px-1 transition-colors"
                     >
                         <ChevronLeft className="w-7 h-7" />
                     </button>

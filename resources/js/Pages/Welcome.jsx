@@ -7,7 +7,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Welcome({ auth, canResetPassword, status }) {
-    const [formType, setFormType] = useState('login'); // 'login', 'register', or 'admin'
+    const [formType, setFormType] = useState('login');
 
     const handleImageError = () => {
         document
@@ -61,197 +61,196 @@ export default function Welcome({ auth, canResetPassword, status }) {
                 `,
                 backgroundSize: "100% 100%",
                 }}> 
-
-                <div className="relative flex min-h-screen flex-col items-center justify-center">
+                <div className="relative flex flex-col items-center justify-center">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
 
-                        <main className="mt-6">
-                            <section className=" ">
-                                <div className=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
-                                    <div className="flex flex-col justify-center">
-                                        <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
-                                        <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
-                                        <div className='grid grid-cols-3 gap-2'>
-                                            <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
-                                                Selamat
-                                            </div>
-                                            <div className='bg-blue-300 p-2 rounded-lg text-center text-blue-700 font-semibold'>
-                                                Terjamin
-                                            </div>
-                                            <div className='bg-yellow-300 p-2 rounded-lg text-center text-amber-500 font-semibold'>
-                                                Tepat
-                                            </div>
+                        <main className="mt-4">
+                            <div className=" py-2 md:py-8 md:mx-auto md:max-w-screen-xl lg:py-8 grid lg:grid-cols-2 gap-8 lg:gap-16">
+                                <div className="flex flex-col justify-center">
+                                    <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
+                                    <p className="mb-3 text-lg font-normal text-gray-500 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
+                                    {/* <div className='grid grid-cols-3 gap-2'>
+                                        <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
+                                            Selamat
                                         </div>
-                                        <div className='mt-4'>
-                                            Daftar sebagai vendor PKPP Agro Sdn. Bhd. sebagai kelayakan untuk menyertai sebut harga & tender yang dibuka oleh PKPP Agro Sdn. Bhd.
+                                        <div className='bg-blue-300 p-2 rounded-lg text-center text-blue-700 font-semibold'>
+                                            Terjamin
                                         </div>
+                                        <div className='bg-yellow-300 p-2 rounded-lg text-center text-amber-500 font-semibold'>
+                                            Tepat
+                                        </div>
+                                    </div> */}
+                                    <img src="/logo/front-img.webp" className='w-1/2' ></img>
+                                    <div className='mt-4 font-medium text-gray-700'>
+                                        Daftar sebagai vendor PKPP Agro Sdn. Bhd. sebagai kelayakan untuk menyertai sebut harga & tender yang dibuka oleh PKPP Agro Sdn. Bhd.
                                     </div>
-                                    <div>
-                                        <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl md:border md:border-gray-200">
-                                            <h2 className="text-2xl font-bold text-gray-900">
-                                                {formType === 'register' ? 'Daftar Sebagai Vendor' : formType === 'admin' ? 'Log Masuk Pentadbir' : 'Log Masuk Vendor'}
-                                            </h2>
+                                </div>
+                                <div>
+                                    <div className="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl md:border md:border-gray-200">
+                                        <h2 className="text-2xl font-bold text-gray-900">
+                                            {formType === 'register' ? 'Daftar Sebagai Vendor' : formType === 'admin' ? 'Log Masuk Pentadbir' : 'Log Masuk Vendor'}
+                                        </h2>
 
-                                            {formType === 'login' ? (
-                                                // Vendor Login Form
-                                                <form className="md:mt-8 md:space-y-6" action="#" onSubmit={submitLogin}>
-                                                    <div>
-                                                        <InputLabel htmlFor="vendor_email" value="E-Mel" />
+                                        {formType === 'login' ? (
+                                            // Vendor Login Form
+                                            <form className="md:mt-8 md:space-y-6 space-y-2" action="#" onSubmit={submitLogin}>
+                                                <div>
+                                                    <InputLabel htmlFor="vendor_email" value="E-Mel" />
 
-                                                        <TextInput
-                                                            id="vendor_email"
-                                                            type="email"
-                                                            name="vendor_email"
-                                                            value={data.vendor_email}
-                                                            className="mt-1 block w-full text-gray-800"
-                                                            autoComplete="vendor_email"
-                                                            isFocused={true}
-                                                            onChange={(e) => setData('vendor_email', e.target.value)}
-                                                        />
+                                                    <TextInput
+                                                        id="vendor_email"
+                                                        type="email"
+                                                        name="vendor_email"
+                                                        value={data.vendor_email}
+                                                        className="mt-1 block w-full text-gray-800"
+                                                        autoComplete="vendor_email"
+                                                        isFocused={true}
+                                                        onChange={(e) => setData('vendor_email', e.target.value)}
+                                                    />
 
-                                                        <InputError message={errors.vendor_email} className="mt-2" />
-                                                    </div>
-                                                    <div>
-                                                        <InputLabel htmlFor="password" value="Kata Laluan" />
+                                                    <InputError message={errors.vendor_email} className="mt-2" />
+                                                </div>
+                                                <div>
+                                                    <InputLabel htmlFor="password" value="Kata Laluan" />
 
-                                                        <TextInput
-                                                            id="password"
-                                                            type="password"
-                                                            name="password"
-                                                            value={data.password}
-                                                            className="mt-1 block w-full"
-                                                            autoComplete="current-password"
-                                                            onChange={(e) => setData('password', e.target.value)}
-                                                        />
+                                                    <TextInput
+                                                        id="password"
+                                                        type="password"
+                                                        name="password"
+                                                        value={data.password}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="current-password"
+                                                        onChange={(e) => setData('password', e.target.value)}
+                                                    />
 
-                                                        <InputError message={errors.password} className="mt-2" />
-                                                    </div>
+                                                    <InputError message={errors.password} className="mt-2" />
+                                                </div>
 
-                                                    <PrimaryButton className="" disabled={processing}>
+                                                <PrimaryButton className="" disabled={processing}>
+                                                    Log Masuk
+                                                </PrimaryButton>
+                                            </form>
+                                        ) : formType === 'register' ? (
+                                            // Register Form
+                                            <form className="md:mt-6 md:space-y-2" action="#" onSubmit={submitRegister}>
+                                                <div>
+                                                    <InputLabel htmlFor="vendor_contact_person" value="Nama" />
+
+                                                    <TextInput
+                                                        id="vendor_contact_person"
+                                                        name="vendor_contact_person"
+                                                        value={data.vendor_contact_person}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="name"
+                                                        isFocused={true}
+                                                        onChange={(e) => setData('vendor_contact_person', e.target.value)}
+                                                        required
+                                                    />
+
+                                                    <InputError message={errors.vendor_contact_person} className="mt-2" />
+                                                </div>
+
+                                                <div>
+                                                    <InputLabel htmlFor="vendor_email" value="E-Mel" />
+
+                                                    <TextInput
+                                                        id="vendor_email"
+                                                        type="email"
+                                                        name="vendor_email"
+                                                        value={data.vendor_email}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="username"
+                                                        onChange={(e) => setData('vendor_email', e.target.value)}
+                                                        required
+                                                    />
+
+                                                    <InputError message={errors.vendor_email} className="mt-2" />
+                                                </div>
+
+                                                <div>
+                                                    <InputLabel htmlFor="password" value="Kata Laluan" />
+
+                                                    <TextInput
+                                                        id="password"
+                                                        type="password"
+                                                        name="password"
+                                                        value={data.password}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="new-password"
+                                                        onChange={(e) => setData('password', e.target.value)}
+                                                        required
+                                                    />
+
+                                                    <InputError message={errors.password} className="mt-2" />
+                                                </div>
+
+                                                <div>
+                                                    <InputLabel htmlFor="password_confirmation" value="Sahkan Kata Laluan" />
+
+                                                    <TextInput
+                                                        id="password_confirmation"
+                                                        type="password"
+                                                        name="password_confirmation"
+                                                        value={data.password_confirmation}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="new-password"
+                                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                                        required
+                                                    />
+
+                                                    <InputError message={errors.password_confirmation} className="mt-2" />
+                                                </div>
+
+                                                <PrimaryButton className="" disabled={processing}>
+                                                    Daftar
+                                                </PrimaryButton>
+                                            </form>
+                                        ) : ""
+                                    }
+
+                                        <div className="text-sm font-medium text-gray-900 border-t pt-4 mt-4">
+                                            {formType === 'register' ? (
+                                                <>
+                                                    Sudah mempunyai akaun?
+                                                    <PrimaryButton
+                                                        onClick={() => switchForm('login')}
+                                                        className="text-blue-600 ml-2 cursor-pointer"
+                                                    >
                                                         Log Masuk
                                                     </PrimaryButton>
-                                                </form>
-                                            ) : formType === 'register' ? (
-                                                // Register Form
-                                                <form className="md:mt-6 md:space-y-2" action="#" onSubmit={submitRegister}>
-                                                    <div>
-                                                        <InputLabel htmlFor="vendor_contact_person" value="Nama" />
-
-                                                        <TextInput
-                                                            id="vendor_contact_person"
-                                                            name="vendor_contact_person"
-                                                            value={data.vendor_contact_person}
-                                                            className="mt-1 block w-full"
-                                                            autoComplete="name"
-                                                            isFocused={true}
-                                                            onChange={(e) => setData('vendor_contact_person', e.target.value)}
-                                                            required
-                                                        />
-
-                                                        <InputError message={errors.vendor_contact_person} className="mt-2" />
-                                                    </div>
-
-                                                    <div>
-                                                        <InputLabel htmlFor="vendor_email" value="E-Mel" />
-
-                                                        <TextInput
-                                                            id="vendor_email"
-                                                            type="email"
-                                                            name="vendor_email"
-                                                            value={data.vendor_email}
-                                                            className="mt-1 block w-full"
-                                                            autoComplete="username"
-                                                            onChange={(e) => setData('vendor_email', e.target.value)}
-                                                            required
-                                                        />
-
-                                                        <InputError message={errors.vendor_email} className="mt-2" />
-                                                    </div>
-
-                                                    <div>
-                                                        <InputLabel htmlFor="password" value="Kata Laluan" />
-
-                                                        <TextInput
-                                                            id="password"
-                                                            type="password"
-                                                            name="password"
-                                                            value={data.password}
-                                                            className="mt-1 block w-full"
-                                                            autoComplete="new-password"
-                                                            onChange={(e) => setData('password', e.target.value)}
-                                                            required
-                                                        />
-
-                                                        <InputError message={errors.password} className="mt-2" />
-                                                    </div>
-
-                                                    <div>
-                                                        <InputLabel htmlFor="password_confirmation" value="Sahkan Kata Laluan" />
-
-                                                        <TextInput
-                                                            id="password_confirmation"
-                                                            type="password"
-                                                            name="password_confirmation"
-                                                            value={data.password_confirmation}
-                                                            className="mt-1 block w-full"
-                                                            autoComplete="new-password"
-                                                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                                                            required
-                                                        />
-
-                                                        <InputError message={errors.password_confirmation} className="mt-2" />
-                                                    </div>
-
-                                                    <PrimaryButton className="" disabled={processing}>
-                                                        Daftar
+                                                </>
+                                            ) : formType === 'admin' ? (
+                                                <>
+                                                    <PrimaryButton
+                                                        onClick={() => switchForm('login')}
+                                                        className="text-blue-600 cursor-pointer"
+                                                    >
+                                                        Kembali ke Log Masuk Vendor
                                                     </PrimaryButton>
-                                                </form>
-                                            ) : ""
-                                        }
-
-                                            <div className="text-sm font-medium text-gray-900 border-t pt-4 mt-4">
-                                                {formType === 'register' ? (
-                                                    <>
-                                                        Sudah mempunyai akaun?
+                                                </>
+                                            ) : (
+                                                <div className="flex flex-col gap-2">
+                                                    <div>
+                                                        Belum mendaftar?
                                                         <PrimaryButton
-                                                            onClick={() => switchForm('login')}
-                                                            className="text-blue-600 ml-2 cursor-pointer"
+                                                            onClick={() => switchForm('register')}
+                                                            className="text-blue-600 md:ml-2 cursor-pointer"
                                                         >
-                                                            Log Masuk
+                                                            Daftar Sebagai Vendor PKPP Agro
                                                         </PrimaryButton>
-                                                    </>
-                                                ) : formType === 'admin' ? (
-                                                    <>
-                                                        <PrimaryButton
-                                                            onClick={() => switchForm('login')}
-                                                            className="text-blue-600 cursor-pointer"
-                                                        >
-                                                            Kembali ke Log Masuk Vendor
-                                                        </PrimaryButton>
-                                                    </>
-                                                ) : (
-                                                    <div className="flex flex-col gap-2">
-                                                        <div>
-                                                            Belum mendaftar?
-                                                            <PrimaryButton
-                                                                onClick={() => switchForm('register')}
-                                                                className="text-blue-600 ml-2 cursor-pointer"
-                                                            >
-                                                                Daftar Sebagai Vendor PKPP Agro
-                                                            </PrimaryButton>
-                                                        </div>
-                                                        
                                                     </div>
-                                                )}
-                                            </div>
+                                                    
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            </section>
+                            </div>
                             <div className='border border-gray-200 p-4 rounded-xl bg-white mb-8'>
                                 <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
+                                Tiada tender atau sebut harga yang sedang aktif buat masa ini. 
                                 <div className='grid flex-1 gap-2 md:grid-cols-3 '>
-                                    Tiada tender atau sebut harga yang sedang aktif buat masa ini. 
+                                    
                                     {/* <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
                                         <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
                                         <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
