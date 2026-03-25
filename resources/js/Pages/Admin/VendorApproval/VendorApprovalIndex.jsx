@@ -53,12 +53,12 @@ export default function VendorApprovalIndex({ unapproved_vendors })
         <AuthenticatedLayout
             header={
                 <div className="flex items-center gap-2">
-                    <button 
-                        onClick={() => window.history.back()}
+                    <Link
+                        href={route('dashboard')}
                         className="hover:bg-gray-100 rounded px-1 transition-colors"
                     >
                         <ChevronLeft className="w-7 h-7" />
-                    </button>
+                    </Link>
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Permohonan Menjadi Vendor
                     </h2>

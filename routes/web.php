@@ -13,11 +13,7 @@ Route::get('/', function () {
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
-});
-
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+})->name('welcome');
 
 Route::get('/v/cert/{vendor_id}', [VendorController::class, 'checkVendorCert'])->name('public.check-cert');
 

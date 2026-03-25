@@ -171,9 +171,16 @@ export default function Login({ status, canResetPassword }) {
                                 </div>
                             </section>
                         </main>
-
-                        <footer className="text-center text-sm text-gray-200">
-                            PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                        <footer className="text-center text-sm text-white border-t py-4 w-full">
+                                <>
+                                    <Link
+                                        href={route('welcome')}
+                                        className="rounded-md px-3 py-2 text-white ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
+                                    >
+                                        Kembali ke Halaman Utama
+                                    </Link>
+                                </>
+                        | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
                         </footer>
                     </div>
                 </div>

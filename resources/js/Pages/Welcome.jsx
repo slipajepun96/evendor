@@ -60,10 +60,9 @@ export default function Welcome({ auth, canResetPassword, status }) {
                     radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #3ABCC2 100%)
                 `,
                 backgroundSize: "100% 100%",
-                }}> 
-                <div className="relative flex flex-col items-center justify-center">
+            }}> 
+                <div className="relative flex flex-col items-center justify-center min-h-screen">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-
                         <main className="mt-4">
                             <div className=" py-2 md:py-8 md:mx-auto md:max-w-screen-xl lg:py-8 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                 <div className="flex flex-col justify-center">
@@ -80,7 +79,7 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                             Tepat
                                         </div>
                                     </div> */}
-                                    <img src="/logo/front-img.webp" className='w-1/2' ></img>
+                                    <img src="/logo/front-img.webp" className='hidden md:block md:w-1/2' ></img>
                                     <div className='mt-4 font-medium text-gray-700'>
                                         Daftar sebagai vendor PKPP Agro Sdn. Bhd. sebagai kelayakan untuk menyertai sebut harga & tender yang dibuka oleh PKPP Agro Sdn. Bhd.
                                     </div>
@@ -246,7 +245,7 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className='border border-gray-200 p-4 rounded-xl bg-white mb-8'>
+                            <div className='border border-gray-300 p-4 rounded-xl bg-white mb-8'>
                                 <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
                                 Tiada tender atau sebut harga yang sedang aktif buat masa ini. 
                                 <div className='grid flex-1 gap-2 md:grid-cols-3 '>
@@ -272,33 +271,33 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                         <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
                                     </div> */}
                                 </div>
-                                
                             </div>
                         </main>
                     </div>
+                    <footer className="text-center text-sm text-black border-t py-4 w-full">
+                        {auth.user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                            >
+                                Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route('login')}
+                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
+                                >
+                                    Log Masuk Pentadbir Sistem
+                                </Link>
+                            </>
+                        )}
+                        
+                    | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                    </footer>
                 </div>
             </div>
-            <footer className="text-center text-sm text-black border-t py-4">
-                {auth.user ? (
-                    <Link
-                        href={route('dashboard')}
-                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
-                    >
-                        Dashboard
-                    </Link>
-                ) : (
-                    <>
-                        <Link
-                            href={route('login')}
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
-                        >
-                            Log Masuk Pentadbir Sistem
-                        </Link>
-                    </>
-                )}
-                
-            | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
-            </footer>
+            
         </>
     );
 }
