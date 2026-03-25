@@ -38,9 +38,9 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                         {/* {vendor_applications[0].application_status} */}
 
                         {/* {vendor_details.vendor_name} */}
-                        <div className="md:flex md:flex-row flex-col gap-2 ml-4 mr-4 mb-4">
+                        <div className="md:grid md:grid-cols-3 gap-2 p-3">
                             {!vendor_details ? (
-                            <div className='bg-yellow-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                            <div className='bg-yellow-300 h-30 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-green-800'>Status Profail</p>
@@ -56,7 +56,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                 </div>
                             </div>
                             ) : (
-                            <div className='bg-lime-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                            <div className='bg-lime-300 h-30 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-lime-400/20 to-green-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-green-800'>Status Profail</p>
@@ -72,7 +72,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             ) }
 
                             {vendor_profile_completed && (vendor_application_status === null) && (
-                            <div className='bg-red-400 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                            <div className='bg-red-400 h-30 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-50'>Permohonan Vendor</p>
@@ -88,7 +88,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             ) }
 
                             { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'pending' ) && (
-                            <div className='bg-amber-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                            <div className='bg-amber-300 h-30 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-700'>Permohonan Vendor</p>
@@ -105,7 +105,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             )}
 
                             { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' ) && (
-                            <div className='bg-lime-300 h-30 w-full md:w-1/3 p-4 rounded-xl relative'>
+                            <div className='bg-lime-300 h-30 p-4 rounded-xl relative'>
                                 <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-700'>Permohonan Vendor</p>
