@@ -47,6 +47,31 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                 )
             }
         },
+        {
+            Header: 'Status',
+            accessor: ['vendor_type',],
+            Cell: ({ row }) => {
+                return ( 
+                    <div className="flex justify-center">
+                        {row.cert_status === 'approved' && (
+                            <div className="flex items-center bg-green-300 rounded-xl font-bold px-2 py-0.5 text-green-800 uppercase text-xs font-semibold">
+                                Lulus
+                            </div>
+                        )}
+                        {row.cert_status === 'suspended' && (
+                            <div className="flex items-center bg-yellow-300 rounded-xl font-bold px-2 py-0.5 text-yellow-800 uppercase text-xs font-semibold">
+                                Digantung
+                            </div>
+                        )}
+                        {row.cert_status === 'rejected' && (
+                            <div className="flex items-center bg-red-300 rounded-xl font-bold px-2 py-0.5 text-red-800 uppercase text-xs font-semibold">
+                                Ditolak
+                            </div>
+                        )}
+                    </div>
+                )
+            }
+        },
         // { Header: 'No. Telefon', accessor: 'vendor_phone' },
         {
             Header: 'Tindakan',
@@ -61,21 +86,20 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                             Lihat Butiran
                         </PrimaryButton>
                     </Link>
-                    <button
-                        className="px-2 py-1 text-white"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            window.location.href = route('vendor.download-cert', { vendor_id: row.vendor_id });
-                        }}
-                    >
-                        <Download /> Perakuan
-                    </button>
-                    {/* <PrimaryButton
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = route('vendor.download-vendor-cert', { vendor_id: row.vendor_id });
+                            }}
+                        >
+                            <PrimaryButton className="gap-2"><Download />  Perakuan</PrimaryButton>
+                        </button>
+                    <PrimaryButton
                         className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleDelete(row.id)}
                     >
-                        Tolak Permohonan
-                    </PrimaryButton> */}
+                        Tarik Perakuan
+                    </PrimaryButton>
                 </div>
             ),
         },
