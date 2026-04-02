@@ -1624,11 +1624,11 @@ export default function VendorDashboard() {
                             {/* part 4 */}
                             {currentPart === 4 && (
                                 <div>
-                                    <p className='font-bold'>Bahagian 4 : Lembaga Pengarah</p>
+                                    <p className='font-bold'>Bahagian 4 : Lembaga Pengarah / Pemilik</p>
 
                             {(vendorType === 'gov_entity' || vendorType === 'individual') && (
                                 <div className='bg-lime-100 m-2 p-2 text-sm'>
-                                    Nama dan butiran Lembaga Pengarah tidak diperlukan untuk entiti kerajaan atau individu. Sila langkau bahagian ini.
+                                    Nama dan butiran Lembaga Pengarah / Pemilik tidak diperlukan untuk entiti kerajaan atau individu. Sila langkau bahagian ini.
                                 </div>
 
                             )}
@@ -1640,7 +1640,7 @@ export default function VendorDashboard() {
                                     {/* Display added board directors */}
                                     {boardDirectors.length > 0 && (
                                         <div className="mt-6">
-                                            <h3 className="text-lg font-semibold mb-4">Senarai Lembaga Pengarah</h3>
+                                            <h3 className="text-lg font-semibold mb-4">Senarai Lembaga Pengarah / Pemilik</h3>
                                             <div className="grid grid-cols-2 gap-2">
                                                 {boardDirectors.map((director) => (
                                                     <div key={director.id} className="border rounded-lg p-4 bg-gray-50">
@@ -1682,9 +1682,9 @@ export default function VendorDashboard() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleRemoveBoardDirector(director.id)}
-                                                                className="ml-4 bg-red-500 px-2 py-1 rounded text-white hover:bg-red-700"
+                                                                className="ml-4 bg-red-500 px-2 py-1 rounded-lg shadow-xl text-white hover:bg-red-700"
                                                             >
-                                                                ✕
+                                                                Padam
                                                             </button>
                                                         </div>
                                                     </div>

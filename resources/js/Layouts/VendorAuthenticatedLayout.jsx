@@ -93,12 +93,12 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link
+                                        {/* <Dropdown.Link
                                             href={route('profile.edit')}
                                             className='text-lg'
                                         >
                                             Profile
-                                        </Dropdown.Link>
+                                        </Dropdown.Link> */}
                                         <Dropdown.Link
                                             href={route('vendor.logout')}
                                             method="post"
@@ -236,13 +236,13 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <ResponsiveNavLink 
+                                    {/* <ResponsiveNavLink 
                                         href={route('profile.edit')} 
                                         onClick={() => setShowingNavigationDropdown(false)}
                                         className="text-gray-100 hover:bg-gray-800 rounded-lg px-3 py-3 block"
                                     >
                                         Profile
-                                    </ResponsiveNavLink>
+                                    </ResponsiveNavLink> */}
                                     <ResponsiveNavLink
                                         method="post"
                                         href={route('vendor.logout')}
@@ -269,7 +269,6 @@ export default function VendorAuthenticatedLayout({ header, children }) {
 
             <main>
                 {typeof children === 'function' ? children({ user, vendor }) : children}
-
             </main>
         </div>
     );

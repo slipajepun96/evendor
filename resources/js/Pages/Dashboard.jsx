@@ -86,14 +86,13 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                             Lihat Butiran
                         </PrimaryButton>
                     </Link>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                window.location.href = route('vendor.download-vendor-cert', { vendor_id: row.vendor_id });
-                            }}
-                        >
-                            <PrimaryButton className="gap-2"><Download />  Perakuan</PrimaryButton>
-                        </button>
+                    
+                    <PrimaryButton
+                        className="gap-2"
+                        onClick={() => window.open(route('vendor.download-vendor-cert', { vendor_id: row.vendor_id }), '_blank')}
+                    >
+                        <Download /> Perakuan
+                    </PrimaryButton>
                     <PrimaryButton
                         className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleDelete(row.id)}
