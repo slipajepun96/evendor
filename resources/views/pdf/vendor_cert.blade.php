@@ -198,7 +198,42 @@
             </div>
 
             <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 3 : Maklumat Kewangan</div>
+                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 3 : Lembaga Pengarah / Pemilik</div>
+                <table class="mt-2 border w-full">
+                    <thead>
+                        <tr>
+                            <th class="border px-2 py-1">Nama Pengarah / Pemilik</th>
+                            <th class="border px-2 py-1">Jawatan</th>
+                            <th class="border px-2 py-1">Butiran Lanjut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($boardDirectors as $director)
+                            <tr>
+                                <td class="border px-2 py-1">
+                                    <p class="font-bold ">{{ $director->vendor_board_name ?? 'N/A' }}</p>
+                                    <p>{{ $director->vendor_board_ic_num ? 'No. KP / Pasport : ' . $director->vendor_board_ic_num : 'Tiada No. KP' }}</p>
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <p>{{ $director->vendor_board_position ?? 'N/A' }}</p>
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <p>No Telefon : {{ $director->vendor_board_phone_num ?? 'N/A' }}</p>
+                                    <p>Kewarganegaraan : {{ $director->vendor_board_citizenship ==="malaysian" ? "Warganegara" : 'Bukan Warganegara' }}</p>
+                                    @if($director->vendor_board_citizenship ==="malaysian")
+                                        <p>Bangsa : {{ $director->vendor_board_ethnic ==="bumiputera" ? "Bumiputera" : "Bukan Bumiputera" }}</p>
+                                    @endif
+                                    <p>Alamat : {{ $director->vendor_board_address ?? 'N/A' }}</p>
+                                    <p>Pekerjaan Lain : {{ $director->vendor_board_actual_outside_jobs ?? 'N/A' }}</p>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 text-sm">
+                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 4 : Maklumat Kewangan</div>
                 <div class="grid grid-cols-3">
                     <div class="mt-2">
                         <div class="text-xs font-medium">Nama Bank</div>
@@ -224,7 +259,7 @@
             </div>
 
             <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 4 : Maklumat Perlesenan</div>
+                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 5 : Maklumat Perlesenan</div>
                 <div>
                     <div class="uppercase text-xs font-semibold underline mt-2">E-Perolehan / Sijil Kementerian Kewangan</div>
                     <div class="grid grid-cols-3">

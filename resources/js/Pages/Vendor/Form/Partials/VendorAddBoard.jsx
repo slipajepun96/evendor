@@ -26,6 +26,7 @@ export default function VendorAddBoard({ onAddBoard }) {
         vendor_board_citizenship: '',
         vendor_board_ethnic: '',
         vendor_board_position: '',
+        vendor_board_actual_outside_jobs: '',
         vendor_board_address: '',
         vendor_board_phone_num: '',
     });
@@ -50,6 +51,7 @@ export default function VendorAddBoard({ onAddBoard }) {
             'vendor_board_citizenship',
             'vendor_board_ethnic',
             'vendor_board_position',
+            'vendor_board_actual_outside_jobs',
             'vendor_board_address',
             'vendor_board_phone_num',
         );
@@ -65,6 +67,7 @@ export default function VendorAddBoard({ onAddBoard }) {
               'vendor_board_citizenship',
               'vendor_board_ethnic',
               'vendor_board_position',
+              'vendor_board_actual_outside_jobs',
               'vendor_board_address',
               'vendor_board_phone_num',
             );
@@ -175,30 +178,53 @@ export default function VendorAddBoard({ onAddBoard }) {
                                 />
                             </div>
                             
-                                <div>
-                                    <InputLabel
-                                        htmlFor="vendor_board_position"
-                                        value="Jawatan Dalam Lembaga Pengarah"
-                                    />
-                                    <TextInput
-                                        id="vendor_board_position"
-                                        name="vendor_board_position"
-                                        value={data.vendor_board_position}
-                                        className="mt-1 block w-full"
-                                        isFocused={false}
-                                        onChange={(e) =>
-                                            setData(
-                                                'vendor_board_position',
-                                                e.target.value,
-                                            )
-                                        }
-                                    />
-                                    <InputError
-                                        message={errors.vendor_board_position}
-                                        className="mt-2"
-                                    />
-                                </div>
+                            <div>
+                                <InputLabel
+                                    htmlFor="vendor_board_position"
+                                    value="Jawatan Dalam Lembaga Pengarah"
+                                />
+                                <TextInput
+                                    id="vendor_board_position"
+                                    name="vendor_board_position"
+                                    value={data.vendor_board_position}
+                                    className="mt-1 block w-full"
+                                    isFocused={false}
+                                    onChange={(e) =>
+                                        setData(
+                                            'vendor_board_position',
+                                            e.target.value,
+                                        )
+                                    }
+                                />
+                                <InputError
+                                    message={errors.vendor_board_position}
+                                    className="mt-2"
+                                />
+                            </div>
                                 
+                            <div>
+                                <InputLabel
+                                    htmlFor="vendor_board_actual_outside_jobs"
+                                    value="Pekerjaan Luar Sebenar"
+                                />
+                                <TextInput
+                                    id="vendor_board_actual_outside_jobs"
+                                    name="vendor_board_actual_outside_jobs"
+                                    value={data.vendor_board_actual_outside_jobs}
+                                    className="mt-1 block w-full"
+                                    isFocused={false}
+                                    onChange={(e) =>
+                                        setData(
+                                            'vendor_board_actual_outside_jobs',
+                                            e.target.value,
+                                        )
+                                    }
+                                />
+                                <InputError
+                                    message={errors.vendor_board_actual_outside_jobs}
+                                    className="mt-2"
+                                />
+                            </div>
                             <div>
                                 <InputLabel
                                     htmlFor="vendor_board_citizenship"

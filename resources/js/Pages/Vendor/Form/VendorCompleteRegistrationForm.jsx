@@ -35,6 +35,16 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import ValueView from '@/Components/ValueView';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 export default function VendorDashboard() {
     const { vendor } = usePage().props.auth;
@@ -64,10 +74,22 @@ export default function VendorDashboard() {
         setBoardDirectors(prev => [...prev, directorData]);
     };
 
+    // console.log('Current Board Directors:', boardDirectors);
+
     //buang bod dari state
     const handleRemoveBoardDirector = (id) => {
         setBoardDirectors(prev => prev.filter(director => director.id !== id));
     };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
 
     const { data, setData, post, processing, errors, reset } = useForm({
             vendor_email: '',
@@ -202,7 +224,7 @@ export default function VendorDashboard() {
         >
             <Head title="Complete Registration" />
             <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 ">
 
 
                     {/* <div className="mb-6">
@@ -1626,81 +1648,619 @@ export default function VendorDashboard() {
                                 <div>
                                     <p className='font-bold'>Bahagian 4 : Lembaga Pengarah / Pemilik</p>
 
-                            {(vendorType === 'gov_entity' || vendorType === 'individual') && (
-                                <div className='bg-lime-100 m-2 p-2 text-sm'>
-                                    Nama dan butiran Lembaga Pengarah / Pemilik tidak diperlukan untuk entiti kerajaan atau individu. Sila langkau bahagian ini.
-                                </div>
+                                {(vendorType === 'gov_entity' || vendorType === 'individual' || vendorType === '') && (
+                                    <div className='bg-lime-100 m-2 p-2 text-sm'>
+                                        Nama dan butiran Lembaga Pengarah / Pemilik tidak diperlukan untuk entiti kerajaan atau individu. Sila langkau bahagian ini.
+                                    </div>
 
+                                )}
+
+                                {(vendorType === 'company' || vendorType === 'cooperation') && (
+                                    <div className=' m-2 p-2 text-sm'>
+                                        <VendorAddBoard onAddBoard={handleAddBoardDirector} />
+                                        
+                                        {/* Display added board directors */}
+                                        {boardDirectors.length > 0 && (
+                                            <div className="mt-6">
+                                                <h3 className="text-lg font-semibold mb-4">Senarai Lembaga Pengarah / Pemilik</h3>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {boardDirectors.map((director) => (
+                                                        <div key={director.id} className="border rounded-lg p-4 bg-gray-50">
+                                                            <div className="flex justify-between items-start">
+                                                                <div className="grid grid-cols-2 gap-2 flex-1">
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Nama</p>
+                                                                        <p className="font-medium">{director.vendor_board_name}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">No. K/P</p>
+                                                                        <p className="font-medium">{director.vendor_board_ic_num}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Kewarganegaraan</p>
+                                                                        <p className="font-medium">
+                                                                            { (director.vendor_board_citizenship === 'malaysian') ? 'Warganegara' : 'Bukan Warganegara' }
+                                                                        </p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Taraf Bumiputera</p>
+                                                                        <p className="font-medium">
+                                                                            { (director.vendor_board_ethnic === 'bumiputera') ? 'Bumiputera' : 'Bukan Bumiputera' }
+                                                                        </p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Jawatan</p>
+                                                                        <p className="font-medium">{director.vendor_board_position ? director.vendor_board_position : '-'}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Pekerjaan Lain</p>
+                                                                        <p className="font-medium">{director.vendor_board_actual_outside_jobs ? director.vendor_board_actual_outside_jobs : '-'}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">No. Telefon</p>
+                                                                        <p className="font-medium">{director.vendor_board_phone_num}</p>
+                                                                    </div>
+                                                                    <div className="col-span-2">
+                                                                        <p className="text-sm text-gray-600">Alamat</p>
+                                                                        <p className="font-medium">{director.vendor_board_address}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleRemoveBoardDirector(director.id)}
+                                                                    className="ml-4 bg-red-500 px-2 py-1 rounded-lg shadow-xl text-white hover:bg-red-700"
+                                                                >
+                                                                    Padam
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                )}
+
+                                </div>
                             )}
 
-                            {(vendorType === 'company' || vendorType === 'cooperation') && (
-                                <div className=' m-2 p-2 text-sm'>
-                                    <VendorAddBoard onAddBoard={handleAddBoardDirector} />
-                                    
-                                    {/* Display added board directors */}
-                                    {boardDirectors.length > 0 && (
-                                        <div className="mt-6">
-                                            <h3 className="text-lg font-semibold mb-4">Senarai Lembaga Pengarah / Pemilik</h3>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {boardDirectors.map((director) => (
-                                                    <div key={director.id} className="border rounded-lg p-4 bg-gray-50">
-                                                        <div className="flex justify-between items-start">
-                                                            <div className="grid grid-cols-2 gap-2 flex-1">
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">Nama</p>
-                                                                    <p className="font-medium">{director.vendor_board_name}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">No. K/P</p>
-                                                                    <p className="font-medium">{director.vendor_board_ic_num}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">Kewarganegaraan</p>
-                                                                    <p className="font-medium">
-                                                                        { (director.vendor_board_citizenship === 'malaysian') ? 'Warganegara' : 'Bukan Warganegara' }
-                                                                    </p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">Etnik</p>
-                                                                    <p className="font-medium">
-                                                                        { (director.vendor_board_ethnic === 'bumiputera') ? 'Bumiputera' : 'Bukan Bumiputera' }
-                                                                    </p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">Jawatan</p>
-                                                                    <p className="font-medium">{director.vendor_board_position}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm text-gray-600">No. Telefon</p>
-                                                                    <p className="font-medium">{director.vendor_board_phone_num}</p>
-                                                                </div>
-                                                                <div className="col-span-2">
-                                                                    <p className="text-sm text-gray-600">Alamat</p>
-                                                                    <p className="font-medium">{director.vendor_board_address}</p>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleRemoveBoardDirector(director.id)}
-                                                                className="ml-4 bg-red-500 px-2 py-1 rounded-lg shadow-xl text-white hover:bg-red-700"
-                                                            >
-                                                                Padam
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                            {/* part 5 */}
+                            {currentPart === 5 && (
+                                <div>
+                                    <p className='font-bold'>Ringkasan</p>
+                                    <div className='text-sm'>
+                                        Sila semak kembali semua maklumat yang telah dimasukkan sebelum menghantar borang profil ini.
+                                    </div>
+
+                                    {/* ringkasan */}
+                                    <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg p-3 mt-4'>
+                
+                                        <div className='font-bold text-4xl'>{data.vendor_name}</div>
+                
+                                        {/* part 1 : maklumat utama */}
+                                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Umum</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_id_num"
+                                                    value={
+                                                        <>
+                                                            No. Pendaftaran
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_id_num} />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_type"
+                                                    value={
+                                                        <>
+                                                            Jenis Entiti
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='text-md font-semibold'>
+                                                    {data.vendor_type === 'company' && ('Syarikat ')}
+                                                    {data.vendor_type === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
+                                                    {data.vendor_type === 'cooperation' && ('Koperasi')}
+                                                    {data.vendor_type === 'organisation' && ('Pertubuhan / Kelab')}
+                                                    {data.vendor_company_type === 'bhd' && ('Berhad')}
+                                                    {data.vendor_company_type === 'sdn-bhd' && ('Sendirian Berhad')}
+                                                    {data.vendor_company_type === 'partnership' && ('Perkongsian')}
+                                                    {data.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_establishment_date"
+                                                    value={
+                                                        <>
+                                                            Tarikh Penubuhan
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={formatDate(data.vendor_establishment_date)} />
                                             </div>
                                         </div>
-                                    )}
-                                </div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-1 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_address"
+                                                    className=''
+                                                    value={
+                                                        <>
+                                                            Alamat Surat Menyurat
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_address} />
+                                            </div>
+                                        </div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_website"
+                                                    value={
+                                                        <>
+                                                            Laman Web
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_website} />
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_email"
+                                                    value={
+                                                        <>
+                                                            E-Mel
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_email} />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_phone"
+                                                    value={
+                                                        <>
+                                                            Nombor Telefon Pejabat
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_phone} />
+                                            </div>
+                                        </div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_bumiputera_ownership_percent"
+                                                    value={
+                                                        <>
+                                                            Peratus Pemilikan Bumiputera
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={`${data.vendor_bumiputera_ownership_percent}%`} />
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_non_bumiputera_ownership_percent"
+                                                    value={
+                                                        <>
+                                                            Peratus Pemilikan Bukan Bumiputera / Luar Negara
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={`${data.vendor_non_bumiputera_ownership_percent}%`} />
+                                            </div>
+                                            
+                                        </div>
+                
+                                        {/* part 2 : maklumat pegawai untuk dihubungi */}
+                                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Untuk Dihubungi</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_contact_person"
+                                                    value={
+                                                        <>
+                                                            Nama Pegawai
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_contact_person} />
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_contact_person_designation"
+                                                    value={
+                                                        <>
+                                                            Jawatan Pegawai
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_contact_person_designation} />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_contact_person_phone"
+                                                    value={
+                                                        <>
+                                                            Nombor Telefon Pegawai
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_contact_person_phone} />
+                                            </div>
+                                        </div>
 
-                            )}
+                                        {/* part lembaga pengarah - pemilik */}
+
+                                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Lembaga Pengarah / Pemilik</div>
+                                        <div className='w-full my-2'>
+                                            <Table>
+                                                {/* <TableHeader>
+                                                    <TableRow>
+                                                    <TableHead className="w-[100px]">Nama</TableHead>
+                                                    <TableHead></TableHead>
+                                                    <TableHead>Jawatan</TableHead>
+                                                    </TableRow>
+                                                </TableHeader> */}
+                                                <TableBody>
+                                                    {boardDirectors.map((director) => (
+                                                    <TableRow key={director.id}>
+                                                        <TableCell className="font-medium w-1/4">
+                                                            <div className='font-bold'>{director.vendor_board_name}</div>
+                                                            No. K/P / Pasport : {director.vendor_board_ic_num} <br />
+                                                            Jawatan : {director.vendor_board_position}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            Alamat : {director.vendor_board_address} <br />
+                                                            No. Tel : {director.vendor_board_phone_num} <br />
+                                                            Warganegara : {(director.vendor_board_citizenship === 'malaysian') ? 'Malaysia' : 'Bukan Malaysia'}
+                                                            { director.vendor_board_citizenship ==='malaysian' && (
+                                                                (director.vendor_board_ethnic === 'bumiputera') ? ' - Bumiputera' : ' - Bukan Bumiputera'
+                                                            )}
+                                                            <br />
+                                                            Jawatan / Pekerjaan Lain : {director.vendor_board_actual_outside_jobs ? director.vendor_board_actual_outside_jobs : '-'}      
+                                                        </TableCell>
+                                                        <TableCell>{director.position}</TableCell>
+                                                    </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        
+                                        </div>
+                
+                                        {/* part 3 : maklumat kewangan */}
+                                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Kewangan</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_bank_name"
+                                                    value={
+                                                        <>
+                                                            Nama Bank
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_bank_name} /> {!data.vendor_bank_name && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_bank_account_number"
+                                                    value={
+                                                        <>
+                                                            Nombor Akaun Bank
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_bank_account_number} />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_bank_account_statement_address"
+                                                    value={
+                                                        <>
+                                                            Penyata Kewangan Terkini
+                                                        </>
+                                                    }
+                                                />
+                                                {/* {data.vendor_bank_account_statement_address ? (
+                                                    <VendorAttachmentViewer title="Penyata Kewangan Terkini" attachment_address={bank_statements_attachment_url} />
+                                                ) : (
+                                                    <div> - </div>
+                                                )} */}
+                                            </div>
+                                        </div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_sst_number"
+                                                    value={
+                                                        <>
+                                                            No. Pendaftaran SST
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_sst_number} /> {!data.vendor_sst_number && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_tax_identification_num"
+                                                    value={
+                                                        <>
+                                                            No. TIN
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_tax_identification_num} /> {!data.vendor_tax_identification_num && (<span className=''> -</span>)}
+                                            </div>
+                                        </div>
+                
+                                        {/* part 4 : maklumat perlesenan & pematuhan */}
+                                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Perlesenan & Pematuhan</div>
+                                        
+                                        {/* eperolehan / mof */}
+                                        <div className='uppercase text-xs font-bold text-gray-700 rounded py-1.5 pt-4'>ePerolehan / Sijil Kementerian Kewangan (MOF)</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_MOF_reg_num"
+                                                    value={
+                                                        <>
+                                                            No. Pendaftaran
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_MOF_reg_num} /> {!data.vendor_MOF_reg_num && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_MOF_start_date"
+                                                    value={
+                                                        <>
+                                                            Tempoh Sah Laku
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={formatDate(data.vendor_MOF_start_date)} />{!data.vendor_MOF_start_date && (<span className=''>-</span>)} {data.vendor_MOF_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(data.vendor_MOF_expiry_date)} />{!data.vendor_MOF_expiry_date && (<span className=''></span>)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_MOF_attachment_address"
+                                                    value={
+                                                        <>
+                                                            Sijil ePerolehan / MOF
+                                                        </>
+                                                    }
+                                                />
+                                                {/* {parsedSnapshot['vendor_MOF_attachment_address'] ? (
+                                                    <VendorAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={MOF_attachment_url} />
+                                                ) : (
+                                                    <div> - </div>
+                                                ) } */}
+                                            </div>
+                                        </div>
+                
+                                        {/* pusat khidmat kontraktor */}
+                                        <>
+                                        <div className='uppercase text-xs font-bold text-gray-700 rounded py-1.5 pt-4'>Pusat Khidmat Kontraktor (PKK)</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_PKK_reg_num"
+                                                    value={
+                                                        <>
+                                                            No. Pendaftaran
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_PKK_reg_num} /> {!data.vendor_PKK_reg_num && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_PKK_start_date"
+                                                    value={
+                                                        <>
+                                                            Tempoh Sah Laku
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={formatDate(data.vendor_PKK_start_date)} />{!data.vendor_PKK_start_date && (<span className=''>-</span>)} {data.vendor_PKK_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(data.vendor_PKK_end_date)} />{!data.vendor_PKK_end_date && (<span className=''></span>)}
+                                                </div>
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_PKK_class"
+                                                    value={
+                                                        <>
+                                                            Kelas & Kepala PKK
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={data.vendor_PKK_class} />{!data.vendor_PKK_class && (<span className=''>-</span>)} <ValueView value={data.vendor_PKK_head} />{!data.vendor_PKK_head && (<span className=''></span>)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_PKK_attachment_address"
+                                                    value={
+                                                        <>
+                                                            Sijil PKK
+                                                        </>
+                                                    }
+                                                />
+                                                {/* {data.vendor_PKK_attachment_address ? (
+                                                    <VendorAttachmentViewer title="Sijil PKK" attachment_address={PKK_attachment_url} />
+                                                ) : (
+                                                    <div> - </div>
+                                                ) } */}
+                                            </div>
+                                        </div>
+                                        </>
+                
+                                        {/* cidb */}
+                                        <>
+                                        <div className='uppercase text-xs font-bold text-gray-700 rounded py-1.5 pt-4'>Lembaga Pembangunan Industri Pembinaan Malaysia (CIDB)</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_CIDB_reg_num"
+                                                    value={
+                                                        <>
+                                                            No. Pendaftaran
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_CIDB_reg_num} /> {!data.vendor_CIDB_reg_num && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_CIDB_start_date"
+                                                    value={
+                                                        <>
+                                                            Tempoh Sah Laku
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={formatDate(data.vendor_CIDB_start_date)} />{!data.vendor_CIDB_start_date && (<span className=''>-</span>)} {data.vendor_CIDB_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(data.vendor_CIDB_end_date)} />{!data.vendor_CIDB_end_date && (<span className=''></span>)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_PKK_attachment_address"
+                                                    value={
+                                                        <>
+                                                            Sijil CIDB
+                                                        </>
+                                                    }
+                                                />
+                                                {/* {parsedSnapshot['vendor_CIDB_attachment_address'] ? (
+                                                    <VendorAttachmentViewer title="Sijil CIDB" attachment_address={CIDB_attachment_url} />
+                                                ) : (
+                                                    <div> - </div>
+                                                ) } */}
+                                            </div>
+                                        </div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_CIDB_B_cat_grade"
+                                                    value={
+                                                        <>
+                                                            Gred Kategori B
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_CIDB_B_cat_grade} /> {!data.vendor_CIDB_B_cat_grade && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_CIDB_CE_cat_grade"
+                                                    value={
+                                                        <>
+                                                            Gred Kategori CE
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_CIDB_CE_cat_grade} /> {!data.vendor_CIDB_CE_cat_grade && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_CIDB_ME_cat_grade"
+                                                    value={
+                                                        <>
+                                                            Gred Kategori ME
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_CIDB_ME_cat_grade} /> {!data.vendor_CIDB_ME_cat_grade && (<span className=''> -</span>)}
+                                            </div>
+                                        </div>
+                                        </>
+                
+                                        {/* mpob */}
+                                        <>
+                                        <div className='uppercase text-xs font-bold text-gray-700 rounded py-1.5 pt-4'>Lembaga Minyak Sawit Malaysia (MPOB)</div>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_MPOB_license_num"
+                                                    value={
+                                                        <>
+                                                            No. Lesen MPOB
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_MPOB_license_num} /> {!data.vendor_MPOB_license_num && (<span className=''> -</span>)}
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_MPOB_start_date"
+                                                    value={
+                                                        <>
+                                                            Tempoh Sah Laku
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={formatDate(data.vendor_MPOB_start_date)} />{!data.vendor_MPOB_start_date && (<span className=''>-</span>)} {data.vendor_MPOB_start_date && (<span className=''>-</span>)}<ValueView value={formatDate(data.vendor_MPOB_end_date)} />{!data.vendor_MPOB_end_date && (<span className=''></span>)}
+                                                </div>
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_MPOB_license_category"
+                                                    value={
+                                                        <>
+                                                            Kategori Lesen MPOB
+                                                        </>
+                                                    }
+                                                />
+                                                <div className='flex items-center'>
+                                                    <ValueView value={data.vendor_MPOB_license_category} />{!data.vendor_MPOB_license_category && (<span className=''>-</span>)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_MPOB_attachment_address"
+                                                    value={
+                                                        <>
+                                                            Lesen MPOB
+                                                        </>
+                                                    }
+                                                />
+                                                
+                                                {/* {parsedSnapshot['vendor_MPOB_attachment_address'] ? (
+                                                    <VendorAttachmentViewer title="Lesen MPOB" attachment_address={MPOB_attachment_url} />
+                                                    
+                                                ) : (
+                                                    <div> - </div>
+                                                ) } */}
+                                            </div>
+                                        </div>
+                                        </>
+                                    </div>
+
+                                    <div className='text-sm border rounded-xl p-2'>
+                                        <p>Sekiranya ingin membuar pembetulan, sila kembali ke bahagian sebelumnya dengan menekan butang <b>"Sebelumnya"</b>.</p>
+                                        <p>Jika anda berpuas hati, anda boleh menghantar borang profil ini dengan menekan butang <b>"Hantar"</b>.</p>
+                                    </div>
+
 
                                 </div>
                             )}
 
                         </div>
-                        <div className="flex justify-between mt-6">
+                        <div className="flex justify-between mt-6 mx-2">
                             <PrimaryButton
                                 onClick={handlePrev}
                                 disabled={currentPart === 1}

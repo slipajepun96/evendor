@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use App\Models\Vendor;
 use App\Models\VendorDetails;
+use App\Models\VendorBoard;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\VendorCertificate;
@@ -42,6 +43,7 @@ class DashboardController extends Controller
     {
         // dd($vendor_id);
         $vendor = VendorCertificate::where('vendor_id', $vendor_id)->first();
+        $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $vendor_id)->get();  
         // dd($vendor);
 
         if (!$vendor) {
@@ -83,6 +85,7 @@ class DashboardController extends Controller
             'CIDB_attachment_url' => $CIDB_attachment_url,
             'PKK_attachment_url' => $PKK_attachment_url,
             'MPOB_attachment_url' => $MPOB_attachment_url,
+            'boardDirectors' => $boardDirectors,
         ]);
         
     }

@@ -5,7 +5,7 @@ import { BadgeCheck } from 'lucide-react';
 import VendorApplication from './Partials/VendorApplication';
 const now = new Date();
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Download } from 'lucide-react';
+import { Download, ClockAlert, X, ClockFading} from 'lucide-react';
 import {
   Button,
   Timeline,
@@ -50,7 +50,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
             <Head title="Dashboard" />
             <div className="pb-12 pt-4 px-2">
                 <div className="mx-auto max-w-7xl lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-lg rounded-2xl">
+                    <div className="overflow-hidden bg-white shadow-lg rounded-2xl border border-gray-200">
                         <div className="p-4 text-gray-900 font-semibold">
                             {hours == 0 && hours == 1 ? "Selamat Tengah Malam" : hours >= 2 && hours <= 11 ? "Selamat Pagi" : hours >= 12 && hours <= 13 ? "Selamat Tengah Hari" : hours >= 14 && hours <= 18 ? "Selamat Petang" : "Selamat Malam"} , {vendor}!
                         </div>
@@ -108,7 +108,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                        </div>
                                         
 
-                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                        <p className='text-4xl font-bold'><ClockAlert size='48' color="#166534" /></p>
                                     </div>
                                 </div>
                             </div>
@@ -129,33 +129,29 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             ) }
 
                             {vendor_profile_completed && (vendor_application_status === null) && (
-                            <div className='bg-red-400 h-30 p-4 rounded-xl relative'>
-                                <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                            <div className='bg-gray-300 h-30 p-4 rounded-xl relative'>
                                 <div className='relative z-10'>
-                                    <p className='font-bold text-gray-50'>Permohonan Vendor</p>
+                                    <p className='font-bold text-gray-700'>Permohonan Vendor</p>
                                     <div className='flex w-full justify-between'>
                                         <div>
-                                            <p className='text-2xl font-bold text-white'>Tiada</p>
+                                            <p className='text-2xl font-bold text-gray-700'>Tiada</p>
                                             <VendorApplication vendor_details_id={vendor_details?.id} vendor_id={vendor_details?.vendor_account_id} />
                                        </div>
-                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                        <p className='text-4xl font-bold'><X size='48' color="#6a6a6a" /></p>
                                     </div>
                                 </div>
                             </div>
                             ) }
 
                             { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'pending' ) && (
-                            <div className='bg-amber-300 h-30 p-4 rounded-xl relative'>
-                                <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                            <div className='bg-amber-500 h-30 p-4 rounded-xl relative'>
                                 <div className='relative z-10'>
-                                    <p className='font-bold text-gray-700'>Permohonan Vendor</p>
+                                    <p className='font-bold text-white'>Permohonan Vendor</p>
                                     <div className='flex w-full justify-between'>
                                         <div>
-                                            <p className='text-2xl font-bold text-gray-700'>Dalam Proses</p>
+                                            <p className='text-2xl font-bold text-white'>Dalam Proses</p>
                                        </div>
-                                        
-
-                                        <p className='text-4xl font-bold'></p>
+                                        <p className='text-4xl font-bold'><ClockFading size='48' color="#FFFFFF" /></p>
                                     </div>
                                 </div>
                             </div>

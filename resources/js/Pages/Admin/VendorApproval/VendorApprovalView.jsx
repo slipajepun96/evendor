@@ -8,9 +8,18 @@ import { useState, useEffect } from 'react';
 import VendorApprovalAttachmentViewer from './Partials/VendorApprovalAttachmentViewer';
 import SecondaryButton from '@/Components/SecondaryButton';
 import VendorApprovalApprove from './Partials/VendorApprovalApprove';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 
-export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id }) 
+export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id, boardDirectors}) 
 {
     //json parse
     const parsedSnapshot = JSON.parse(unapproved_vendor.application_data_snapshot);
@@ -259,6 +268,37 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                 />
                                 <ValueView value={parsedSnapshot['vendor_contact_person_phone']} />
                             </div>
+                        </div>
+
+
+                        {/* part 3a : maklumat board and pemilik */}
+                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Lembaga Pengarah / Pemilik</div>
+                        <div className='w-full my-2'>
+                            <Table>
+                                <TableBody>
+                                    {boardDirectors.map((director) => (
+                                    <TableRow key={director.id}>
+                                        <TableCell className="font-medium w-1/4">
+                                            <div className='font-bold'>{director.vendor_board_name}</div>
+                                            No. K/P / Pasport : {director.vendor_board_ic_num} <br />
+                                            Jawatan : {director.vendor_board_position}
+                                        </TableCell>
+                                        <TableCell>
+                                            Alamat : {director.vendor_board_address} <br />
+                                            No. Tel : {director.vendor_board_phone_num} <br />
+                                            Warganegara : {(director.vendor_board_citizenship === 'malaysian') ? 'Malaysia' : 'Bukan Malaysia'}
+                                            { director.vendor_board_citizenship ==='malaysian' && (
+                                                (director.vendor_board_ethnic === 'bumiputera') ? ' - Bumiputera' : ' - Bukan Bumiputera'
+                                            )}
+                                            <br />
+                                            Jawatan / Pekerjaan Lain : {director.vendor_board_actual_outside_jobs ? director.vendor_board_actual_outside_jobs : '-'}      
+                                        </TableCell>
+                                        <TableCell>{director.position}</TableCell>
+                                    </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        
                         </div>
 
                         {/* part 3 : maklumat kewangan */}

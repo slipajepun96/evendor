@@ -8,6 +8,7 @@ use App\Models\Vendor;
 use App\Models\VendorDetails;
 use App\Models\VendorApplication;
 use App\Models\VendorCertificate;
+use App\Models\VendorBoard;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -43,7 +44,8 @@ class VendorProcessController extends Controller
         // dd($vendor_id);
         
             $unapproved_vendor = VendorApplication::where('vendor_id', $vendor_id)->first();
-            // dd($unapproved_vendor);
+            $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $vendor_id)->get();  
+            // dd($boardDirectors);
 
             if (!$unapproved_vendor) {
                 abort(404);
@@ -83,6 +85,7 @@ class VendorProcessController extends Controller
                 'CIDB_attachment_url' => $CIDB_attachment_url,
                 'PKK_attachment_url' => $PKK_attachment_url,
                 'MPOB_attachment_url' => $MPOB_attachment_url,
+                'boardDirectors' => $boardDirectors,
             ]);
        
     }
@@ -124,7 +127,7 @@ class VendorProcessController extends Controller
         
         $certificate->save();
 
-        // dd($certificate->id);
+        $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $certificate->vendor_id)->get();  
 
         //cert area
        
@@ -145,7 +148,7 @@ class VendorProcessController extends Controller
                 mkdir($directory, 0755, true);
             }
 
-            Pdf::view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])->format(Format::A4)->save(storage_path($pdfPath));
+            Pdf::view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode, 'boardDirectors' => $boardDirectors])->format(Format::A4)->save(storage_path($pdfPath));
 
             //save path
             $cert = VendorCertificate::findOrFail($certificate->id);
@@ -170,8 +173,13 @@ class VendorProcessController extends Controller
         $vendor_json = json_decode($certificate->cert_data_snapshot, true);
         $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
         $qrCode = QrCode::size(100)->generate($cert_url);
+
+        $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $certificate->vendor_id)->get();  
+
+        // dd($boardDirectors);
+
         return pdf()
-        ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode])
+        ->view('pdf.vendor_cert', ['certificate' => $certificate, 'vendor_json' => $vendor_json, 'qrCode' => $qrCode, 'boardDirectors' => $boardDirectors])
         ->format(Format::A4)
         ->name('vendor_certificate.pdf');
 

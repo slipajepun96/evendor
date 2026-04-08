@@ -9,14 +9,24 @@ import VendorAttachmentViewer from './Partials/VendorAttachmentViewer';
 import SecondaryButton from '@/Components/SecondaryButton';
 // import VendorApprovalApprove from './Partials/VendorApprovalApprove';
 import { Upload, X, FileIcon, ChevronLeft } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 
-export default function VendorApprovalView({ vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id }) 
+export default function VendorView({ vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id, boardDirectors }) 
 {
     console.log('vendor:', vendor)
     //json parse
     const parsedSnapshot = JSON.parse(vendor.cert_data_snapshot);
     console.log('parsedSnapshot:', parsedSnapshot);
+    
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -335,6 +345,36 @@ export default function VendorApprovalView({ vendor, snapshot , bank_statements_
                                 <ValueView value={parsedSnapshot['vendor_tax_identification_num']} />{!parsedSnapshot['vendor_tax_identification_num'] && (<span className=''> -</span>)}
                             </div>
                         </div>
+                        {/* part 3a : maklumat board and pemilik */}
+                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Lembaga Pengarah / Pemilik</div>
+                        <div className='w-full my-2'>
+                            <Table>
+                                <TableBody>
+                                    {boardDirectors.map((director) => (
+                                    <TableRow key={director.id}>
+                                        <TableCell className="font-medium w-1/4">
+                                            <div className='font-bold'>{director.vendor_board_name}</div>
+                                            No. K/P / Pasport : {director.vendor_board_ic_num} <br />
+                                            Jawatan : {director.vendor_board_position}
+                                        </TableCell>
+                                        <TableCell>
+                                            Alamat : {director.vendor_board_address} <br />
+                                            No. Tel : {director.vendor_board_phone_num} <br />
+                                            Warganegara : {(director.vendor_board_citizenship === 'malaysian') ? 'Malaysia' : 'Bukan Malaysia'}
+                                            { director.vendor_board_citizenship ==='malaysian' && (
+                                                (director.vendor_board_ethnic === 'bumiputera') ? ' - Bumiputera' : ' - Bukan Bumiputera'
+                                            )}
+                                            <br />
+                                            Jawatan / Pekerjaan Lain : {director.vendor_board_actual_outside_jobs ? director.vendor_board_actual_outside_jobs : '-'}      
+                                        </TableCell>
+                                        <TableCell>{director.position}</TableCell>
+                                    </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        
+                        </div>
+
 
                         {/* part 4 : maklumat perlesenan & pematuhan */}
                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Perlesenan & Pematuhan</div>

@@ -8,6 +8,7 @@ use App\Models\Vendor;
 use App\Models\VendorDetails;
 use App\Models\VendorApplication;
 use App\Models\VendorCertificate;
+use App\Models\VendorBoard;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -105,7 +106,7 @@ class VendorController extends Controller
     public function saveVendorCompleteRegistrationForm(Request $request): RedirectResponse
     {
         $vendor = Auth::guard('vendor')->user()->id;
-        // dd($vendor);
+        // dd($request->all());
         try {
             $validated = $request->validate([
                 'vendor_type' => 'required|string',
@@ -262,19 +263,23 @@ class VendorController extends Controller
                 $vendor_details->vendor_account_id = $vendor->id;
                 $vendor_details->save();
 
-                // update vendor
-                // $vendor->update($validated);
-
-                // Handle board directors
-                // if (isset($validated['boardDirectors']) && is_array($validated['boardDirectors'])) {
-                //     // Delete existing directors
-                //     $vendor->boardDirectors()->delete();
-                    
-                //     // Create new directors
-                //     foreach ($validated['boardDirectors'] as $director) {
-                //         $vendor->boardDirectors()->create($director);
-                //     }
-                // }
+                // save board directors / pemilik
+                if (isset($validated['boardDirectors']) && is_array($validated['boardDirectors'])) {
+                    foreach($validated['boardDirectors'] as $director)
+                    {
+                        $vendor_board = new VendorBoard();
+                        $vendor_board->vendor_board_vendor_id = $vendor->id;
+                        $vendor_board->vendor_board_name = $director['vendor_board_name'] ?? null;
+                        $vendor_board->vendor_board_ic_num = $director['vendor_board_ic_num'] ?? null;
+                        $vendor_board->vendor_board_phone_num = $director['vendor_board_phone_num'] ?? null;
+                        $vendor_board->vendor_board_citizenship = $director['vendor_board_citizenship'] ?? null;
+                        $vendor_board->vendor_board_ethnic = $director['vendor_board_ethnic'] ?? null;
+                        $vendor_board->vendor_board_position = $director['vendor_board_position'] ?? null;
+                        $vendor_board->vendor_board_address = $director['vendor_board_address'] ?? null;
+                        $vendor_board->vendor_board_actual_outside_jobs = $director['vendor_board_actual_outside_jobs'] ?? null;
+                        $vendor_board->save();
+                    }
+                }
 
                 DB::commit();
                 
