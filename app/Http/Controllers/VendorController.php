@@ -90,7 +90,7 @@ class VendorController extends Controller
         $vendor_applications = VendorApplication::where('vendor_id', Auth::guard('vendor')->user()->id)->orderBy('created_at', 'desc')->get();
         $vendor_active_cert = VendorCertificate::where('vendor_id', Auth::guard('vendor')->user()->id)->where('cert_status', 'approved')->where('created_at', '>=', now()->subYears(2))->where('created_at', '<=', now())->first();
 
-        return Inertia::render('Vendor/VendorDashboard', [
+        return Inertia::render('Vendor-Area/VendorDashboard', [
             'vendor' => $vendor,
             'vendor_details' => $vendor_details,
             'vendor_applications' => $vendor_applications,
@@ -100,7 +100,7 @@ class VendorController extends Controller
 
     public function showVendorCompleteRegistrationForm(): Response
     {
-        return Inertia::render('Vendor/Form/VendorCompleteRegistrationForm');
+        return Inertia::render('Vendor-Area/Form/VendorCompleteRegistrationForm');
     }
 
     public function saveVendorCompleteRegistrationForm(Request $request): RedirectResponse
