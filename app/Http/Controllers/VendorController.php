@@ -45,7 +45,7 @@ class VendorController extends Controller
         }
 
         return back()->withErrors([
-            'vendor_email' => 'The provided credentials do not match our records.',
+            'error' => 'Alamat e-mel atau kata laluan anda salah. Sila semak semula dan cuba lagi',
         ])->onlyInput('vendor_email');
     }
 

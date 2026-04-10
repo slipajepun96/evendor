@@ -45,6 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import MPOBLicenseTypeList from './Partials/MPOBLicenseTypeList';
 
 export default function VendorDashboard() {
     const { vendor } = usePage().props.auth;
@@ -311,7 +312,7 @@ export default function VendorDashboard() {
                                                     { value: 'bhd', label: 'Syarikat Berhad' },
                                                     { value: 'sdn-bhd', label: 'Syarikat Sendirian Berhad' },
                                                     { value: 'partnership', label: 'Perkongsian' },
-                                                    { value: 'sole-ownership', label: 'Milikan Tunggal' },
+                                                    { value: 'sole-ownership', label: <div className='text-center'>Milikan Tunggal</div> },
                                                 ]}
                                                 columns={4}
                                             />
@@ -1473,7 +1474,9 @@ export default function VendorDashboard() {
 
                                     {/* ============ MPOB ======================================================== */}
                                     <div className='mt-4 border p-4 rounded-lg hover:shadow-lg transition-shadow'>
-                                        <p className='text-sm font-bold underline'>Lembaga Minyak Sawit Malaysia (MPOB) (Jika Berkaitan)</p>
+                                            <p className='text-sm font-bold underline'>Lembaga Minyak Sawit Malaysia (MPOB) (Jika Berkaitan)</p>
+                                        
+
                                             <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
                                                 <div className=''>
                                                     <InputLabel
@@ -1484,6 +1487,7 @@ export default function VendorDashboard() {
                                                             </>
                                                         }
                                                     />
+                                                    
                                                     <TextInput
                                                         id="vendor_MPOB_license_num"
                                                         name="vendor_MPOB_license_num"
@@ -1605,7 +1609,7 @@ export default function VendorDashboard() {
                                                     />
                                                 </div>
                                             </div>
-                                        <div className="grid flex-1 gap-6 md:grid-cols-2 my-2">
+                                        <div className="grid flex-1 gap-6 my-2">
                                             <div className=''>
                                                 <InputLabel
                                                     htmlFor="vendor_MPOB_license_category"
@@ -1614,19 +1618,39 @@ export default function VendorDashboard() {
                                                             Lesen MPOB
                                                         </>
                                                     }
-                                                />
+                                                /><MPOBLicenseTypeList />
                                                 <RadioGroup
                                                     name="vendor_MPOB_license_category"
                                                     value={data.vendor_MPOB_license_category}
                                                     onChange={(value) => setData('vendor_MPOB_license_category', value)}
                                                     options={[
+                                                        { value: 'CF', label: 'CF' },
+                                                        { value: 'CM', label: 'CM' },
+                                                        { value: 'DA', label: 'DA' },
+                                                        { value: 'DF', label: 'DF' },
+                                                        { value: 'DK', label: 'DK' },
+                                                        { value: 'DL', label: 'DL' },
+                                                        { value: 'DM', label: 'DM' },
+                                                        { value: 'DN', label: 'DN' },
+                                                        { value: 'DT', label: 'DT' },
+                                                        { value: 'ET', label: 'ET' },
+                                                        { value: 'KB', label: 'KB' },
+                                                        { value: 'KS', label: 'KS' },
+                                                        { value: 'LB', label: 'LB' },
+                                                        { value: 'MB', label: 'MB' },
+                                                        { value: 'MF', label: 'MF' },
                                                         { value: 'NN', label: 'NN' },
                                                         { value: 'NS', label: 'NS' },
-                                                        { value: 'MF', label: 'MF' },
+                                                        { value: 'NT', label: 'NT' },
+                                                        { value: 'PM', label: 'PM' },
+                                                        { value: 'PX', label: 'PX' },
                                                         { value: 'RF', label: 'RF' },
-                                                        { value: 'DF', label: 'DF' },
+                                                        { value: 'SH', label: 'SH' },
+                                                        { value: 'TL', label: 'TL' },
+                                                        { value: 'UK', label: 'UK' },
+
                                                     ]}
-                                                    columns={5}
+                                                    columns={6}
                                                     className="grid-cols-3"
                                                 />
                                                 <InputError

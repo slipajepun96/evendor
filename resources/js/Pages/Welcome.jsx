@@ -5,6 +5,13 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button" 
+import { Info } from "lucide-react";
 
 export default function Welcome({ auth, canResetPassword, status }) {
     const [formType, setFormType] = useState('login');
@@ -66,19 +73,8 @@ export default function Welcome({ auth, canResetPassword, status }) {
                         <main className="mt-4">
                             <div className=" py-2 md:py-8 md:mx-auto md:max-w-screen-xl lg:py-8 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                 <div className="flex flex-col justify-center">
-                                    <h1 className="mb-2 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
-                                    <p className="mb-3 text-lg font-normal text-gray-500 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
-                                    {/* <div className='grid grid-cols-3 gap-2'>
-                                        <div className='bg-green-300  p-2 rounded-lg text-center text-green-700 font-semibold'>
-                                            Selamat
-                                        </div>
-                                        <div className='bg-blue-300 p-2 rounded-lg text-center text-blue-700 font-semibold'>
-                                            Terjamin
-                                        </div>
-                                        <div className='bg-yellow-300 p-2 rounded-lg text-center text-amber-500 font-semibold'>
-                                            Tepat
-                                        </div>
-                                    </div> */}
+                                    <h1 className=" text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">E-Vendor</h1>
+                                    <p className="mb-3 text-lg font-normal text-gray-700 lg:text-xl">PKPP Agro Sdn. Bhd.</p>
                                     <img src="/logo/front-img.webp" className='hidden md:block md:w-1/2' ></img>
                                     <div className='mt-4 font-medium text-gray-700'>
                                         Daftar sebagai vendor PKPP Agro Sdn. Bhd. sebagai kelayakan untuk menyertai sebut harga & tender yang dibuka oleh PKPP Agro Sdn. Bhd.
@@ -102,7 +98,6 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                                         name="vendor_email"
                                                         value={data.vendor_email}
                                                         className="mt-1 block w-full text-gray-800"
-                                                        autoComplete="vendor_email"
                                                         isFocused={true}
                                                         onChange={(e) => setData('vendor_email', e.target.value)}
                                                     />
@@ -118,12 +113,13 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                                         name="password"
                                                         value={data.password}
                                                         className="mt-1 block w-full"
-                                                        autoComplete="current-password"
                                                         onChange={(e) => setData('password', e.target.value)}
                                                     />
 
                                                     <InputError message={errors.password} className="mt-2" />
                                                 </div>
+
+                                                <div className='text-red-700 text-sm'><InputError message={errors.error} className="mt-2" /></div>
 
                                                 <PrimaryButton className="" disabled={processing}>
                                                     Log Masuk
@@ -131,10 +127,20 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                             </form>
                                         ) : formType === 'register' ? (
                                             // Register Form
-                                            <form className="md:mt-6 md:space-y-2" action="#" onSubmit={submitRegister}>
+                                            <form className="md:mt-8 md:space-y-6 md:space-y-2" action="#" onSubmit={submitRegister}>
                                                 <div>
-                                                    <InputLabel htmlFor="vendor_contact_person" value="Nama" />
-
+                                                    <div className='flex gap-2 items-center'>
+                                                        <InputLabel htmlFor="vendor_contact_person" value="Nama Pegawai Dilantik" />
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <Info className='w-4'/>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent align="center" className=" text-xs">
+                                                                Pegawai Dilantik merujuk kepada pegawai yang dilantik oleh pihak vendor bagi urusan perolehan dengan PKPP Agro Sdn. Bhd.<br/> Nama pegawai ini akan digunakan sebagai rujukan dalam sistem E-Vendor PKPP Agro Sdn. Bhd. untuk sebarang urusan berkaitan perolehan
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    </div>
+                                                    
                                                     <TextInput
                                                         id="vendor_contact_person"
                                                         name="vendor_contact_person"
@@ -145,12 +151,20 @@ export default function Welcome({ auth, canResetPassword, status }) {
                                                         onChange={(e) => setData('vendor_contact_person', e.target.value)}
                                                         required
                                                     />
-
                                                     <InputError message={errors.vendor_contact_person} className="mt-2" />
                                                 </div>
-
                                                 <div>
-                                                    <InputLabel htmlFor="vendor_email" value="E-Mel" />
+                                                    <div className='flex gap-2 items-center'>
+                                                        <InputLabel htmlFor="vendor_email" value="E-Mel" />
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <Info className='w-4'/>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent align="center" className=" text-xs">
+                                                                Alamat e-mel ini akan digunakan untuk log masuk sistem ini.
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    </div>
 
                                                     <TextInput
                                                         id="vendor_email"
