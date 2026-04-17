@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button" 
 import { Info } from "lucide-react";
 
-export default function Welcome({ auth, canResetPassword, status, openProcurements }) {
+export default function Welcome({ auth, canResetPassword, status, openProcurements = []}) {
     const [formType, setFormType] = useState('login');
 
     const handleImageError = () => {
