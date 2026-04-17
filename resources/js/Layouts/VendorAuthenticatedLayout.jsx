@@ -164,9 +164,9 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                         />
                         
                         {/* Sidebar */}
-                        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-gray-900 shadow-xl transition-transform duration-300 ease-in-out transform">
+                        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-gray-100 shadow-xl transition-transform duration-300 ease-in-out transform">
                             {/* Header */}
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+                            <div className="flex items-center justify-between px-4 py-3 border-gray-700">
                                 <Link href="/" onClick={() => setShowingNavigationDropdown(false)}>
                                     <ApplicationLogo className="block h-8 w-auto fill-current text-gray-50" />
                                 </Link>
@@ -181,8 +181,8 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                             </div>
 
                             {/* Navigation Links */}
-                            <div className="px-4 py-6 space-y-2">
-                                {/* <ResponsiveNavLink
+                            {/* <div className="px-4 py-6 space-y-2">
+                                 <ResponsiveNavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                     onClick={() => setShowingNavigationDropdown(false)}
@@ -221,8 +221,8 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                                     className="text-gray-100 hover:bg-gray-800 rounded-lg px-3 py-3 block"
                                 >
                                     Agent
-                                </ResponsiveNavLink> */}
-                            </div>
+                                </ResponsiveNavLink> 
+                            </div> */}
 
                             {/* User Profile Section */}
                             <div className="border-t border-gray-700 px-4 py-6">
@@ -248,7 +248,7 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                                         href={route('vendor.logout')}
                                         as="button"
                                         onClick={() => setShowingNavigationDropdown(false)}
-                                        className="text-red-400 hover:bg-gray-800 rounded-lg px-3 py-3 block w-full text-left"
+                                        className="text-red-400 hover:bg-red-600 hover:text-white rounded-lg px-3 py-3 block w-full text-left"
                                     >
                                         Log Out
                                     </ResponsiveNavLink>

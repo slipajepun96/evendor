@@ -205,7 +205,7 @@ export default function VendorAddBoard({ onAddBoard }) {
                             <div>
                                 <InputLabel
                                     htmlFor="vendor_board_actual_outside_jobs"
-                                    value="Pekerjaan Luar Sebenar"
+                                    value="Pekerjaan Perniagaan (Jawatan Tetap)"
                                 />
                                 <TextInput
                                     id="vendor_board_actual_outside_jobs"

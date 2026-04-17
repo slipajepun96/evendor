@@ -46,6 +46,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import MPOBLicenseTypeList from './Partials/MPOBLicenseTypeList';
+import VendorAttachmentViewer from './Partials/VendorAttachmentViewer';
 
 export default function VendorDashboard() {
     const { vendor } = usePage().props.auth;
@@ -69,6 +70,22 @@ export default function VendorDashboard() {
     const [openCIDBExpiry, setOpenCIDBExpiry] = useState(false);
     const [openMPOBStart, setOpenMPOBStart] = useState(false);
     const [openMPOBExpiry, setOpenMPOBExpiry] = useState(false);
+
+    const requiredFieldsByPart = {
+        1: ['vendor_type', ...(vendorType === 'company' ? ['vendor_company_type'] : []), 'vendor_name', ...(vendorType !== 'gov_entity' ? ['vendor_id_num'] : []), 'vendor_establishment_date', 'vendor_SSM_attachment_address', 'vendor_address', 'vendor_phone', 'vendor_email', 'vendor_contact_person_designation', 'vendor_contact_person_phone', ...(vendorType === 'company' && (companyType === 'sdn-bhd' || companyType === 'bhd') ? ['vendor_capital_1', 'vendor_capital_2','vendor_bumiputera_ownership_percent'] : []), ...(vendorType === 'cooperation' ? ['vendor_capital_1', 'vendor_capital_2'] : []) ],
+        2: ['vendor_bank_name', 'vendor_bank_account_number', ...(vendorType === 'gov_entity' ? ['vendor_bank_entity_registration_num'] : []), 'vendor_bank_account_statement_address', 'vendor_tax_identification_num'],
+        3: [''],
+        4: [''],
+        // 4: ['vendor_tax_identification_num', 'vendor_sst_number', 'vendor_capital_1', 'vendor_capital_2', 'vendor_bumiputera_ownership_percent', 'vendor_non_bumiputera_ownership_percent', 'vendor_bank_entity_registration_num', 'vendor_bank_account_statement_address', 'vendor_bank_name', 'vendor_bank_account_number'],
+        // 5: ['vendor_MOF_reg_num', 'vendor_MOF_start_date', 'vendor_MOF_expiry_date', 'vendor_MOF_attachment_address', 'vendor_SSM_start_date', 'vendor_SSM_expiry_date', 'vendor_SSM_attachment_address', 'vendor_PKK_reg_num', 'vendor_PKK_start_date', 'vendor_PKK_end_date', 'vendor_PKK_class', 'vendor_PKK_head', 'vendor_PKK_attachment_address', 'vendor_CIDB_reg_num', 'vendor_CIDB_start_date', 'vendor_CIDB_end_date', 'vendor_CIDB_B_cat_grade', 'vendor_CIDB_CE_cat_grade', 'vendor_CIDB_ME_cat_grade', 'vendor_CIDB_attachment_address', 'vendor_MPOB_license_num', 'vendor_MPOB_start_date', 'vendor_MPOB_end_date', 'vendor_MPOB_license_category', 'vendor_MPOB_attachment_address'],
+    };
+
+    const partCompleted = (currentPart) => {
+        const fields = requiredFieldsByPart[currentPart];
+        console.log(fields);
+        if(!fields) return true; // If no required fields for this part, consider it completed
+        return fields.every(field => data[field] !== '');
+    }
 
     //state untuk bod
     const handleAddBoardDirector = (directorData) => {
@@ -97,6 +114,7 @@ export default function VendorDashboard() {
             vendor_type: '',
             vendor_company_type: '',
             vendor_id_num: '',
+            vendor_id_num_2: '',
             vendor_name: '',
             vendor_contact_person: vendor.vendor_contact_person || '',
             vendor_contact_person_phone: '',
@@ -112,7 +130,8 @@ export default function VendorDashboard() {
             vendor_establishment_date: '',
             vendor_capital_1: '',
             vendor_capital_2: '',
-            vendor_bumiputera_ownership_percent: '' || 0.00,
+            vendor_bumiputera_ownership_percent: '',
+            vendor_non_bumiputera_ownership_percent: '',
             vendor_bank_entity_registration_num: '',
             vendor_bank_account_statement_address: '',
             vendor_bank_name: '',
@@ -180,9 +199,6 @@ export default function VendorDashboard() {
         }
     }, [data, shouldSubmit]); // Watch for changes in data and shouldSubmit
 
-
-
-
     const handleNext = () => {
         if (currentPart < totalParts) {
             setCurrentPart(prev => prev + 1);
@@ -201,6 +217,7 @@ export default function VendorDashboard() {
         setVendorType(type);
         setData('vendor_type', type);
         setData('vendor_company_type', '');
+        setData('vendor_id_num', '');
         // setData('')
     };
 
@@ -208,6 +225,11 @@ export default function VendorDashboard() {
         setCompanyType(companyType);
         setData('vendor_company_type', companyType);
     };
+
+    const setCurrencyFormat = (value) => {
+        if (!value) return '-';
+        return parseFloat(value).toLocaleString('en-MY', { style: 'currency', currency: 'MYR' });
+    }
 
     const [dropdown, setDropdown] = useState("dropdown")
 
@@ -323,7 +345,7 @@ export default function VendorDashboard() {
                                         </div>
                                     </div>
                                     )}
-                                    {(vendorType !== '') && (
+                                    {((data.vendor_type === 'gov_entity' || data.vendor_type === 'cooperation' || data.vendor_type === 'organisation') || (data.vendor_type === 'company' && data.vendor_company_type !== '')) && (
                                         <>
                                     <div className="grid flex-1 gap-2 md:grid-cols-1 my-2">
                                         <div className='grid-cols-2'>
@@ -358,8 +380,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_id_num"
                                                 value={
                                                     <>
-                                                    {vendorType === 'company' && ( <>No. Pendaftaran SSM  </>)}
-                                                    {vendorType === 'individual' && ( <>No. Kad Pengenalan</>)}
+                                                    {vendorType === 'company' && ( <>No. Pendaftaran SSM </>)}
                                                     {vendorType === 'cooperation' && ( <>No. Pendaftaran Koperasi</>)}
                                                     {vendorType === 'organisation' && ( <>No. Pendaftaran Pertubuhan / Kelab</>)}
                                                         {/* No. Pendaftaran SSM (Bagi Syarikat Sahaja) / Koperasi / No. Kad Pengenalan (Bagi Individu Sahaja) */}
@@ -384,6 +405,35 @@ export default function VendorDashboard() {
                                             />
                                         </div>
                                         )}
+                                        {vendorType === 'company' && ( 
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_id_num_2"
+                                                value={
+                                                    <>
+                                                    No. Pendaftaran SSM (Format Lama. Contoh : 123456-X)
+                                                        
+                                                    </>
+                                                }
+                                            />
+
+                                            <TextInput
+                                                id="vendor_id_num_2"
+                                                name="vendor_id_num_2"
+                                                value={data.vendor_id_num_2}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) =>
+                                                    setData('vendor_id_num_2', e.target.value)
+                                                }
+                                                required
+                                            />
+                                            <InputError
+                                                message={errors.vendor_id_num_2}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                        )}
+
                                         {vendorType !== 'individual' && (
                                         <div>
                                             <InputLabel
@@ -430,6 +480,33 @@ export default function VendorDashboard() {
                                         )}
                                     </div>
                                     <div className="grid flex-1 gap-2 md:grid-cols-1 my-2">
+                                        <div className=''>
+                                            <InputLabel
+                                                htmlFor="vendor_SSM_attachment_address"
+                                                value={
+                                                    <>
+                                                        Muat Naik Borang 9 SSM / Sijil Pendaftaran Syarikat / Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab <span className="text-red-500">*</span>
+                                                    </>
+                                                }
+                                            />
+                                            <FileInput
+                                                id="vendor_SSM_attachment_address"
+                                                name="vendor_SSM_attachment_address"
+                                                accept=".pdf"
+                                                maxSize={2}
+                                                showPreview={true}
+                                                value={data.vendor_SSM_attachment_address}
+                                                onChange={(e) =>
+                                                    setData('vendor_SSM_attachment_address', e.target.files[0])
+                                                }
+                                            />
+                                            <InputError
+                                                message={errors.vendor_SSM_attachment_address}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid flex-1 gap-2 md:grid-cols-1 my-2">
                                         <div className='grid-cols-2'>
                                             <InputLabel
                                                 htmlFor="vendor_address"
@@ -461,7 +538,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_phone"
                                                 value={
                                                     <>
-                                                        No. Telefon<span className="text-red-500">*</span>
+                                                        No. Telefon Pejabat Vendor <span className="text-red-500">*</span>
                                                     </>
                                                 }
                                             />
@@ -485,7 +562,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_email"
                                                 value={
                                                     <>
-                                                        E-Mel<span className="text-red-500">*</span>
+                                                        E-Mel Pejabat Vendor<span className="text-red-500">*</span>
                                                     </>
                                                 }
                                             />
@@ -535,7 +612,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_contact_person"
                                                 value={
                                                     <>
-                                                        Nama Pegawai Bertugas
+                                                        Nama Pegawai Dilantik
                                                     </>
                                                 }
                                             />
@@ -555,7 +632,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_contact_person_designation"
                                                 value={
                                                     <>
-                                                        Jawatan Pegawai Bertugas<span className="text-red-500">*</span>
+                                                        Jawatan Pegawai Dilantik<span className="text-red-500">*</span>
                                                     </>
                                                 }
                                             />
@@ -579,7 +656,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_contact_person_phone"
                                                 value={
                                                     <>
-                                                        No. Telefon Pegawai Bertugas<span className="text-red-500">*</span>
+                                                        No. Telefon Pegawai Dilantik<span className="text-red-500">*</span>
                                                     </>
                                                 }
                                             />
@@ -735,9 +812,9 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <Select
-                                                    onValueChange={(value) =>
-                                                        setData('vendor_bank_name', value)
-                                                }>
+                                                    onValueChange={(value) => setData('vendor_bank_name', value)}
+                                                    value={data.vendor_bank_name}
+                                                >
                                                     <SelectTrigger className="mt-1">
                                                         <SelectValue placeholder="Sila pilih bank" />
                                                     </SelectTrigger>
@@ -829,12 +906,13 @@ export default function VendorDashboard() {
                                                 <FileInput
                                                     id="vendor_bank_account_statement_address"
                                                     name="vendor_bank_account_statement_address"
-                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    accept=".pdf"
                                                     maxSize={2}
                                                     showPreview={true}
                                                     onChange={(e) =>
                                                         setData('vendor_bank_account_statement_address', e.target.files[0])
                                                     }
+                                                    value={data.vendor_bank_account_statement_address}
                                                 />
                                                 <InputError
                                                     message={errors.vendor_bank_account_statement_address}
@@ -1025,9 +1103,10 @@ export default function VendorDashboard() {
                                                     <FileInput
                                                         id="vendor_MOF_attachment_address"
                                                         name="vendor_MOF_attachment_address"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        accept=".pdf"
                                                         maxSize={2}
                                                         showPreview={true}
+                                                        value={data.vendor_MOF_attachment_address}
                                                         onChange={(e) =>
                                                             setData('vendor_MOF_attachment_address', e.target.files[0])
                                                         }
@@ -1161,9 +1240,10 @@ export default function VendorDashboard() {
                                                     <FileInput
                                                         id="vendor_PKK_attachment_address"
                                                         name="vendor_PKK_attachment_address"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        accept=".pdf"
                                                         maxSize={5}
                                                         showPreview={true}
+                                                        value={data.vendor_PKK_attachment_address}
                                                         onChange={(e) =>
                                                             setData('vendor_PKK_attachment_address', e.target.files[0])
                                                         }
@@ -1360,9 +1440,10 @@ export default function VendorDashboard() {
                                                     <FileInput
                                                         id="vendor_CIDB_attachment_address"
                                                         name="vendor_CIDB_attachment_address"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        accept=".pdf"
                                                         maxSize={5}
                                                         showPreview={true}
+                                                        value={data.vendor_CIDB_attachment_address}
                                                         onChange={(e) =>
                                                             setData('vendor_CIDB_attachment_address', e.target.files[0])
                                                         }
@@ -1596,9 +1677,10 @@ export default function VendorDashboard() {
                                                     <FileInput
                                                         id="vendor_MPOB_attachment_address"
                                                         name="vendor_MPOB_attachment_address"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        accept=".pdf"
                                                         maxSize={5}
                                                         showPreview={true}
+                                                        value={data.vendor_MPOB_attachment_address}
                                                         onChange={(e) =>
                                                             setData('vendor_MPOB_attachment_address', e.target.files[0])
                                                         }
@@ -1717,7 +1799,7 @@ export default function VendorDashboard() {
                                                                         <p className="font-medium">{director.vendor_board_position ? director.vendor_board_position : '-'}</p>
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-sm text-gray-600">Pekerjaan Lain</p>
+                                                                        <p className="text-sm text-gray-600">Pekerjaan Perniagaan (Jawatan Tetap)</p>
                                                                         <p className="font-medium">{director.vendor_board_actual_outside_jobs ? director.vendor_board_actual_outside_jobs : '-'}</p>
                                                                     </div>
                                                                     <div>
@@ -1764,7 +1846,7 @@ export default function VendorDashboard() {
                 
                                         {/* part 1 : maklumat utama */}
                                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Umum</div>
-                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
                                             <div className=''>
                                                 <InputLabel
                                                     htmlFor="vendor_id_num"
@@ -1774,7 +1856,13 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                <ValueView value={data.vendor_id_num} />
+                                                <div className='flex'>
+                                                    <ValueView value={data.vendor_id_num} />
+                                                    {data.vendor_type === 'company' ? (
+                                                        <span className='flex'>(<ValueView value={data.vendor_id_num_2} />)</span>
+                                                    ) : 
+                                                    ''}
+                                                </div>
                                             </div>
                                             <div>
                                                 <InputLabel
@@ -1795,6 +1883,21 @@ export default function VendorDashboard() {
                                                     {data.vendor_company_type === 'partnership' && ('Perkongsian')}
                                                     {data.vendor_company_type === 'sole-ownership' && ('Milikan Tunggal')}
                                                 </div>
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_SSM_attachment_address"
+                                                    value={
+                                                        <>
+                                                            {(data.vendor_type === 'company') ? 'Borang 9 SSM / Sijil Pendaftaran Syarikat ' : 'Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab'}
+                                                        </>
+                                                    }
+                                                />
+                                                {data.vendor_SSM_attachment_address ? (
+                                                    <VendorAttachmentViewer title={(data.vendor_type === 'company') ? 'Borang 9 SSM / Sijil Pendaftaran Syarikat' : 'Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab'} attachment_address={URL.createObjectURL(data.vendor_SSM_attachment_address)} />
+                                                ) : (
+                                                    <div> - </div>
+                                                )}
                                             </div>
                                             <div>
                                                 <InputLabel
@@ -1880,8 +1983,35 @@ export default function VendorDashboard() {
                                                 />
                                                 <ValueView value={`${data.vendor_non_bumiputera_ownership_percent}%`} />
                                             </div>
-                                            
                                         </div>
+                                        {(data.vendor_type === 'company' && (data.vendor_company_type === 'sdn-bhd' || data.vendor_company_type === 'bhd') || data.vendor_type === 'cooperation') ? (
+                                        <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_capital_1"
+                                                    value={
+                                                        <>
+                                                            {(data.vendor_type === 'company' && (data.vendor_company_type === 'sdn-bhd' || data.vendor_company_type === 'bhd')) ? 'Modal Dibenarkan' : ''}
+                                                            {(data.vendor_type === 'cooperation') ? 'Modal Yuran' : ''}
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={setCurrencyFormat(data.vendor_capital_1)} />
+                                            </div>
+                                            <div className=''>
+                                                <InputLabel
+                                                    htmlFor="vendor_capital_2"
+                                                    value={
+                                                        <>
+                                                            {(data.vendor_type === 'company' && (data.vendor_company_type === 'sdn-bhd' || data.vendor_company_type === 'bhd')) ? 'Modal Dibayar' : ''}
+                                                            {(data.vendor_type === 'cooperation') ? 'Modal Syer' : ''}
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={setCurrencyFormat(data.vendor_capital_2)} />
+                                            </div>
+                                            
+                                        </div>) : ''}
                 
                                         {/* part 2 : maklumat pegawai untuk dihubungi */}
                                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Untuk Dihubungi</div>
@@ -1993,11 +2123,11 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                {/* {data.vendor_bank_account_statement_address ? (
-                                                    <VendorAttachmentViewer title="Penyata Kewangan Terkini" attachment_address={bank_statements_attachment_url} />
+                                                {data.vendor_bank_account_statement_address ? (
+                                                    <VendorAttachmentViewer title="Penyata Kewangan Terkini" attachment_address={URL.createObjectURL(data.vendor_bank_account_statement_address)} />
                                                 ) : (
                                                     <div> - </div>
-                                                )} */}
+                                                )}
                                             </div>
                                         </div>
                                         <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
@@ -2064,11 +2194,11 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                {/* {parsedSnapshot['vendor_MOF_attachment_address'] ? (
-                                                    <VendorAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={MOF_attachment_url} />
+                                                {data.vendor_MOF_attachment_address ? (
+                                                    <VendorAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={URL.createObjectURL(data.vendor_MOF_attachment_address)} />
                                                 ) : (
                                                     <div> - </div>
-                                                ) } */}
+                                                ) }
                                             </div>
                                         </div>
                 
@@ -2122,11 +2252,11 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                {/* {data.vendor_PKK_attachment_address ? (
-                                                    <VendorAttachmentViewer title="Sijil PKK" attachment_address={PKK_attachment_url} />
+                                                {data.vendor_PKK_attachment_address ? (
+                                                    <VendorAttachmentViewer title="Sijil PKK" attachment_address={URL.createObjectURL(data.vendor_PKK_attachment_address)} />
                                                 ) : (
                                                     <div> - </div>
-                                                ) } */}
+                                                ) }
                                             </div>
                                         </div>
                                         </>
@@ -2168,11 +2298,14 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                {/* {parsedSnapshot['vendor_CIDB_attachment_address'] ? (
-                                                    <VendorAttachmentViewer title="Sijil CIDB" attachment_address={CIDB_attachment_url} />
+                                                {data.vendor_CIDB_attachment_address ? (
+                                                    <VendorAttachmentViewer 
+                                                        title="Sijil CIDB"
+                                                        attachment_address={URL.createObjectURL(data.vendor_CIDB_attachment_address)} 
+                                                    />
                                                 ) : (
                                                     <div> - </div>
-                                                ) } */}
+                                                ) }
                                             </div>
                                         </div>
                                         <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
@@ -2263,12 +2396,12 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 
-                                                {/* {parsedSnapshot['vendor_MPOB_attachment_address'] ? (
-                                                    <VendorAttachmentViewer title="Lesen MPOB" attachment_address={MPOB_attachment_url} />
+                                                {data.vendor_MPOB_attachment_address ? (
+                                                    <VendorAttachmentViewer title="Lesen MPOB" attachment_address={URL.createObjectURL(data.vendor_MPOB_attachment_address)} />
                                                     
                                                 ) : (
                                                     <div> - </div>
-                                                ) } */}
+                                                ) }
                                             </div>
                                         </div>
                                         </>
@@ -2287,19 +2420,11 @@ export default function VendorDashboard() {
                         <div className="flex justify-between mt-6 mx-2">
                             <PrimaryButton
                                 onClick={handlePrev}
-                                disabled={currentPart === 1}
+                                disabled={currentPart === 1 }
                                 className="px-4 py-2 bg-blue-500 rounded disabled:opacity-50"
                             >
                                 Sebelumnya
                             </PrimaryButton>
-                            {/* {allAnswered && (
-                                <button
-                                    onClick={handleSubmit}
-                                    className="px-4 py-2 bg-green-600 text-white rounded"
-                                >
-                                    Hantar Undian
-                                </button>
-                            )} */}
                             {(currentPart === totalParts) && (
                                 <PrimaryButton
                                     onClick={submit}
@@ -2309,10 +2434,10 @@ export default function VendorDashboard() {
                                     Hantar
                                 </PrimaryButton>
                             )}
-                            {(currentPart !== totalParts) && (
+                            {(currentPart !== totalParts ) && (
                                 <PrimaryButton
                                     onClick={handleNext}
-                                    disabled={currentPart === totalParts}
+                                    disabled={!partCompleted(currentPart)}
                                     className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                                 >
                                     Seterusnya

@@ -9,6 +9,7 @@ use App\Models\VendorDetails;
 use App\Models\VendorApplication;
 use App\Models\VendorCertificate;
 use App\Models\VendorBoard;
+use App\Models\ProcurementList;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -22,6 +23,18 @@ use Inertia\Response;
 
 class VendorController extends Controller
 {
+    public function indexPage()
+    {
+        $open_procurements = ProcurementList::where('procurement_open_date', '<=', now())
+            ->where('procurement_close_date', '>=', now())
+            ->orderBy('procurement_close_date', 'asc')
+            ->get();
+
+        return Inertia::render('Welcome', [
+            'openProcurements' => $open_procurements,
+        ]);
+    }
+
     public function showLoginForm()
     {
         return redirect('/');
@@ -112,6 +125,7 @@ class VendorController extends Controller
                 'vendor_type' => 'required|string',
                 'vendor_company_type' => 'nullable|string',
                 'vendor_id_num' => 'required|string',//no syarikat etc
+                'vendor_id_num_2' => 'nullable|string', //no syarikat lama
                 'vendor_email' => 'required|string|email',
                 'vendor_name' => 'required|string',
                 'vendor_contact_person' => 'required|string',
@@ -167,6 +181,15 @@ class VendorController extends Controller
                 // dd($vendor);
                 
                 // Handle file uploads
+                if ($request->hasFile('vendor_SSM_attachment_address')) {
+                    // Delete old file if exists
+                    if ($vendor->vendor_SSM_attachment_address) {
+                        Storage::disk('local')->delete($vendor->vendor_SSM_attachment_address);
+                    }
+                    $validated['vendor_SSM_attachment_address'] = $request->file('vendor_SSM_attachment_address')
+                        ->store('vendor/ssm_certificates', 'local');
+                }
+                                
                 if ($request->hasFile('vendor_bank_account_statement_address')) {
                     // Delete old file if exists
                     if ($vendor->vendor_bank_account_statement_address) {
@@ -214,6 +237,7 @@ class VendorController extends Controller
                 $vendor_details->vendor_type = $validated['vendor_type'];
                 $vendor_details->vendor_company_type = $validated['vendor_company_type'];
                 $vendor_details->vendor_id_num = $validated['vendor_id_num'];
+                $vendor_details->vendor_id_num_2 = $validated['vendor_id_num_2'];
                 $vendor_details->vendor_name = $validated['vendor_name'];
                 $vendor_details->vendor_email = $validated['vendor_email'];
                 $vendor_details->vendor_contact_person = $validated['vendor_contact_person'];
@@ -222,6 +246,7 @@ class VendorController extends Controller
                 $vendor_details->vendor_phone = $validated['vendor_phone'];
                 $vendor_details->vendor_address = $validated['vendor_address'];
                 $vendor_details->vendor_website = $validated['vendor_website'];
+                $vendor_details->vendor_SSM_attachment_address = $validated['vendor_SSM_attachment_address'];
                 $vendor_details->vendor_tax_identification_num = $validated['vendor_tax_identification_num'];
                 $vendor_details->vendor_sst_number = $validated['vendor_sst_number'];
                 $vendor_details->vendor_establishment_date = $validated['vendor_establishment_date'];
@@ -292,6 +317,7 @@ class VendorController extends Controller
                 // Delete uploaded files on error
                 $fileFields = [
                     'vendor_bank_account_statement_address',
+                    'vendor_SSM_attachment_address',
                     'vendor_MOF_attachment_address',
                     'vendor_PKK_attachment_address',
                     'vendor_CIDB_attachment_address',

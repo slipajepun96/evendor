@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table"
 
 
-export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id, boardDirectors}) 
+export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_statements_attachment_url, MOF_attachment_url, CIDB_attachment_url, PKK_attachment_url, MPOB_attachment_url, user_id, boardDirectors, ssm_attachment_url}) 
 {
     //json parse
     const parsedSnapshot = JSON.parse(unapproved_vendor.application_data_snapshot);
@@ -32,6 +32,11 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
+    
+    const setCurrencyFormat = (value) => {
+        if (!value) return '-';
+        return parseFloat(value).toLocaleString('en-MY', { style: 'currency', currency: 'MYR' });
+    }
 
     const formatDateTime = (dateTimeString) => {
         if (!dateTimeString) return '-';
@@ -113,7 +118,7 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
 
                         {/* part 1 : maklumat utama */}
                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Umum</div>
-                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
                             <div className=''>
                                 <InputLabel
                                     htmlFor="vendor_id_num"
@@ -123,7 +128,14 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                         </>
                                     }
                                 />
-                                <ValueView value={parsedSnapshot['vendor_id_num']} />
+                                <div className='flex'>
+                                    <ValueView value={parsedSnapshot['vendor_id_num']} />
+                                    {parsedSnapshot['vendor_type'] === 'company' ? (
+                                        <span className='flex'>(<ValueView value={parsedSnapshot['vendor_id_num_2']} />)</span>
+                                    ) : 
+                                    ''}
+                                </div>
+
                             </div>
                             <div>
                                 <InputLabel
@@ -155,6 +167,21 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                     }
                                 />
                                 <ValueView value={formatDate(parsedSnapshot['vendor_establishment_date'])} />
+                            </div>
+                            <div>
+                                <InputLabel
+                                    htmlFor="vendor_establishment_date"
+                                    value={
+                                        <>
+                                            {(parsedSnapshot['vendor_type'] === 'company') ? 'Borang 9 SSM / Sijil Pendaftaran Syarikat ' : 'Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab'}
+                                        </>
+                                    }
+                                />
+                                {parsedSnapshot['vendor_bank_account_statement_address'] ? (
+                                    <VendorApprovalAttachmentViewer title={(parsedSnapshot['vendor_type'] === 'company') ? 'Borang 9 SSM / Sijil Pendaftaran Syarikat' : 'Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab'} attachment_address={ssm_attachment_url} />
+                                ) : (
+                                    <div> - </div>
+                                )}
                             </div>
                         </div>
                         <div className='grid flex-1 gap-2 md:grid-cols-1 my-2'>
@@ -229,18 +256,46 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                 />
                                 <ValueView value={`${parsedSnapshot['vendor_non_bumiputera_ownership_percent']}%`} />
                             </div>
-                            
                         </div>
+                        {(parsedSnapshot['vendor_type'] === 'company' && (parsedSnapshot['vendor_company_type'] === 'sdn-bhd' || parsedSnapshot['vendor_company_type'] === 'bhd') || parsedSnapshot['vendor_type'] === 'cooperation') ? (
+                            <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
+                                <div className=''>
+                                    <InputLabel
+                                        htmlFor="vendor_capital_1"
+                                        value={
+                                            <>
+                                                {(parsedSnapshot['vendor_type'] === 'company' && (parsedSnapshot['vendor_company_type'] === 'sdn-bhd' || parsedSnapshot['vendor_company_type'] === 'bhd')) ? 'Modal Dibenarkan' : ''}
+                                                {(parsedSnapshot['vendor_type'] === 'cooperation') ? 'Modal Yuran' : ''}
+                                            </>
+                                        }
+                                    />
+                                    <ValueView value={setCurrencyFormat(parsedSnapshot['vendor_capital_1'])} />
+                                </div>
+                                <div className=''>
+                                    <InputLabel
+                                        htmlFor="vendor_capital_2"
+                                        value={
+                                            <>
+                                                {(parsedSnapshot['vendor_type'] === 'company' && (parsedSnapshot['vendor_company_type'] === 'sdn-bhd' || parsedSnapshot['vendor_company_type'] === 'bhd')) ? 'Modal Dibayar' : ''}
+                                                {(parsedSnapshot['vendor_type'] === 'cooperation') ? 'Modal Syer' : ''}
+                                            </>
+                                        }
+                                    />
+                                    <ValueView value={setCurrencyFormat(parsedSnapshot['vendor_capital_2'])} />
+                                </div>
+                                
+                            </div>) 
+                        : ''}
 
                         {/* part 2 : maklumat pegawai untuk dihubungi */}
-                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Untuk Dihubungi</div>
+                        <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Dilantik Untuk Dihubungi</div>
                         <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
                             <div className=''>
                                 <InputLabel
                                     htmlFor="vendor_contact_person"
                                     value={
                                         <>
-                                            Nama Pegawai
+                                            Nama Pegawai Dilantik
                                         </>
                                     }
                                 />
@@ -251,7 +306,7 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                     htmlFor="vendor_contact_person_designation"
                                     value={
                                         <>
-                                            Jawatan Pegawai
+                                            Jawatan Pegawai Dilantik
                                         </>
                                     }
                                 />
@@ -262,7 +317,7 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                     htmlFor="vendor_contact_person_phone"
                                     value={
                                         <>
-                                            Nombor Telefon Pegawai
+                                            Nombor Telefon Pegawai Dilantik
                                         </>
                                     }
                                 />

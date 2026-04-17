@@ -29,6 +29,7 @@ class VendorDetails extends Model
             'vendor_type',
             'vendor_company_type',
             'vendor_id_num',
+            'vendor_id_num_2',
             'vendor_name',
             'vendor_contact_person',
             'vendor_contact_person_phone',

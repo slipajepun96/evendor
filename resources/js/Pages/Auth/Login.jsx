@@ -105,8 +105,8 @@ export default function Login({ status, canResetPassword }) {
             
                 {/* Your Content/Components */}
 
-                <div className="bg-gradient-to-tr from-sky-400 to-sky-700 text-white">
-                    <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
+                <div className="text-white">
+                    <div className="relative flex min-h-screen flex-col items-center justify-center">
                         <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                             <main className="mt-6">
                                 <section class="">
@@ -117,7 +117,7 @@ export default function Login({ status, canResetPassword }) {
                                             <p className='uppercase rounded-lg bg-green-700 px-1.5 py-0.5 font-bold w-fit'>Pentadbir</p>
                                         </div>
                                         <div>
-                                            <div className="w-full lg:max-w-xl md:p-6 space-y-2 md:space-y-8 sm:p-8 md:bg-gray-800 rounded-lg md:shadow-xl">
+                                            <div className="w-full lg:max-w-xl md:p-6 space-y-2 md:space-y-8 sm:p-8 border rounded-lg md:shadow-xl">
                                                 <h2 class="text-2xl font-bold text-white">
                                                     Log Masuk Pentadbir
                                                 </h2>

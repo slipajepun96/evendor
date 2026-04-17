@@ -74,6 +74,9 @@ class VendorProcessController extends Controller
             $MPOB_attachment_url = isset($snapshot['vendor_MPOB_attachment_address'])
                 ? URL::temporarySignedRoute('admin.vendor.file', now()->addMinutes(30), ['path' => base64_encode($snapshot['vendor_MPOB_attachment_address'])]) 
                 : null;
+            $ssm_attachment_url = isset($snapshot['vendor_SSM_attachment_address'])
+                ? URL::temporarySignedRoute('admin.vendor.file', now()->addMinutes(30), ['path' => base64_encode($snapshot['vendor_SSM_attachment_address'])]) 
+                : null;
             
                 // dd($MPOB_attachment_url);
 
@@ -86,6 +89,7 @@ class VendorProcessController extends Controller
                 'PKK_attachment_url' => $PKK_attachment_url,
                 'MPOB_attachment_url' => $MPOB_attachment_url,
                 'boardDirectors' => $boardDirectors,
+                'ssm_attachment_url' => $ssm_attachment_url,
             ]);
        
     }
@@ -169,7 +173,7 @@ class VendorProcessController extends Controller
 
     public function approveVendorTest()
     {
-        $certificate = VendorCertificate::first();
+        $certificate = VendorCertificate::where('id', "4412876b-4eed-4ed4-9da8-ae1733c3b67c")->firstOrFail();
         $vendor_json = json_decode($certificate->cert_data_snapshot, true);
         $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
         $qrCode = QrCode::size(100)->generate($cert_url);

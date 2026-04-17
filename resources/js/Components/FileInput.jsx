@@ -8,12 +8,13 @@ export default forwardRef(function FileInput(
         accept = '*',
         maxSize = 5, // MB
         showPreview = true,
+        value = null,
         ...props 
     },
     ref,
 ) {
     const localRef = useRef(null);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(value || null);
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState('');
 

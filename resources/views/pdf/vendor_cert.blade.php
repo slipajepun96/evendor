@@ -74,6 +74,8 @@
             function formatDate($date) {
                 return \Carbon\Carbon::parse($date)->locale('ms')->isoFormat('D MMMM YYYY');
             }
+
+            $formatter = new NumberFormatter('en_MY', NumberFormatter::CURRENCY);
         ?>
         <div class="background-overlay relative z-10">
             <img src="{{ public_path('logo/logo-small.png') }}" alt="PKPP Logo" class="w-32 mb-4">
@@ -91,6 +93,14 @@
                 @if($vendor_json['vendor_type'] != 'gov_entity')
                     {{ $vendor_json['vendor_id_num'] ?? 'N/A' }}
                 @endif
+
+                @if(isset($vendor_json['vendor_id_num_2']))
+                    @if($vendor_json['vendor_type'] == 'company')
+                        ({{ strtoupper($vendor_json['vendor_id_num_2'] ?? 'N/A') }})
+                    @endif
+                @endif  
+                
+                
             </div>
             {{-- <div> UUID Vendor : {{ $vendor_json['vendor_id_num'] ?? 'N/A' }}</div> --}}
             {{-- <div>{{ $certificate->cert_start_date }} - {{ $certificate->cert_end_date }}</div> --}}
@@ -109,39 +119,47 @@
         @pageBreak
         <div class="mt-10">
             <div class="text-2xl font-bold">Profil Vendor</div>
-            <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 1 : Maklumat Vendor</div>
-                <div class="grid grid-cols-2">
+            <div class="mt-6 text-xs">
+                <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 1 : Maklumat Vendor</div>
+                <div class="grid grid-cols-3">
                     <div class="mt-2">
                         <div class="text-xs font-medium">Nama Vendor</div>
                         <div class="font-bold">{{ $vendor_json['vendor_name'] ?? 'N/A' }}</div>
                     </div>
                     <div class="mt-2">
                         <div class="text-xs font-medium">No. Pendaftaran Syarikat</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }}</div>
+                        @if($vendor_json['vendor_type'] === 'company')
+                            <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }} ({{ strtoupper($vendor_json['vendor_id_num_2'] ?? 'N/A') }})</div>
+                        @else
+                            <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }}</div>
+                        @endif
+                        </div>
                     </div>
+                    
                 </div>
-                <div class="grid grid-cols-3">
+                <div class="grid grid-cols-3 text-xs">
                     <div class="mt-2">
                         <div class="text-xs font-medium">Jenis Entiti</div>
-                        @if($vendor_json['vendor_type'] == 'company')
-                            Syarikat 
-                            @if($vendor_json['vendor_company_type'] === 'bhd')
-                                Berhad
-                            @elseif($vendor_json['vendor_company_type'] === "sdn-bhd")
-                                Sendirian Berhad
-                            @elseif($vendor_json['vendor_company_type'] === 'partnership')
-                                Perkongsian
-                            @elseif($vendor_json['vendor_company_type'] === 'sole-ownership')
-                                Milikan Tunggal
+                        <div class="font-bold">
+                            @if($vendor_json['vendor_type'] == 'company')
+                                Syarikat 
+                                @if($vendor_json['vendor_company_type'] === 'bhd')
+                                    Berhad
+                                @elseif($vendor_json['vendor_company_type'] === "sdn-bhd")
+                                    Sendirian Berhad
+                                @elseif($vendor_json['vendor_company_type'] === 'partnership')
+                                    Perkongsian
+                                @elseif($vendor_json['vendor_company_type'] === 'sole-ownership')
+                                    Milikan Tunggal
+                                @endif
+                            @elseif($vendor_json['vendor_type'] == 'cooperation')
+                                Koperasi
+                            @elseif($vendor_json['vendor_type'] == 'gov_entity')
+                                Perbadanan / Entiti Kerajaan
+                            @elseif($vendor_json['vendor_type'] == 'organisation')
+                                Pertubuhan / Kelab
                             @endif
-                        @elseif($vendor_json['vendor_type'] == 'cooperation')
-                            Koperasi
-                        @elseif($vendor_json['vendor_type'] == 'gov_entity')
-                            Perbadanan / Entiti Kerajaan
-                        @elseif($vendor_json['vendor_type'] == 'organisation')
-                            Pertubuhan / Kelab
-                        @endif
+                        </div>
                     </div>
                     <div class="mt-2">
                         <div class="text-xs font-medium">Tarikh Penubuhan</div>
@@ -153,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3">
+                <div class="grid grid-cols-3 text-xs">
                     <div class="mt-2">
                         <div class="text-xs font-medium">Laman Web</div>
                         <div class="font-bold">{{ $vendor_json['vendor_website'] ?? 'N/A' }}</div>
@@ -178,28 +196,40 @@
                         <div class="font-bold">{{ $vendor_json['vendor_non_bumiputera_ownership_percent'] ?? 'N/A' }} %</div>
                     </div>
                 </div>
+                @if(isset($vendor_json['vendor_type']) && ($vendor_json['vendor_type'] === 'company' || $vendor_json['vendor_type'] === 'cooperation'))
+                <div class="grid grid-cols-2">
+                    <div class="mt-2">
+                        <div class="text-xs font-medium">@if($vendor_json['vendor_type'] === 'company') Modal Dibenar @elseif($vendor_json['vendor_type'] === 'cooperation') Modal Yuran @endif</div>
+                        <div class="font-bold">{{ $formatter->formatCurrency($vendor_json['vendor_capital_1'] ?? 0, 'MYR') }} </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-xs font-medium">@if($vendor_json['vendor_type'] === 'company') Modal Dibayar @elseif($vendor_json['vendor_type'] === 'cooperation') Modal Syer @endif</div>
+                        <div class="font-bold">{{ $formatter->formatCurrency($vendor_json['vendor_capital_2'] ?? 0, 'MYR') }} </div>
+                    </div>
+                </div>
+                @endif
             </div>
-            <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 2 : Maklumat Pegawai Untuk Dihubungi</div>
+            <div class="mt-6 text-xs">
+                <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 2 : Maklumat Pegawai Dilantik Untuk Dihubungi</div>
                 <div class="grid grid-cols-3">
                     <div class="mt-2">
-                        <div class="text-xs font-medium">Nama Pegawai</div>
+                        <div class="text-xs font-medium">Nama Pegawai Dilantik</div>
                         <div class="font-bold">{{ $vendor_json['vendor_contact_person'] ?? 'N/A' }}</div>
                     </div>
                     <div class="mt-2">
-                        <div class="text-xs font-medium">Jawatan Pegawai</div>
+                        <div class="text-xs font-medium">Jawatan Pegawai Dilantik</div>
                         <div class="font-bold">{{ $vendor_json['vendor_contact_person_designation'] ?? 'N/A' }}</div>
                     </div>
                     <div class="mt-2">
-                        <div class="text-xs font-medium">No. Telefon Pegawai</div>
+                        <div class="text-xs font-medium">No. Telefon Pegawai Dilantik</div>
                         <div class="font-bold">{{ $vendor_json['vendor_contact_person_phone'] ?? 'N/A' }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 3 : Lembaga Pengarah / Pemilik</div>
-                <table class="mt-2 border w-full">
+            <div class="mt-6 text-xs">
+                <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 3 : Lembaga Pengarah / Pemilik</div>
+                <table class="mt-2 border w-full text-xs">
                     <thead>
                         <tr>
                             <th class="border px-2 py-1">Nama Pengarah / Pemilik</th>
@@ -231,126 +261,129 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 4 : Maklumat Kewangan</div>
-                <div class="grid grid-cols-3">
-                    <div class="mt-2">
-                        <div class="text-xs font-medium">Nama Bank</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_bank_name'] ?? 'N/A' }}</div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="text-xs font-medium">No. Akaun Bank</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_bank_account_number'] ?? 'N/A' }}</div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="text-xs font-medium">No. Pendaftaran Entiti Di Bank</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_bank_entity_registration_num'] ?? 'N/A' }}</div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="text-xs font-medium">No. Pendaftaran SST</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_sst_number'] ?? 'N/A' }}</div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="text-xs font-medium">No. TIN LHDN</div>
-                        <div class="font-bold">{{ $vendor_json['vendor_tax_identification_num'] ?? 'N/A' }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 text-sm">
-                <div class="uppercase text-sm font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 5 : Maklumat Perlesenan</div>
-                <div>
-                    <div class="uppercase text-xs font-semibold underline mt-2">E-Perolehan / Sijil Kementerian Kewangan</div>
+        </div>
+        @pageBreak
+        <div class="mt-10">
+                <div class="mt-6 text-xs">
+                    <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 4 : Maklumat Kewangan</div>
                     <div class="grid grid-cols-3">
                         <div class="mt-2">
-                            <div class="text-xs font-medium">No. Pendaftaran</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_MOF_reg_num'] ?? 'N/A' }}</div>
+                            <div class="text-xs font-medium">Nama Bank</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_bank_name'] ?? 'N/A' }}</div>
                         </div>
                         <div class="mt-2">
-                            <div class="text-xs font-medium">Tempoh Sah Laku</div>
-                            @if($vendor_json['vendor_MOF_start_date'] && $vendor_json['vendor_MOF_expiry_date'])
-                                <div class="font-bold">{{ $vendor_json['vendor_MOF_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_MOF_expiry_date'] ?? 'N/A' }}</div>
-                            @else
-                                <div class="font-bold">N/A</div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="uppercase text-xs font-semibold underline mt-2">Pusat Khidmat Kontraktor</div>
-                    <div class="grid grid-cols-3">
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">No. Pendaftaran</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_PKK_reg_num'] ?? 'N/A' }}</div>
+                            <div class="text-xs font-medium">No. Akaun Bank</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_bank_account_number'] ?? 'N/A' }}</div>
                         </div>
                         <div class="mt-2">
-                            <div class="text-xs font-medium">Tempoh Sah Laku</div>
-                            @if($vendor_json['vendor_PKK_start_date'] && $vendor_json['vendor_PKK_end_date'])
-                                <div class="font-bold">{{ $vendor_json['vendor_PKK_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_PKK_end_date'] ?? 'N/A' }}</div>
-                            @else
-                                <div class="font-bold">N/A</div>
-                            @endif
+                            <div class="text-xs font-medium">No. Pendaftaran Entiti Di Bank</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_bank_entity_registration_num'] ?? 'N/A' }}</div>
                         </div>
                         <div class="mt-2">
-                            <div class="text-xs font-medium">Kelas & Kepala PKK</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_PKK_class'] ?? 'N/A' }} {{ $vendor_json['vendor_PKK_head'] ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="uppercase text-xs font-semibold underline mt-2">Lembaga Pembangunan Industri Pembinaan Malaysia (CIDB)</div>
-                    <div class="grid grid-cols-3">
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">No. Pendaftaran</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_CIDB_reg_num'] ?? 'N/A' }}</div>
+                            <div class="text-xs font-medium">No. Pendaftaran SST</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_sst_number'] ?? 'N/A' }}</div>
                         </div>
                         <div class="mt-2">
-                            <div class="text-xs font-medium">Tempoh Sah Laku</div>
-                            @if($vendor_json['vendor_CIDB_start_date'] && $vendor_json['vendor_CIDB_end_date'])
-                                <div class="font-bold">{{ $vendor_json['vendor_CIDB_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_CIDB_end_date'] ?? 'N/A' }}</div>
-                            @else
-                                <div class="font-bold">N/A</div>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3">
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">Gred Kategori B</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_CIDB_B_cat_grade'] ?? 'N/A' }}</div>
-                        </div>
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">Gred Kategori CE</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_CIDB_CE_cat_grade'] ?? 'N/A' }}</div>
-                        </div>
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">Gred Kategori ME</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_CIDB_ME_cat_grade'] ?? 'N/A' }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="uppercase text-xs font-semibold underline mt-2">Lembaga Minyak Sawit Malaysia (MPOB)</div>
-                    <div class="grid grid-cols-3">
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">No. Lesen MPOB</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_MPOB_license_num'] ?? 'N/A' }}</div>
-                        </div>
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">Tempoh Sah Laku</div>
-                            @if($vendor_json['vendor_MPOB_start_date'] && $vendor_json['vendor_MPOB_end_date'])
-                                <div class="font-bold">{{ $vendor_json['vendor_MPOB_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_MPOB_end_date'] ?? 'N/A' }}</div>
-                            @else
-                                <div class="font-bold">N/A</div>
-                            @endif
-                        </div>
-                        <div class="mt-2">
-                            <div class="text-xs font-medium">Kategori Lesen</div>
-                            <div class="font-bold">{{ $vendor_json['vendor_MPOB_license_category'] ?? 'N/A' }}</div>
+                            <div class="text-xs font-medium">No. TIN LHDN</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_tax_identification_num'] ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>
 
+                <div class="mt-6 text-xs">
+                    <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 5 : Maklumat Perlesenan</div>
+                    <div>
+                        <div class="uppercase text-xs font-semibold underline mt-2">E-Perolehan / Sijil Kementerian Kewangan</div>
+                        <div class="grid grid-cols-3">
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">No. Pendaftaran</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_MOF_reg_num'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Tempoh Sah Laku</div>
+                                @if($vendor_json['vendor_MOF_start_date'] && $vendor_json['vendor_MOF_expiry_date'])
+                                    <div class="font-bold">{{ $vendor_json['vendor_MOF_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_MOF_expiry_date'] ?? 'N/A' }}</div>
+                                @else
+                                    <div class="font-bold">N/A</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="uppercase text-xs font-semibold underline mt-2">Pusat Khidmat Kontraktor</div>
+                        <div class="grid grid-cols-3">
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">No. Pendaftaran</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_PKK_reg_num'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Tempoh Sah Laku</div>
+                                @if($vendor_json['vendor_PKK_start_date'] && $vendor_json['vendor_PKK_end_date'])
+                                    <div class="font-bold">{{ $vendor_json['vendor_PKK_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_PKK_end_date'] ?? 'N/A' }}</div>
+                                @else
+                                    <div class="font-bold">N/A</div>
+                                @endif
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Kelas & Kepala PKK</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_PKK_class'] ?? 'N/A' }} {{ $vendor_json['vendor_PKK_head'] ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="uppercase text-xs font-semibold underline mt-2">Lembaga Pembangunan Industri Pembinaan Malaysia (CIDB)</div>
+                        <div class="grid grid-cols-3">
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">No. Pendaftaran</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_CIDB_reg_num'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Tempoh Sah Laku</div>
+                                @if($vendor_json['vendor_CIDB_start_date'] && $vendor_json['vendor_CIDB_end_date'])
+                                    <div class="font-bold">{{ $vendor_json['vendor_CIDB_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_CIDB_end_date'] ?? 'N/A' }}</div>
+                                @else
+                                    <div class="font-bold">N/A</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3">
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Gred Kategori B</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_CIDB_B_cat_grade'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Gred Kategori CE</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_CIDB_CE_cat_grade'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Gred Kategori ME</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_CIDB_ME_cat_grade'] ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="uppercase text-xs font-semibold underline mt-2">Lembaga Minyak Sawit Malaysia (MPOB)</div>
+                        <div class="grid grid-cols-3">
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">No. Lesen MPOB</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_MPOB_license_num'] ?? 'N/A' }}</div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Tempoh Sah Laku</div>
+                                @if($vendor_json['vendor_MPOB_start_date'] && $vendor_json['vendor_MPOB_end_date'])
+                                    <div class="font-bold">{{ $vendor_json['vendor_MPOB_start_date'] ?? 'N/A' }} - {{ $vendor_json['vendor_MPOB_end_date'] ?? 'N/A' }}</div>
+                                @else
+                                    <div class="font-bold">N/A</div>
+                                @endif
+                            </div>
+                            <div class="mt-2">
+                                <div class="text-xs font-medium">Kategori Lesen</div>
+                                <div class="font-bold">{{ $vendor_json['vendor_MPOB_license_category'] ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
            
         </div>

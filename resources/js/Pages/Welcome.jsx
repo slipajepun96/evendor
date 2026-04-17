@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button" 
 import { Info } from "lucide-react";
 
-export default function Welcome({ auth, canResetPassword, status }) {
+export default function Welcome({ auth, canResetPassword, status, openProcurements }) {
     const [formType, setFormType] = useState('login');
 
     const handleImageError = () => {
@@ -33,6 +33,15 @@ export default function Welcome({ auth, canResetPassword, status }) {
         password: '',
         password_confirmation: '',
     });
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
     const switchForm = (type) => {
         reset();
@@ -261,14 +270,30 @@ export default function Welcome({ auth, canResetPassword, status }) {
                             </div>
                             <div className='border border-gray-300 p-4 rounded-xl bg-white mb-8'>
                                 <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
-                                Tiada tender atau sebut harga yang sedang aktif buat masa ini. 
+                                {openProcurements.length === 0 && (
+                                    <p>Tiada tender atau sebut harga yang sedang aktif buat masa ini.</p>
+                                )}
+                                
                                 <div className='grid flex-1 gap-2 md:grid-cols-3 '>
+                                    {openProcurements.map((procurement) => (
                                     
-                                    {/* <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
-                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
-                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
-                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
+                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
+                                        {procurement.procurement_type === 'tender' ? (
+                                            <div className="flex items-center bg-green-200 rounded-xl font-bold px-2 py-0.5 text-green-800 uppercase text-xs font-semibold w-max mb-2">
+                                                Tender
+                                            </div>
+                                        ) : procurement.procurement_type === 'quotation' ? (
+                                            <div className="flex items-center bg-blue-200 rounded-xl font-bold px-2 py-0.5 text-blue-800 uppercase text-xs font-semibold w-max mb-2">
+                                                Sebutharga
+                                            </div>
+                                        ) : null}
+                                        <h1 className="text-lg font-semibold text-gray-800">{procurement.procurement_title}</h1>
+                                        <h2 className="text-sm font-bold text-gray-700 uppercase">{procurement.procurement_description}</h2>
+                                        <p className="text-sm text-gray-500">Tarikh Tutup: {formatDate(procurement.procurement_close_date)}</p>
+                                        <a href={procurement.procurement_pdf_address} target="_blank" className='underline'>Lihat Dokumen Iklan Ini</a>
                                     </div>
+                                    ))}
+                                    {/*}
                                     <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white '>
                                         <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
                                         <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>

@@ -4,16 +4,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\VendorProcessController;
+use App\Http\Controllers\ProcurementListController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('welcome');
+Route::get('/', [VendorController::class, 'indexPage'])->name('welcome');
 
 Route::get('/v/cert/{vendor_id}', [VendorController::class, 'checkVendorCert'])->name('public.check-cert');
 
@@ -32,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/vendor-approval/test-approve-pdf', [VendorProcessController::class, 'approveVendorTest'])->name('vendor-approval.test-approve-pdf');
     Route::get('/vendor-approval/file/{path}', [VendorProcessController::class, 'serveVendorFile'])->middleware('signed')->name('admin.vendor.file');
     Route::get('/admin/vendor/cert/{vendor_id}', [VendorController::class, 'downloadVendorCert'])->name('vendor.download-vendor-cert');
+
+    //procurement
+    Route::get('/procurement', [ProcurementListController::class, 'viewProcurementList'])->name('procurement.index');
+    Route::post('/procurement/add', [ProcurementListController::class, 'addProcurement'])->name('procurement.add');
 
 });
 

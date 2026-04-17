@@ -1,0 +1,91 @@
+// import { Inertia } from '@inertiajs/inertia'; 
+import { useState, useEffect } from 'react';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/Components/ui/dialog';
+
+import { useForm } from '@inertiajs/react';
+
+
+
+export default function VendorApprovalAttachmentViewer({title , attachment_address}) {
+
+    // const { data, setData, post, processing, errors, reset } = useForm({
+    //     lot_num: '',
+    //     lot_file_num: '',
+    //     lot_description: '',
+    //     lot_area_size: '',
+    //     lot_current_administrator_uuid: '',
+    // });
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    // const submit = (e) => {
+    //     e.preventDefault();
+    //     console.log('onSuccess', data);
+
+    //     post(route('lots.add'), {
+    //         onSuccess: () => {
+    //             reset(
+    //                 'lot_num',
+    //                 'lot_file_num',
+    //                 'lot_description',
+    //                 'lot_area_size',
+    //                 'location_radius',
+    //                 'lot_current_administrator_uuid',
+    //             );
+    //             // Close the dialog
+    //             console.log('onSuccess', data);
+    //             setIsDialogOpen(false);
+    //         },
+    //     });
+    // };
+    const handleDialogClose = (isOpen) => {
+        setIsDialogOpen(isOpen);
+
+        if (!isOpen) {
+            reset(
+            //   'lot_num',
+            //   'lot_file_num',
+            //   'lot_description',
+            //   'lot_area_size',
+            //   'location_radius',
+            //   'lot_current_administrator_uuid',
+            );
+        }
+    };
+    return (
+        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+            <DialogTrigger asChild>
+                <PrimaryButton variant="outline">
+                    Buka Lampiran
+                </PrimaryButton>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl">
+                <DialogHeader>
+                    <DialogTitle>{title}</DialogTitle>
+                    {/* <DialogDescription>
+                        Anyone who has this link will be able to view this.
+                    </DialogDescription> */}
+                </DialogHeader>
+{/* Attachment Viewer Content */}
+{/* {attachment_address} */}
+                <div className="mt-4">
+                    <iframe 
+                    src={attachment_address}
+                    width="100%"
+                    height="400px"
+                    title={title}
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}

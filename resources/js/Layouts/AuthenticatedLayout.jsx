@@ -23,39 +23,27 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </Link>
                             </div>
 
-                            {/* <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                 >
-                                    Sales
+                                    Utama
                                 </NavLink>
                                 <NavLink
-                                    href={route('inventory.index')}
-                                    active={route().current('inventory.index')}
+                                    href={route('procurement.index')}
+                                    active={route().current('procurement.index')}
                                     className='text-white'
                                 >
-                                    Inventory
+                                    Perolehan
                                 </NavLink>
-                                <NavLink
+                                {/* <NavLink
                                     href={route('supplier.index')}
                                     active={route().current('supplier.index')}
                                 >
                                     Supplier
-                                </NavLink>
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Report
-                                </NavLink>
-                                <NavLink
-                                    href={route('agent.index')}
-                                    active={route().current('agent.index')}
-                                >
-                                    Agent
-                                </NavLink>
-                            </div> */}
+                                </NavLink> */}
+                            </div>
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
