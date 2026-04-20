@@ -116,6 +116,38 @@ class VendorController extends Controller
         return Inertia::render('Vendor-Area/Form/VendorCompleteRegistrationForm');
     }
 
+    public function uploadTempFile(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'field' => 'required|string|alpha_dash',
+        ]);
+
+        $path = $request->file('file')->store('vendor/temp', 'local');
+
+        return response()->json(['path' => $path]);
+    }
+
+    public function viewTempFile(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse|\Illuminate\Http\Response
+    {
+        $path = $request->query('path', '');
+
+        if (!str_starts_with($path, 'vendor/temp/') || str_contains($path, '..')) {
+            abort(403);
+        }
+
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+
+        $mime = Storage::disk('local')->mimeType($path);
+
+        return Storage::disk('local')->response($path, null, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline',
+        ]);
+    }
+
     public function saveVendorCompleteRegistrationForm(Request $request): RedirectResponse
     {
         $vendor = Auth::guard('vendor')->user()->id;
@@ -143,33 +175,33 @@ class VendorController extends Controller
                 'vendor_non_bumiputera_ownership_percent' => 'nullable|numeric|max:100',
                 'vendor_SSM_start_date' => 'nullable|date',
                 'vendor_SSM_expiry_date' => 'nullable|date',
-                'vendor_SSM_attachment_address' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_SSM_attachment_address' => 'nullable|string',
                 'vendor_bank_name' => 'required|string',
                 'vendor_bank_account_number' => 'required|string',
                 'vendor_bank_entity_registration_num' => 'nullable|string',
-                'vendor_bank_account_statement_address' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_bank_account_statement_address' => 'required|string',
                 'vendor_MOF_reg_num' => 'nullable|string',
                 'vendor_MOF_start_date' => 'nullable|date',
                 'vendor_MOF_expiry_date' => 'nullable|date',
-                'vendor_MOF_attachment_address' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_MOF_attachment_address' => 'nullable|string',
                 'vendor_PKK_reg_num' => 'nullable|string',
                 'vendor_PKK_start_date' => 'nullable|date',
                 'vendor_PKK_end_date' => 'nullable|date',
                 'vendor_PKK_class' => 'nullable|string',
                 'vendor_PKK_head' => 'nullable|string',
-                'vendor_PKK_attachment_address' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_PKK_attachment_address' => 'nullable|string',
                 'vendor_CIDB_reg_num' => 'nullable|string',
                 'vendor_CIDB_start_date' => 'nullable|date',
                 'vendor_CIDB_end_date' => 'nullable|date',
                 'vendor_CIDB_B_cat_grade' => 'nullable|string',
                 'vendor_CIDB_CE_cat_grade' => 'nullable|string',
                 'vendor_CIDB_ME_cat_grade' => 'nullable|string',
-                'vendor_CIDB_attachment_address' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_CIDB_attachment_address' => 'nullable|string',
                 'vendor_MPOB_license_num' => 'nullable|string',
                 'vendor_MPOB_start_date' => 'nullable|date',
                 'vendor_MPOB_end_date' => 'nullable|date',
                 'vendor_MPOB_license_category' => 'nullable|string',
-                'vendor_MPOB_attachment_address' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'vendor_MPOB_attachment_address' => 'nullable|string',
                 'boardDirectors' => 'nullable|array',
             ]);
             
@@ -180,55 +212,77 @@ class VendorController extends Controller
                 $vendor = Auth::guard('vendor')->user();
                 // dd($vendor);
                 
-                // Handle file uploads
-                if ($request->hasFile('vendor_SSM_attachment_address')) {
-                    // Delete old file if exists
-                    if ($vendor->vendor_SSM_attachment_address) {
-                        Storage::disk('local')->delete($vendor->vendor_SSM_attachment_address);
+                // Handle file uploads - move from temp to permanent storage
+                if ($request->input('vendor_SSM_attachment_address')) {
+                    $tempPath = $request->input('vendor_SSM_attachment_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_SSM_attachment_address) {
+                            Storage::disk('local')->delete($vendor->vendor_SSM_attachment_address);
+                        }
+                        $newPath = 'vendor/ssm_certificates/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_SSM_attachment_address'] = $newPath;
                     }
-                    $validated['vendor_SSM_attachment_address'] = $request->file('vendor_SSM_attachment_address')
-                        ->store('vendor/ssm_certificates', 'local');
                 }
                                 
-                if ($request->hasFile('vendor_bank_account_statement_address')) {
-                    // Delete old file if exists
-                    if ($vendor->vendor_bank_account_statement_address) {
-                        Storage::disk('local')->delete($vendor->vendor_bank_account_statement_address);
+                if ($request->input('vendor_bank_account_statement_address')) {
+                    $tempPath = $request->input('vendor_bank_account_statement_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_bank_account_statement_address) {
+                            Storage::disk('local')->delete($vendor->vendor_bank_account_statement_address);
+                        }
+                        $newPath = 'vendor/bank_statements/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_bank_account_statement_address'] = $newPath;
                     }
-                    $validated['vendor_bank_account_statement_address'] = $request->file('vendor_bank_account_statement_address')
-                        ->store('vendor/bank_statements', 'local');
                 }
 
-                if ($request->hasFile('vendor_MOF_attachment_address')) {
-                    if ($vendor->vendor_MOF_attachment_address) {
-                        Storage::disk('local')->delete($vendor->vendor_MOF_attachment_address);
+                if ($request->input('vendor_MOF_attachment_address')) {
+                    $tempPath = $request->input('vendor_MOF_attachment_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_MOF_attachment_address) {
+                            Storage::disk('local')->delete($vendor->vendor_MOF_attachment_address);
+                        }
+                        $newPath = 'vendor/mof_certificates/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_MOF_attachment_address'] = $newPath;
                     }
-                    $validated['vendor_MOF_attachment_address'] = $request->file('vendor_MOF_attachment_address')
-                        ->store('vendor/mof_certificates', 'local');
                 }
 
-                if ($request->hasFile('vendor_PKK_attachment_address')) {
-                    if ($vendor->vendor_PKK_attachment_address) {
-                        Storage::disk('local')->delete($vendor->vendor_PKK_attachment_address);
+                if ($request->input('vendor_PKK_attachment_address')) {
+                    $tempPath = $request->input('vendor_PKK_attachment_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_PKK_attachment_address) {
+                            Storage::disk('local')->delete($vendor->vendor_PKK_attachment_address);
+                        }
+                        $newPath = 'vendor/pkk_certificates/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_PKK_attachment_address'] = $newPath;
                     }
-                    $validated['vendor_PKK_attachment_address'] = $request->file('vendor_PKK_attachment_address')
-                        ->store('vendor/pkk_certificates', 'local');
                 }
 
-                if ($request->hasFile('vendor_CIDB_attachment_address')) {
-                    if ($vendor->vendor_CIDB_attachment_address) {
-                        Storage::disk('local')->delete($vendor->vendor_CIDB_attachment_address);
+                if ($request->input('vendor_CIDB_attachment_address')) {
+                    $tempPath = $request->input('vendor_CIDB_attachment_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_CIDB_attachment_address) {
+                            Storage::disk('local')->delete($vendor->vendor_CIDB_attachment_address);
+                        }
+                        $newPath = 'vendor/cidb_certificates/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_CIDB_attachment_address'] = $newPath;
                     }
-                    $validated['vendor_CIDB_attachment_address'] = $request->file('vendor_CIDB_attachment_address')
-                        ->store('vendor/cidb_certificates', 'local');
                 }
 
-                if ($request->hasFile('vendor_MPOB_attachment_address')) {
-                    if ($vendor->vendor_MPOB_attachment_address) {
-                        Storage::disk('local')->delete($vendor->vendor_MPOB_attachment_address);
+                if ($request->input('vendor_MPOB_attachment_address')) {
+                    $tempPath = $request->input('vendor_MPOB_attachment_address');
+                    if (str_starts_with($tempPath, 'vendor/temp/')) {
+                        if ($vendor->vendor_MPOB_attachment_address) {
+                            Storage::disk('local')->delete($vendor->vendor_MPOB_attachment_address);
+                        }
+                        $newPath = 'vendor/mpob_licenses/' . basename($tempPath);
+                        Storage::disk('local')->move($tempPath, $newPath);
+                        $validated['vendor_MPOB_attachment_address'] = $newPath;
                     }
-                    $validated['vendor_MPOB_attachment_address'] = $request->file('vendor_MPOB_attachment_address')
-                        ->store('vendor/mpob_licenses', 'local');
                 }
 
                 //add vendor details

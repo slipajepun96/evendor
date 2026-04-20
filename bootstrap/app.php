@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX);
 
+        $middleware->validateCsrfTokens(except: [
+            'vendor/upload-temp-file',
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,

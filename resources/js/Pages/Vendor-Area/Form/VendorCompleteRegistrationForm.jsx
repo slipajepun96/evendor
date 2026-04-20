@@ -9,7 +9,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import TextArea from '@/Components/TextArea';
-import FileInput from '@/Components/FileInput';
+import FileUploadField from '@/Components/FileUploadField';
 import RadioGroup from '@/Components/RadioGroup';
 import {
     Dialog,
@@ -489,20 +489,13 @@ export default function VendorDashboard() {
                                                     </>
                                                 }
                                             />
-                                            <FileInput
-                                                id="vendor_SSM_attachment_address"
-                                                name="vendor_SSM_attachment_address"
+                                            <FileUploadField
+                                                field="vendor_SSM_attachment_address"
+                                                required={true}
                                                 accept=".pdf"
                                                 maxSize={2}
-                                                showPreview={true}
-                                                value={data.vendor_SSM_attachment_address}
-                                                onChange={(e) =>
-                                                    setData('vendor_SSM_attachment_address', e.target.files[0])
-                                                }
-                                            />
-                                            <InputError
-                                                message={errors.vendor_SSM_attachment_address}
-                                                className="mt-2"
+                                                onUploaded={(path) => setData('vendor_SSM_attachment_address', path)}
+                                                error={errors.vendor_SSM_attachment_address}
                                             />
                                         </div>
                                     </div>
@@ -903,20 +896,13 @@ export default function VendorDashboard() {
                                                         </>
                                                     }
                                                 />
-                                                <FileInput
-                                                    id="vendor_bank_account_statement_address"
-                                                    name="vendor_bank_account_statement_address"
+                                                <FileUploadField
+                                                    field="vendor_bank_account_statement_address"
+                                                    required={true}
                                                     accept=".pdf"
                                                     maxSize={2}
-                                                    showPreview={true}
-                                                    onChange={(e) =>
-                                                        setData('vendor_bank_account_statement_address', e.target.files[0])
-                                                    }
-                                                    value={data.vendor_bank_account_statement_address}
-                                                />
-                                                <InputError
-                                                    message={errors.vendor_bank_account_statement_address}
-                                                    className="mt-2"
+                                                    onUploaded={(path) => setData('vendor_bank_account_statement_address', path)}
+                                                    error={errors.vendor_bank_account_statement_address}
                                                 />
                                             </div>
                                         </div>       
@@ -1100,20 +1086,12 @@ export default function VendorDashboard() {
                                                             </>
                                                         }
                                                     />
-                                                    <FileInput
-                                                        id="vendor_MOF_attachment_address"
-                                                        name="vendor_MOF_attachment_address"
+                                                    <FileUploadField
+                                                        field="vendor_MOF_attachment_address"
                                                         accept=".pdf"
                                                         maxSize={2}
-                                                        showPreview={true}
-                                                        value={data.vendor_MOF_attachment_address}
-                                                        onChange={(e) =>
-                                                            setData('vendor_MOF_attachment_address', e.target.files[0])
-                                                        }
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_MOF_attachment_address}
-                                                        className="mt-2"
+                                                        onUploaded={(path) => setData('vendor_MOF_attachment_address', path)}
+                                                        error={errors.vendor_MOF_attachment_address}
                                                     />
                                                 </div>
                                             </div>                            
@@ -1237,20 +1215,12 @@ export default function VendorDashboard() {
                                                             </>
                                                         }
                                                     />
-                                                    <FileInput
-                                                        id="vendor_PKK_attachment_address"
-                                                        name="vendor_PKK_attachment_address"
+                                                    <FileUploadField
+                                                        field="vendor_PKK_attachment_address"
                                                         accept=".pdf"
                                                         maxSize={5}
-                                                        showPreview={true}
-                                                        value={data.vendor_PKK_attachment_address}
-                                                        onChange={(e) =>
-                                                            setData('vendor_PKK_attachment_address', e.target.files[0])
-                                                        }
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_PKK_attachment_address}
-                                                        className="mt-2"
+                                                        onUploaded={(path) => setData('vendor_PKK_attachment_address', path)}
+                                                        error={errors.vendor_PKK_attachment_address}
                                                     />
                                                 </div>
                                             </div>
@@ -1437,20 +1407,12 @@ export default function VendorDashboard() {
                                                             </>
                                                         }
                                                     />
-                                                    <FileInput
-                                                        id="vendor_CIDB_attachment_address"
-                                                        name="vendor_CIDB_attachment_address"
+                                                    <FileUploadField
+                                                        field="vendor_CIDB_attachment_address"
                                                         accept=".pdf"
                                                         maxSize={5}
-                                                        showPreview={true}
-                                                        value={data.vendor_CIDB_attachment_address}
-                                                        onChange={(e) =>
-                                                            setData('vendor_CIDB_attachment_address', e.target.files[0])
-                                                        }
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_CIDB_attachment_address}
-                                                        className="mt-2"
+                                                        onUploaded={(path) => setData('vendor_CIDB_attachment_address', path)}
+                                                        error={errors.vendor_CIDB_attachment_address}
                                                     />
                                                 </div>
                                             </div>
@@ -1674,20 +1636,12 @@ export default function VendorDashboard() {
                                                             </>
                                                         }
                                                     />
-                                                    <FileInput
-                                                        id="vendor_MPOB_attachment_address"
-                                                        name="vendor_MPOB_attachment_address"
+                                                    <FileUploadField
+                                                        field="vendor_MPOB_attachment_address"
                                                         accept=".pdf"
                                                         maxSize={5}
-                                                        showPreview={true}
-                                                        value={data.vendor_MPOB_attachment_address}
-                                                        onChange={(e) =>
-                                                            setData('vendor_MPOB_attachment_address', e.target.files[0])
-                                                        }
-                                                    />
-                                                    <InputError
-                                                        message={errors.vendor_MPOB_attachment_address}
-                                                        className="mt-2"
+                                                        onUploaded={(path) => setData('vendor_MPOB_attachment_address', path)}
+                                                        error={errors.vendor_MPOB_attachment_address}
                                                     />
                                                 </div>
                                             </div>
@@ -1894,7 +1848,10 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 {data.vendor_SSM_attachment_address ? (
-                                                    <VendorAttachmentViewer title={(data.vendor_type === 'company') ? 'Borang 9 SSM / Sijil Pendaftaran Syarikat' : 'Dokumen Penubuhan Perbadanan/Koperasi/Pertubuhan/Kelab'} attachment_address={URL.createObjectURL(data.vendor_SSM_attachment_address)} />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_SSM_attachment_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                 ) : (
                                                     <div> - </div>
                                                 )}
@@ -2124,7 +2081,10 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 {data.vendor_bank_account_statement_address ? (
-                                                    <VendorAttachmentViewer title="Penyata Kewangan Terkini" attachment_address={URL.createObjectURL(data.vendor_bank_account_statement_address)} />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_bank_account_statement_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                 ) : (
                                                     <div> - </div>
                                                 )}
@@ -2195,7 +2155,10 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 {data.vendor_MOF_attachment_address ? (
-                                                    <VendorAttachmentViewer title="Sijil ePerolehan / MOF" attachment_address={URL.createObjectURL(data.vendor_MOF_attachment_address)} />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_MOF_attachment_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                 ) : (
                                                     <div> - </div>
                                                 ) }
@@ -2253,7 +2216,10 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 {data.vendor_PKK_attachment_address ? (
-                                                    <VendorAttachmentViewer title="Sijil PKK" attachment_address={URL.createObjectURL(data.vendor_PKK_attachment_address)} />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_PKK_attachment_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                 ) : (
                                                     <div> - </div>
                                                 ) }
@@ -2299,10 +2265,10 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 {data.vendor_CIDB_attachment_address ? (
-                                                    <VendorAttachmentViewer 
-                                                        title="Sijil CIDB"
-                                                        attachment_address={URL.createObjectURL(data.vendor_CIDB_attachment_address)} 
-                                                    />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_CIDB_attachment_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                 ) : (
                                                     <div> - </div>
                                                 ) }
@@ -2397,7 +2363,10 @@ export default function VendorDashboard() {
                                                 />
                                                 
                                                 {data.vendor_MPOB_attachment_address ? (
-                                                    <VendorAttachmentViewer title="Lesen MPOB" attachment_address={URL.createObjectURL(data.vendor_MPOB_attachment_address)} />
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm text-green-700 font-medium'>&#10003; Fail dimuat naik</span>
+                                                        <a href={route('vendor.view-temp-file', { path: data.vendor_MPOB_attachment_address })} target='_blank' rel='noopener noreferrer' className='text-xs text-indigo-600 underline hover:text-indigo-800'>Lihat Fail</a>
+                                                    </div>
                                                     
                                                 ) : (
                                                     <div> - </div>

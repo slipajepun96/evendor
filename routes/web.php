@@ -52,6 +52,8 @@ Route::middleware('vendor')->group(function () {
     //form
     Route::get('/vendor/complete-registration', [VendorController::class, 'showVendorCompleteRegistrationForm'])->name('vendor.complete-registration');
     Route::post('/vendor/complete-registration', [VendorController::class, 'saveVendorCompleteRegistrationForm'])->name('vendor.complete-registration.save');
+    Route::post('/vendor/upload-temp-file', [VendorController::class, 'uploadTempFile'])->name('vendor.upload-temp-file');
+    Route::get('/vendor/view-temp-file', [VendorController::class, 'viewTempFile'])->name('vendor.view-temp-file');
 });
 
 require __DIR__.'/auth.php';
