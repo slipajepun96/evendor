@@ -37,12 +37,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Perolehan
                                 </NavLink>
-                                {/* <NavLink
-                                    href={route('supplier.index')}
-                                    active={route().current('supplier.index')}
+                                <NavLink
+                                    href={route('admin.index')}
+                                    active={route().current('admin.index')}
                                 >
-                                    Supplier
-                                </NavLink> */}
+                                    Pentadbir
+                                </NavLink>
                             </div>
                         </div>
 

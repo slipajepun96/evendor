@@ -1,11 +1,34 @@
+// import { Inertia } from '@inertiajs/inertia'; 
+import { useState, useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import TextArea from '@/Components/TextArea';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/Components/ui/dialog';
 
-export default function Register() {
+import { useForm } from '@inertiajs/react';
+import RadioGroup from '@/Components/RadioGroup';
+import { Calendar } from "@/Components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+// import { Input } from '@/Components/ui/input';
+// import { Label } from '@/Components/ui/label';
+
+
+export default function AdminUserAddAdmin({ }) {
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
@@ -13,20 +36,54 @@ export default function Register() {
         password_confirmation: '',
     });
 
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [openStart, setOpenStart] = useState(false);
+    const [openClose, setOpenClose] = useState(false);
+    const [dropdown, setDropdown] = useState("dropdown");
+
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
+        // Call the parent callback to add the procurement
+       post(route('register'), {
+            onSuccess: () => {
+                reset(
+                    'name',
+                    'email',
+                    'password',
+                    'password_confirmation',
+                );
+                setIsDialogOpen(false);
+            }
         });
     };
+        
+    const handleDialogClose = (isOpen) => {
+        setIsDialogOpen(isOpen);
 
+        if (!isOpen) {
+            reset(
+              'name',
+              'email',
+              'password',
+              'password_confirmation',
+            );
+        }
+    };
     return (
-        <AuthenticatedLayout>
-            <Head title="Register" />
-
-            <div className="py-4 md:py-4 px-2">
-                <div className="mx-auto max-w-7xl space-y-1 sm:px-6 lg:px-8">
+        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+            <DialogTrigger asChild>
+                <PrimaryButton variant="outline">
+                    Tambah Pentadbir Baru
+                </PrimaryButton>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>Tambah Pentadbir Baru</DialogTitle>
+                    {/* <DialogDescription>
+                        Anyone who has this link will be able to view this.
+                    </DialogDescription> */}
+                </DialogHeader>
                 <form onSubmit={submit}>
                     <div>
                         <InputLabel htmlFor="name" value="Name" />
@@ -105,20 +162,12 @@ export default function Register() {
                     </div>
 
                     <div className="mt-4 flex items-center justify-end">
-                        <Link
-                            href={route('login')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Already registered?
-                        </Link>
-
                         <PrimaryButton className="ms-4" disabled={processing}>
                             Register
                         </PrimaryButton>
                     </div>
                 </form>
-                </div>
-            </div>
-        </AuthenticatedLayout>
+            </DialogContent>
+        </Dialog>
     );
 }

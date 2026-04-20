@@ -5,6 +5,8 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\VendorProcessController;
 use App\Http\Controllers\ProcurementListController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Admin\AdminUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 
     Route::get('/vendor/view/{vendor_id}', [DashboardController::class, 'viewVendorDetails'])->name('vendor.view');
 
@@ -33,6 +36,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/procurement', [ProcurementListController::class, 'viewProcurementList'])->name('procurement.index');
     Route::post('/procurement/add', [ProcurementListController::class, 'addProcurement'])->name('procurement.add');
 
+    //admin user
+    Route::get('/users', [AdminUserController::class, 'viewAdminUsers'])->name('admin.index');
+    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
+    Route::post('/users/{user}', [RegisteredUserController::class, 'delete'])->name('admin.user.delete');
 });
 
 //vendor

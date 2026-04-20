@@ -46,6 +46,19 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('admin.index', absolute: false));
+    }
+
+    public function delete($user): RedirectResponse
+    {
+        try {
+            $userToDelete = User::findOrFail($user);
+            $userToDelete->delete();
+        } catch (\Exception $e) {
+            // Handle the error, e.g., log it or return an error response
+            return redirect()->back()->withErrors(['error' => 'Failed to delete user: ' . $e->getMessage()]);
+        }
+
+        return redirect('/users')->with('success', 'User deleted successfully.');
     }
 }

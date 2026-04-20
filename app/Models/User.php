@@ -13,8 +13,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    // protected $keyType = 'string'; // Set the key type to UUID
-    // public $incrementing = false; // Disable auto-incrementing
+    protected $keyType = 'string'; // Set the key type to UUID
+    public $incrementing = false; // Disable auto-incrementing
    
     public static function booted()
     {
