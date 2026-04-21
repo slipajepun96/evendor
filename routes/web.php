@@ -56,4 +56,7 @@ Route::middleware('vendor')->group(function () {
     Route::get('/vendor/view-temp-file', [VendorController::class, 'viewTempFile'])->name('vendor.view-temp-file');
 });
 
+//open procurement api
+Route::get('/api/open-procurements', [ProcurementListController::class, 'openProcurementAPI'])->name('api.open-procurements');
+
 require __DIR__.'/auth.php';

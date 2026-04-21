@@ -39,4 +39,13 @@ class ProcurementListController extends Controller
 
         return redirect()->route('procurement.index')->with('success', 'Procurement added successfully');
     }
+
+    public function openProcurementAPI()
+    {
+        $open_procurements = ProcurementList::where('procurement_open_date', '<=', now())
+            ->where('procurement_close_date', '>=', now())
+            ->get();
+
+        return response()->json($open_procurements);
+    }
 }
