@@ -293,22 +293,6 @@ export default function Welcome({ auth, canResetPassword, status, openProcuremen
                                         <a href={procurement.procurement_pdf_address} target="_blank" className='underline'>Lihat Dokumen Iklan Ini</a>
                                     </div>
                                     ))}
-                                    {/*}
-                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white '>
-                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
-                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
-                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
-                                    </div>
-                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
-                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
-                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
-                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
-                                    </div>
-                                    <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
-                                        <h1 className="text-lg font-semibold text-gray-800">Tender PASB/HQ/Tender/2026/01</h1>
-                                        <h2 className="text-sm font-bold text-gray-700 uppercase">Tawaran Pembelian Kenderaan Pacuan Empat Roda Untuk Kegunaan PKPP Strawberry Village bagi pihak PKPP Agro Sdn. Bhd.</h2>
-                                        <p className="text-sm text-gray-500">Tarikh Tutup: 31 Disember 2025</p>
-                                    </div> */}
                                 </div>
                             </div>
                         </main>

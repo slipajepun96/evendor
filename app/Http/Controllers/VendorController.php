@@ -103,11 +103,17 @@ class VendorController extends Controller
         $vendor_applications = VendorApplication::where('vendor_id', Auth::guard('vendor')->user()->id)->orderBy('created_at', 'desc')->get();
         $vendor_active_cert = VendorCertificate::where('vendor_id', Auth::guard('vendor')->user()->id)->where('cert_status', 'approved')->where('created_at', '>=', now()->subYears(2))->where('created_at', '<=', now())->first();
 
+        $open_procurements = ProcurementList::where('procurement_open_date', '<=', now())
+            ->where('procurement_close_date', '>=', now())
+            ->orderBy('procurement_close_date', 'asc')
+            ->get();
+
         return Inertia::render('Vendor-Area/VendorDashboard', [
             'vendor' => $vendor,
             'vendor_details' => $vendor_details,
             'vendor_applications' => $vendor_applications,
             'vendor_active_cert' => $vendor_active_cert,
+            'openProcurements' => $open_procurements,
         ]);
     }
 

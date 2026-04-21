@@ -31,7 +31,7 @@ const formatDate = (dateString) => {
 };
 
 
-export default function VendorDashboard({ vendor, vendor_details, vendor_applications, vendor_active_cert }) {
+export default function VendorDashboard({ vendor, vendor_details, vendor_applications, vendor_active_cert, openProcurements = [] }) {
     // const { vendor } = usePage().props.auth;
 
     const vendor_profile_completed = !!vendor_details;
@@ -208,6 +208,34 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             </button>
                         </div>
                     )}
+
+                    <div className='border border-gray-300 p-4 rounded-xl bg-white mb-8 mt-3'>
+                        <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
+                        {openProcurements.length === 0 && (
+                            <p>Tiada tender atau sebut harga yang sedang aktif buat masa ini.</p>
+                        )}
+                        
+                        <div className='grid flex-1 gap-2 md:grid-cols-3 '>
+                            {openProcurements.map((procurement) => (
+                            
+                            <div className='mt-2 text-gray-600 border border-gray-200 p-4 rounded-xl bg-white'>
+                                {procurement.procurement_type === 'tender' ? (
+                                    <div className="flex items-center bg-green-200 rounded-xl font-bold px-2 py-0.5 text-green-800 uppercase text-xs font-semibold w-max mb-2">
+                                        Tender
+                                    </div>
+                                ) : procurement.procurement_type === 'quotation' ? (
+                                    <div className="flex items-center bg-blue-200 rounded-xl font-bold px-2 py-0.5 text-blue-800 uppercase text-xs font-semibold w-max mb-2">
+                                        Sebutharga
+                                    </div>
+                                ) : null}
+                                <h1 className="text-lg font-semibold text-gray-800">{procurement.procurement_title}</h1>
+                                <h2 className="text-sm font-bold text-gray-700 uppercase">{procurement.procurement_description}</h2>
+                                <p className="text-sm text-gray-500">Tarikh Tutup: {formatDate(procurement.procurement_close_date)}</p>
+                                <a href={procurement.procurement_pdf_address} target="_blank" className='underline'>Lihat Dokumen Iklan Ini</a>
+                            </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </VendorAuthenticatedLayout>

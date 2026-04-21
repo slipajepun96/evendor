@@ -14,6 +14,13 @@ import {
 } from '@/Components/ui/dialog';
 import { useForm } from '@inertiajs/react';
 import RadioGroup from '@/Components/RadioGroup';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select"
 // import { Input } from '@/Components/ui/input';
 // import { Label } from '@/Components/ui/label';
 
@@ -77,12 +84,12 @@ export default function VendorAddBoard({ onAddBoard }) {
         <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
                 <PrimaryButton variant="outline">
-                    Tambah Lembaga Pengarah
+                    Tambah Lembaga Pengarah / Pemilik
                 </PrimaryButton>
             </DialogTrigger>
             <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Tambah Lembaga Pengarah</DialogTitle>
+                    <DialogTitle>Tambah Lembaga Pengarah / Pemilik</DialogTitle>
                     {/* <DialogDescription>
                         Anyone who has this link will be able to view this.
                     </DialogDescription> */}
@@ -183,19 +190,23 @@ export default function VendorAddBoard({ onAddBoard }) {
                                     htmlFor="vendor_board_position"
                                     value="Jawatan Dalam Lembaga Pengarah"
                                 />
-                                <TextInput
-                                    id="vendor_board_position"
-                                    name="vendor_board_position"
+                                <Select
+                                    onValueChange={(value) => setData('vendor_board_position', value)}
                                     value={data.vendor_board_position}
-                                    className="mt-1 block w-full"
-                                    isFocused={false}
-                                    onChange={(e) =>
-                                        setData(
-                                            'vendor_board_position',
-                                            e.target.value,
-                                        )
-                                    }
-                                />
+                                >
+                                    <SelectTrigger className="mt-1">
+                                        <SelectValue placeholder="Sila pilih jawatan" />
+                                    </SelectTrigger>
+                                    <SelectContent 
+                                        id="vendor_board_position"
+                                        name="vendor_board_position"
+                                    >
+                                        <SelectItem value="Pengerusi">Pengerusi</SelectItem>
+                                        <SelectItem value="Pengarah">Pengarah</SelectItem>
+                                        <SelectItem value="Pemilik">Pemilik (Bukan Untuk Syarikat Berhad / Sdn. Bhd.)</SelectItem>
+                                        
+                                    </SelectContent>
+                                </Select>
                                 <InputError
                                     message={errors.vendor_board_position}
                                     className="mt-2"
