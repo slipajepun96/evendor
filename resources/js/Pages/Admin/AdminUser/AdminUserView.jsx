@@ -44,6 +44,7 @@ export default function AdminUserView({users})
                 
                     <div className="flex flex-col">
                         <div className='font-semibold'>{row.name}</div>
+                        <div className='text-sm font-base'>{row.email}</div>
 
                     </div>
                 )

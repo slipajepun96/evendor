@@ -141,10 +141,10 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                                 <PrimaryButton className="bg-gray-800">Lihat Senarai</PrimaryButton></Link>
                             </div>
 
-                            <div className='bg-red-300 h-30 w-1/3 p-4 rounded-xl '>
+                            {/* <div className='bg-red-300 h-30 w-1/3 p-4 rounded-xl '>
                                 <p className='font-bold text-red-800'>Vendor Ditolak</p>
                                 <p className='justify-self-end text-4xl font-bold'>27</p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className='bg-white p-3 mt-8 rounded-2xl shadow-lg '>
