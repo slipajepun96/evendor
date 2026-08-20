@@ -127,7 +127,10 @@ class VendorProcessController extends Controller
         $certificate->cert_end_date = now()->addYear(2)->toDateString();
         $certificate->cert_validity_period = '2';
         $certificate->cert_data_snapshot = $application->application_data_snapshot;
-        $certificate->cert_status = 'approved';
+        $certificate->cert_status = match($application->application_status) {
+            'approved' => 'approved',
+            'rejected' => 'rejected',
+        };
         
         $certificate->save();
 
@@ -173,7 +176,7 @@ class VendorProcessController extends Controller
 
     public function approveVendorTest()
     {
-        $certificate = VendorCertificate::where('id', "4412876b-4eed-4ed4-9da8-ae1733c3b67c")->firstOrFail();
+        $certificate = VendorCertificate::where('id', "991f741b-b2fd-47bc-b47c-2ee8fd050552")->firstOrFail();
         $vendor_json = json_decode($certificate->cert_data_snapshot, true);
         $cert_url = "https://evendor.on-pasb.com/v/cert/" . $certificate->id;
         $qrCode = QrCode::size(100)->generate($cert_url);

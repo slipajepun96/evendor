@@ -156,6 +156,21 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                 </div>
                             </div>
                             )}
+                            
+                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'rejected' ) && (
+                            <div className='bg-red-500 h-30 p-4 rounded-xl relative'>
+                                <div className='relative z-10'>
+                                    <p className='font-bold text-white'>Permohonan Vendor</p>
+                                    <div className='flex w-full justify-between'>
+                                        <div>
+                                            <p className='text-2xl font-bold text-white'>Ditolak</p>
+                                       </div>
+                                       <VendorApplication vendor_details_id={vendor_details?.id} vendor_id={vendor_details?.vendor_account_id}/>
+                                        <p className='text-4xl font-bold'><ClockFading size='48' color="#FFFFFF" /></p>
+                                    </div>
+                                </div>
+                            </div>
+                            )}
 
                             { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' ) && (
                             <div className='bg-lime-300 h-30 p-4 rounded-xl relative'>

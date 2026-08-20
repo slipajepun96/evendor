@@ -129,7 +129,7 @@
                     <div class="mt-2">
                         <div class="text-xs font-medium">No. Pendaftaran Syarikat</div>
                         @if($vendor_json['vendor_type'] === 'company')
-                            <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }} ({{ strtoupper($vendor_json['vendor_id_num_2'] ?? 'N/A') }})</div>
+                            <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }} @if($vendor_json['vendor_id_num_2'])({{ strtoupper($vendor_json['vendor_id_num_2'] ?? 'N/A') }})@endif</div>
                         @else
                             <div class="font-bold">{{ $vendor_json['vendor_id_num'] ?? 'N/A' }}</div>
                         @endif
@@ -165,6 +165,12 @@
                         <div class="text-xs font-medium">Tarikh Penubuhan</div>
                         <div class="font-bold">{{ formatDate($vendor_json['vendor_establishment_date'] ?? 'N/A') }}</div>
                     </div>
+                    @if($vendor_json['vendor_type'] == 'company' && ($vendor_json['vendor_company_type'] === 'partnership' || $vendor_json['vendor_company_type'] === 'sole-ownership'))
+                    <div class="mt-2">
+                        <div class="text-xs font-medium">Tarikh Tamat Pendaftaran</div>
+                        <div class="font-bold">{{ formatDate($vendor_json['vendor_current_establishment_cert_expiry_date'] ?? 'N/A') }}</div>
+                    </div>
+                    @endif
                     <div class="mt-2">
                         <div class="text-xs font-medium">Alamat Surat Menyurat</div>
                         <div class="font-bold">{{ $vendor_json['vendor_address'] ?? 'N/A' }}</div>
@@ -211,7 +217,7 @@
             </div>
             <div class="mt-6 text-xs">
                 <div class="uppercase text-xs font-semibold bg-gray-900 text-white py-1 px-2">Bahagian 2 : Maklumat Pegawai Dilantik Untuk Dihubungi</div>
-                <div class="grid grid-cols-3">
+                <div class="grid grid-cols-2">
                     <div class="mt-2">
                         <div class="text-xs font-medium">Nama Pegawai Dilantik</div>
                         <div class="font-bold">{{ $vendor_json['vendor_contact_person'] ?? 'N/A' }}</div>
@@ -223,6 +229,10 @@
                     <div class="mt-2">
                         <div class="text-xs font-medium">No. Telefon Pegawai Dilantik</div>
                         <div class="font-bold">{{ $vendor_json['vendor_contact_person_phone'] ?? 'N/A' }}</div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-xs font-medium">E-Mel Pegawai Dilantik</div>
+                        <div class="font-bold">{{ $vendor_json['vendor_contact_person_email'] ?? 'N/A' }}</div>
                     </div>
                 </div>
             </div>

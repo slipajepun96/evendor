@@ -62,6 +62,7 @@ export default function VendorDashboard() {
     
     // Separate state for each calendar popup
     const [openEstablishment, setOpenEstablishment] = useState(false);
+    const [openEstablishmentCertExpiryDate, setOpenEstablishmentCertExpiryDate] = useState(false);
     const [openMOFStart, setOpenMOFStart] = useState(false);
     const [openMOFExpiry, setOpenMOFExpiry] = useState(false);
     const [openPKKStart, setOpenPKKStart] = useState(false);
@@ -119,6 +120,7 @@ export default function VendorDashboard() {
             vendor_contact_person: vendor.vendor_contact_person || '',
             vendor_contact_person_phone: '',
             vendor_contact_person_designation: '',
+            vendor_contact_person_email: vendor.vendor_email || '',
             vendor_phone: '',
             vendor_address: '',
             // vendor_bumiputera_status: '',
@@ -128,6 +130,7 @@ export default function VendorDashboard() {
             vendor_tax_identification_num: '',
             vendor_sst_number: '',
             vendor_establishment_date: '',
+            vendor_current_establishment_cert_expiry_date: '',
             vendor_capital_1: '',
             vendor_capital_2: '',
             vendor_bumiputera_ownership_percent: '',
@@ -136,7 +139,6 @@ export default function VendorDashboard() {
             vendor_bank_account_statement_address: '',
             vendor_bank_name: '',
             vendor_bank_account_number: '',
-            vendor_non_bumiputera_ownership_percent: '',
             vendor_MOF_reg_num: '',
             vendor_MOF_start_date: '',
             vendor_MOF_expiry_date: '',
@@ -246,7 +248,7 @@ export default function VendorDashboard() {
             }
         >
             <Head title="Complete Registration" />
-            <div className="py-12">
+            <div className="py-4">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 ">
 
 
@@ -343,6 +345,9 @@ export default function VendorDashboard() {
                                                 className="mt-2"
                                             />
                                         </div>
+                                        <div className='text-sm text-gray-500'>
+                                            Bagi syarikat "Enterprise" atau "Trading", anda perlu memastikan jenis syarikat sama ada jenis Perkongsian atau Milikan Tunggal dengan tepat
+                                        </div>
                                     </div>
                                     )}
                                     {((data.vendor_type === 'gov_entity' || data.vendor_type === 'cooperation' || data.vendor_type === 'organisation') || (data.vendor_type === 'company' && data.vendor_company_type !== '')) && (
@@ -373,7 +378,7 @@ export default function VendorDashboard() {
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid flex-1 gap-2 md:grid-cols-3 my-2">
+                                    <div className="grid flex-1 gap-2 md:grid-cols-4 my-2">
                                         {vendorType !== 'gov_entity' && ( 
                                         <div>
                                             <InputLabel
@@ -411,7 +416,7 @@ export default function VendorDashboard() {
                                                 htmlFor="vendor_id_num_2"
                                                 value={
                                                     <>
-                                                    No. Pendaftaran SSM (Format Lama. Contoh : 123456-X)
+                                                    No. Pendaftaran SSM (Format Lama)
                                                         
                                                     </>
                                                 }
@@ -474,6 +479,50 @@ export default function VendorDashboard() {
                                             </Popover>
                                             <InputError
                                                 message={errors.vendor_establishment_date}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                        )}
+                                        {(vendorType == 'company' && (companyType =='partnership' ||companyType == 'sole-ownership') ) && (
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_current_establishment_cert_expiry_date"
+                                                value={
+                                                    <>
+                                                        Tarikh Tamat Pendaftaran<span className="text-red-500">*</span>
+                                                    </>
+                                                }
+                                            />
+
+                                            <Popover open={openEstablishmentCertExpiryDate} onOpenChange={setOpenEstablishmentCertExpiryDate} modal={false}>
+                                                <PopoverTrigger asChild>
+                                                    <button
+                                                        type="button"
+                                                        className={cn(
+                                                            "mt-1 h-9 w-full text-left text-sm bg-white border border-gray-300 rounded-md px-3 py-2",
+                                                            !data.vendor_current_establishment_cert_expiry_date && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        { data.vendor_current_establishment_cert_expiry_date ? format(data.vendor_current_establishment_cert_expiry_date, "dd/MM/yyyy") : "Pilih Tarikh"}
+                                                    </button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" trapFocus={false}>
+                                                    <Calendar
+                                                    mode="single"
+                                                    selected={data.vendor_current_establishment_cert_expiry_date ? new Date(data.vendor_current_establishment_cert_expiry_date) : undefined}
+                                                    onSelect={selectedDate => {
+                                                            setData('vendor_current_establishment_cert_expiry_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                                                            setOpenEstablishment(false);
+                                                        }}
+                                                    captionLayout={dropdown}
+                                                    fromYear={1900}
+                                                    toYear={2100}
+                                                    className="rounded-lg border shadow-sm"
+                                                />
+                                                </PopoverContent>
+                                            </Popover>
+                                            <InputError
+                                                message={errors.vendor_current_establishment_cert_expiry_date}
                                                 className="mt-2"
                                             />
                                         </div>
@@ -665,6 +714,30 @@ export default function VendorDashboard() {
                                             />
                                             <InputError
                                                 message={errors.vendor_contact_person_phone}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <InputLabel
+                                                htmlFor="vendor_contact_person_email"
+                                                value={
+                                                    <>
+                                                        E-Mel Pegawai Dilantik
+                                                    </>
+                                                }
+                                            />
+                                            <TextInput
+                                                id="vendor_contact_person_email"
+                                                name="vendor_contact_person_email"
+                                                value={data.vendor_contact_person_email}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) =>
+                                                    setData('vendor_contact_person_email', e.target.value)
+                                                }
+                                                disabled
+                                            />
+                                            <InputError
+                                                message={errors.vendor_contact_person_email}
                                                 className="mt-2"
                                             />
                                         </div>
@@ -1790,7 +1863,7 @@ export default function VendorDashboard() {
                                 <div>
                                     <p className='font-bold'>Ringkasan</p>
                                     <div className='text-sm'>
-                                        Sila semak kembali semua maklumat yang telah dimasukkan sebelum menghantar borang profil ini.
+                                        Sila semak kembali semua maklumat yang telah dimasukkan sebelum menyimpan borang profil ini.
                                     </div>
 
                                     {/* ringkasan */}
@@ -1800,7 +1873,7 @@ export default function VendorDashboard() {
                 
                                         {/* part 1 : maklumat utama */}
                                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Umum</div>
-                                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
                                             <div className=''>
                                                 <InputLabel
                                                     htmlFor="vendor_id_num"
@@ -1812,7 +1885,7 @@ export default function VendorDashboard() {
                                                 />
                                                 <div className='flex'>
                                                     <ValueView value={data.vendor_id_num} />
-                                                    {data.vendor_type === 'company' ? (
+                                                    {(data.vendor_type === 'company' && data.vendor_id_num_2 != "") ? (
                                                         <span className='flex'>(<ValueView value={data.vendor_id_num_2} />)</span>
                                                     ) : 
                                                     ''}
@@ -1867,6 +1940,20 @@ export default function VendorDashboard() {
                                                 />
                                                 <ValueView value={formatDate(data.vendor_establishment_date)} />
                                             </div>
+                                            {(data.vendor_current_establishment_cert_expiry_date != "" ) ? (
+                                                <div>
+                                                    <InputLabel
+                                                        htmlFor="vendor_current_establishment_cert_expiry_date"
+                                                        value={
+                                                            <>
+                                                                Tarikh Tamat Pendaftaran Penubuhan
+                                                            </>
+                                                        }
+                                                    />
+                                                    <ValueView value={formatDate(data.vendor_current_establishment_cert_expiry_date)} />
+                                                </div>
+                                            ):('')}
+                                            
                                         </div>
                                         <div className='grid flex-1 gap-2 md:grid-cols-1 my-2'>
                                             <div className=''>
@@ -1972,7 +2059,7 @@ export default function VendorDashboard() {
                 
                                         {/* part 2 : maklumat pegawai untuk dihubungi */}
                                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Untuk Dihubungi</div>
-                                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                                        <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
                                             <div className=''>
                                                 <InputLabel
                                                     htmlFor="vendor_contact_person"
@@ -2005,6 +2092,17 @@ export default function VendorDashboard() {
                                                     }
                                                 />
                                                 <ValueView value={data.vendor_contact_person_phone} />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    htmlFor="vendor_contact_person_email"
+                                                    value={
+                                                        <>
+                                                            E-Mel Pegawai
+                                                        </>
+                                                    }
+                                                />
+                                                <ValueView value={data.vendor_contact_person_email} />
                                             </div>
                                         </div>
 

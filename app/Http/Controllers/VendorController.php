@@ -169,12 +169,14 @@ class VendorController extends Controller
                 'vendor_contact_person' => 'required|string',
                 'vendor_contact_person_phone' => 'required|numeric',
                 'vendor_contact_person_designation' => 'required|string',
+                'vendor_contact_person_email' => 'required|string',
                 'vendor_phone' => 'required|string',
                 'vendor_address' => 'required|string',
                 'vendor_website' => 'nullable|string',
                 'vendor_tax_identification_num' => 'nullable|string',
                 'vendor_sst_number' => 'nullable|string',
                 'vendor_establishment_date' => 'required|date',
+                'vendor_current_establishment_cert_expiry_date' => 'nullable|date',
                 'vendor_capital_1' => 'nullable|numeric',
                 'vendor_capital_2' => 'nullable|numeric',
                 'vendor_bumiputera_ownership_percent' => 'nullable|numeric|max:100',
@@ -303,6 +305,7 @@ class VendorController extends Controller
                 $vendor_details->vendor_contact_person = $validated['vendor_contact_person'];
                 $vendor_details->vendor_contact_person_phone = $validated['vendor_contact_person_phone'];
                 $vendor_details->vendor_contact_person_designation = $validated['vendor_contact_person_designation'];
+                $vendor_details->vendor_contact_person_email = $validated['vendor_contact_person_email'];
                 $vendor_details->vendor_phone = $validated['vendor_phone'];
                 $vendor_details->vendor_address = $validated['vendor_address'];
                 $vendor_details->vendor_website = $validated['vendor_website'];
@@ -310,6 +313,7 @@ class VendorController extends Controller
                 $vendor_details->vendor_tax_identification_num = $validated['vendor_tax_identification_num'];
                 $vendor_details->vendor_sst_number = $validated['vendor_sst_number'];
                 $vendor_details->vendor_establishment_date = $validated['vendor_establishment_date'];
+                $vendor_details->vendor_current_establishment_cert_expiry_date = $validated['vendor_current_establishment_cert_expiry_date'];
                 $vendor_details->vendor_capital_1 = $validated['vendor_capital_1'];
                 $vendor_details->vendor_capital_2 = $validated['vendor_capital_2'];
                 $vendor_details->vendor_bumiputera_ownership_percent = $validated['vendor_bumiputera_ownership_percent'];

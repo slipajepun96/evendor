@@ -123,7 +123,7 @@ export default function VendorView({ vendor, snapshot , bank_statements_attachme
 
                         {/* part 1 : maklumat utama */}
                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Umum</div>
-                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                        <div className='grid flex-1 gap-2 md:grid-cols-4 my-2'>
                             <div className=''>
                                 <InputLabel
                                     htmlFor="vendor_id_num"
@@ -166,6 +166,20 @@ export default function VendorView({ vendor, snapshot , bank_statements_attachme
                                 />
                                 <ValueView value={formatDate(parsedSnapshot['vendor_establishment_date'])} />
                             </div>
+                            {(parsedSnapshot['vendor_type'] === 'company' && (parsedSnapshot['vendor_company_type'] == 'sole-ownership' || parsedSnapshot['vendor_company_type'] == 'partnership' ) ) ? (
+                                <div>
+                                    <InputLabel
+                                        htmlFor="vendor_current_establishment_cert_expiry_date"
+                                        value={
+                                            <>
+                                                Tarikh Tamat Pendaftaran 
+                                            </>
+                                        }
+                                    />
+                                    <ValueView value={formatDate(parsedSnapshot['vendor_current_establishment_cert_expiry_date'])} />
+                                </div>
+                                ) : ("")
+                            }
                         </div>
                         <div className='grid flex-1 gap-2 md:grid-cols-1 my-2'>
                             <div className=''>

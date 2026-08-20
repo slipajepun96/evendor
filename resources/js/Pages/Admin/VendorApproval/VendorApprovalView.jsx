@@ -162,12 +162,25 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                     htmlFor="vendor_establishment_date"
                                     value={
                                         <>
-                                            Tarikh Penubuhan
+                                            Tarikh Penubuhan / Pendaftaran
                                         </>
                                     }
                                 />
                                 <ValueView value={formatDate(parsedSnapshot['vendor_establishment_date'])} />
                             </div>
+                            {(parsedSnapshot['vendor_type'] === 'company' && (parsedSnapshot['vendor_company_type'] == 'sole-ownership' || parsedSnapshot['vendor_company_type'] == 'partnership' ) ) ? (
+                            <div>
+                                <InputLabel
+                                    htmlFor="vendor_current_establishment_cert_expiry_date"
+                                    value={
+                                        <>
+                                            Tarikh Tamat Pendaftaran 
+                                        </>
+                                    }
+                                />
+                                <ValueView value={formatDate(parsedSnapshot['vendor_current_establishment_cert_expiry_date'])} />
+                            </div>
+                            ) : ("")}
                             <div>
                                 <InputLabel
                                     htmlFor="vendor_establishment_date"
@@ -289,7 +302,7 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
 
                         {/* part 2 : maklumat pegawai untuk dihubungi */}
                         <div className='uppercase text-sm font-bold text-gray-50 rounded bg-gray-950 p-1.5'>Maklumat Pegawai Dilantik Untuk Dihubungi</div>
-                        <div className='grid flex-1 gap-2 md:grid-cols-3 my-2'>
+                        <div className='grid flex-1 gap-2 md:grid-cols-2 my-2'>
                             <div className=''>
                                 <InputLabel
                                     htmlFor="vendor_contact_person"
@@ -322,6 +335,17 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                                     }
                                 />
                                 <ValueView value={parsedSnapshot['vendor_contact_person_phone']} />
+                            </div>
+                            <div>
+                                <InputLabel
+                                    htmlFor="vendor_contact_person_email"
+                                    value={
+                                        <>
+                                            E-Mel Pegawai Dilantik
+                                        </>
+                                    }
+                                />
+                                <ValueView value={parsedSnapshot['vendor_contact_person_email']} />
                             </div>
                         </div>
 
