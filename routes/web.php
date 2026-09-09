@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/vendor/view/{vendor_id}', [DashboardController::class, 'viewVendorDetails'])->name('vendor.view');
+    Route::post('/vendor/suspend', [VendorProcessController::class, 'suspendVendorCert'])->name('vendor.suspend');
+    Route::post('/vendor/suspend/reactivate', [VendorProcessController::class, 'reactivateSuspendedVendorCert'])->name('vendor.suspend.reactivate');
+
 
     //vendor verification
     Route::get('/vendor-approval', [VendorProcessController::class, 'showVendorApprovalPage'])->name('vendor-approval.index');
@@ -35,6 +38,7 @@ Route::middleware('auth')->group(function () {
     //procurement
     Route::get('/procurement', [ProcurementListController::class, 'viewProcurementList'])->name('procurement.index');
     Route::post('/procurement/add', [ProcurementListController::class, 'addProcurement'])->name('procurement.add');
+    Route::post('/procurement/delete', [ProcurementListController::class, 'deleteProcurement'])->name('procurement.delete');
 
     //admin user
     Route::get('/users', [AdminUserController::class, 'viewAdminUsers'])->name('admin.index');
@@ -48,12 +52,21 @@ Route::middleware('vendor')->group(function () {
     Route::get('/vendor', [VendorController::class, 'vendorDashboard'])->name('vendor.dashboard');
     Route::post('/vendor/submit-application', [VendorController::class, 'submitVendorApplication'])->name('vendor.submit-application');
     Route::get('/vendor/cert/{vendor_id}', [VendorController::class, 'downloadVendorCert'])->name('vendor.download-cert');
+    Route::get('/vendor/profile/{vendor_id}', [VendorController::class, 'viewVendorProfile'])->name('vendor.view-vendor-profile');
+    Route::get('/vendor/file/{path}', [VendorController::class, 'serveVendorFile'])->middleware('signed')->name('vendor.view-vendor.file');
 
     //form
     Route::get('/vendor/complete-registration', [VendorController::class, 'showVendorCompleteRegistrationForm'])->name('vendor.complete-registration');
     Route::post('/vendor/complete-registration', [VendorController::class, 'saveVendorCompleteRegistrationForm'])->name('vendor.complete-registration.save');
     Route::post('/vendor/upload-temp-file', [VendorController::class, 'uploadTempFile'])->name('vendor.upload-temp-file');
     Route::get('/vendor/view-temp-file', [VendorController::class, 'viewTempFile'])->name('vendor.view-temp-file');
+
+    //vendor update
+    Route::get('/vendor/update-profile/{vendor_id}', [VendorController::class, 'showVendorProfileUpdateForm'])->name('vendor.update-profile');
+    Route::post('/vendor/update-profile/save', [VendorController::class, 'saveVendorProfileUpdateForm'])->name('vendor.update-profile.save');
+    Route::post('/vendor/update-profile-confirm', [VendorController::class, 'confirmUpdateProfile'])->name('vendor.update-profile-confirm');
+    Route::delete('/vendor/delete-board-member/{board_id}', [VendorController::class, 'deleteBoardMember'])->name('vendor.delete-board-member');
+
 });
 
 //open procurement api

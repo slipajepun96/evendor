@@ -32,10 +32,16 @@ class DashboardController extends Controller
                 $vendor->cert_data_snapshot = json_decode($vendor->cert_data_snapshot, true);
                 return $vendor;
             });
+        $suspended_vendors = VendorCertificate::where('cert_status','suspended')->where('cert_end_date', '>=', now())->get()
+            ->map(function ($vendor) {
+                $vendor->cert_data_snapshot = json_decode($vendor->cert_data_snapshot, true);
+                return $vendor;
+            });
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Admin/Dashboard', [
             'unapproved_vendors' => $unapproved_vendors,
             'approved_vendors' => $approved_vendors,
+            'suspended_vendors' => $suspended_vendors,
         ]);
     }
 

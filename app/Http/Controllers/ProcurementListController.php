@@ -40,6 +40,15 @@ class ProcurementListController extends Controller
         return redirect()->route('procurement.index')->with('success', 'Procurement added successfully');
     }
 
+    public function deleteProcurement(Request $request)
+    {
+        // dd($request);
+
+        $procurement_list = ProcurementList::where('id','=',$request->procurement_id)->delete();
+
+        return redirect()->route('procurement.index')->with('success', 'Procurement deleted successfully');
+    }
+
     public function openProcurementAPI()
     {
         $open_procurements = ProcurementList::where('procurement_open_date', '<=', now())

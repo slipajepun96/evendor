@@ -73,8 +73,7 @@ export default function VendorApprovalView({ unapproved_vendor, snapshot , bank_
                     {/* status dan butiran permohonan */}
                     <div className='flex flex-row gap-1'>
                         <VendorApprovalApprove vendor_application_id={unapproved_vendor.id} vendor_name={parsedSnapshot['vendor_name']} />
-                        <SecondaryButton>Tolak Permohonan</SecondaryButton>
-                        <PrimaryButton>Cetak</PrimaryButton>
+
                     </div>
 
 

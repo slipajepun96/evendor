@@ -50,20 +50,27 @@ export default function VendorApprovalApprove({vendor_application_id , vendor_na
     const handleApprove = (e) => {
         e.preventDefault();
 
-        console.log('approving...');
+        if (processing) return;
+
         post(route('vendor-approval.approve', {
                 vendor_application_id: vendor_application_id,
                 application_status: 'approved',
-        }))
+        }), {
+            onSuccess: () => setIsDialogOpen(false),
+        })
     }
 
     const handleReject = (e) => {
         e.preventDefault();
 
+        if (processing) return;
+
         post(route('vendor-approval.approve', {
             vendor_application_id: data.vendor_application_id,
             application_status: 'rejected',
-        }))
+        }), {
+            onSuccess: () => setIsDialogOpen(false),
+        })
     }
 
     const handleDialogClose = (isOpen) => {

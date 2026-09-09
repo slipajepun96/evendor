@@ -1,21 +1,33 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, Link} from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import { BadgeCheck, Clock } from 'lucide-react';
 const now = new Date();
-import { Link, useForm } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DataTable from '@/Components/DataTable';
 import { Download } from 'lucide-react';
+import DashboardSuspendCert from '@/Pages/Admin/Partials/DashboardSuspendCert';
+import DashboardReactivateCert from '@/Pages/Admin/Partials/DashboardReactivateCert';
+import { Alert } from "flowbite-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const hours = now.getHours();
-console.log(`Current hour: ${hours}`);
 
-
-export default function Dashboard({ unapproved_vendors, approved_vendors }) 
+export default function Dashboard({ unapproved_vendors, approved_vendors, suspended_vendors }) 
 {
     // console.log(approved_vendors[0].cert_data_snapshot['vendor_name']);
+    const { flash } = usePage().props
+    const [showAlert, setShowAlert] = useState(false);
 
-    const columns = [
+    useEffect(() => {
+        if (flash?.success || flash?.error) {
+            setShowAlert(true);
+            const timer = setTimeout(() => setShowAlert(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [flash]);
+
+    const approved_vendor_columns = [
         {
             Header: 'Nama Vendor',
             accessor: ['vendor_name', 'vendor_id_num'],
@@ -49,13 +61,13 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
         },
         {
             Header: 'Status',
-            accessor: ['vendor_type',],
+            accessor: [],
             Cell: ({ row }) => {
                 return ( 
                     <div className="flex justify-center">
                         {row.cert_status === 'approved' && (
                             <div className="flex items-center bg-green-300 rounded-xl font-bold px-2 py-0.5 text-green-800 uppercase text-xs font-semibold">
-                                Lulus
+                                Aktif
                             </div>
                         )}
                         {row.cert_status === 'suspended' && (
@@ -93,18 +105,80 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                     >
                         <Download /> Perakuan
                     </PrimaryButton>
-                    <PrimaryButton
-                        className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                        onClick={() => handleDelete(row.id)}
-                    >
-                        Tarik Perakuan
-                    </PrimaryButton>
+                    <DashboardSuspendCert vendor_cert_uuid={row.id}/>
                 </div>
             ),
         },
     ];
+
+    const suspended_vendor_columns = [
+        {
+            Header: 'Nama Vendor',
+            accessor: ['vendor_name', 'vendor_id_num'],
+            Cell: ({ row }) => (
+                
+                    <div className="flex flex-col">
+                        <div className='font-semibold'>{row.cert_data_snapshot['vendor_name']}</div>
+                        <div className='text-sm'>{row.cert_data_snapshot['vendor_id_num']}</div>
+                    </div>
+                )
+        },
+        {
+            Header: 'Jenis Entiti',
+            accessor: ['vendor_type'],
+            Cell: ({ row }) => {
+                const snap = row.cert_data_snapshot ?? {};
+                return (
+                    <div className="flex flex-col text-sm">
+                        {snap['vendor_type'] === 'company' && ('Syarikat')}
+                        {snap['vendor_type'] === 'gov_entity' && ('Perbadanan / Entiti Kerajaan')}
+                        {snap['vendor_type'] === 'cooperation' && ('Koperasi')}
+                        {snap['vendor_type'] === 'organisation' && ('Pertubuhan / Kelab')}
+                <p> </p>
+                    {snap['vendor_company_type'] === 'bhd' && ('Berhad')}
+                    {snap['vendor_company_type'] === 'sdn-bhd' && ('Sendirian Berhad')}
+                    {snap['vendor_company_type'] === 'partnership' && ('Perkongsian')}
+                    {snap['vendor_company_type'] === 'sole-ownership' && ('Milikan Tunggal')}
+                </div>
+                )
+            }
+        },
+        {
+            Header: 'Sebab Digantung',
+            accessor: [],
+            Cell: ({ row }) => {
+                return ( 
+                    <>
+                        <p className='text-sm'>
+                            {row.cert_suspend_reason}
+                        </p>
+                    </>
+                )
+            }
+        },
+        // { Header: 'No. Telefon', accessor: 'vendor_phone' },
+        {
+            Header: 'Tindakan',
+            accessor: 'actions',
+            Cell: ({ row }) => (
+                <div className="flex space-x-2 gap-2">
+                    {/* <AllotteeEdit allottee={row} /> */}
+                    <Link href={route('vendor.view', row.vendor_id)}>
+                        <PrimaryButton
+                            className="px-2 py-1 text-white"
+                        >
+                            Lihat Butiran
+                        </PrimaryButton>
+                    </Link>
+                    <DashboardReactivateCert vendor_cert_uuid={row.id} vendor_name={row.cert_data_snapshot['vendor_name']}/>
+                </div>
+            ),
+        },
+    ];
+
     const number_of_unapproved_vendors = unapproved_vendors.length;
     const number_of_approved_vendors = approved_vendors.length;
+    const number_of_suspended_vendors = suspended_vendors.length;
     const user = usePage().props.auth.user;
     return (
         <AuthenticatedLayout
@@ -147,9 +221,40 @@ export default function Dashboard({ unapproved_vendors, approved_vendors })
                             </div> */}
                         </div>
                     </div>
+                    <div className='mt-4'>
+                        {showAlert && flash.success && (
+                            <Alert color="success" onDismiss={() => setShowAlert(false)}>
+                                <span className="font-medium">Success!</span> {flash.success}
+                            </Alert>
+                        )}
+                        
+                        {showAlert && flash.error && (
+                            <Alert color="failure" onDismiss={() => setShowAlert(false)}>
+                                <span className="font-medium">Error!</span> {flash.error}
+                            </Alert>
+                        )}
+                    </div>
+                    
+                    
                     <div className='bg-white p-3 mt-8 rounded-2xl shadow-lg '>
-                        <h2 className="text-2xl font-semibold text-gray-900">Senarai Vendor Disahkan</h2>
-                        <DataTable columns={columns} data={approved_vendors} className='mt-4'/>
+                        <h2 className="text-2xl font-semibold text-gray-900">Senarai Vendor</h2>
+                        <Tabs defaultValue="approved-vendor" className="w-full">
+                            <TabsList>
+                                <TabsTrigger value="approved-vendor">Vendor Disahkan & Aktif [{number_of_approved_vendors}]</TabsTrigger>
+                                <TabsTrigger value="suspended-vendor">Vendor Digantung [{number_of_suspended_vendors}]</TabsTrigger>
+                                <TabsTrigger value="expired-vendor">Vendor Tamat Perakuan</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="approved-vendor">
+                                <DataTable columns={approved_vendor_columns} data={approved_vendors} className='mt-4'/>
+                            </TabsContent>
+                            <TabsContent value="suspended-vendor">
+                                <DataTable columns={suspended_vendor_columns} data={suspended_vendors} className='mt-4'/>
+                            </TabsContent>
+                            <TabsContent value="expired-vendor">
+                                ~Akan Datang~
+                            </TabsContent>
+                        </Tabs>
+                        
                     </div>
 
                     {/* {approved_vendors.id} */}

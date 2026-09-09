@@ -31,7 +31,8 @@ export default function VendorApprovalIndex({ unapproved_vendors })
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2 gap-2">
-                    <Link href={route('vendor-approval.view', row.vendor_id)}>
+                    {/* <Link href={route('vendor-approval.view', row.vendor_id)}> */}
+                    <Link href={route('vendor-approval.view', row.id)}>
                         <PrimaryButton
                             className="px-2 py-1 text-white"
                         >

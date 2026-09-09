@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/table"
 import MPOBLicenseTypeList from './Partials/MPOBLicenseTypeList';
 import VendorAttachmentViewer from './Partials/VendorAttachmentViewer';
+import { Info } from "lucide-react";
 
 export default function VendorDashboard() {
     const { vendor } = usePage().props.auth;
@@ -964,9 +965,12 @@ export default function VendorDashboard() {
                                                 <InputLabel
                                                     htmlFor="vendor_bank_account_statement_address"
                                                     value={
-                                                        <>
+                                                        <div className=''>
                                                             Muat Naik Penyata Akaun Bank<span className="text-red-500">*</span>
-                                                        </>
+                                                            <div className='text-xs p-1 rounded bg-green-300'>
+                                                                Hanya Muka Hadapan Penyata Akaun Bank terkini untuk tempoh 1 bulan sahaja diperlukan
+                                                            </div>
+                                                        </div>
                                                     }
                                                 />
                                                 <FileUploadField

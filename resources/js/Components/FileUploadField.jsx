@@ -11,11 +11,15 @@ export default function FileUploadField({
     required = false,
     accept = '.pdf',
     maxSize = 5,
+    initialPath = '',
 }) {
     const inputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState('');
-    const [uploadedFile, setUploadedFile] = useState(null);
+    // seed from the already-saved path so existing uploads show as uploaded on load
+    const [uploadedFile, setUploadedFile] = useState(() =>
+        initialPath ? { name: initialPath.split('/').pop(), path: initialPath, size: null } : null
+    );
 
     const formatFileSize = (bytes) => {
         if (bytes < 1024) return bytes + ' B';
@@ -44,7 +48,7 @@ export default function FileUploadField({
             }
 
             const json = await response.json();
-            setUploadedFile({ name: file.name, size: file.size });
+            setUploadedFile({ name: file.name, size: file.size, path: json.path });
             onUploaded(json.path);
         } catch (err) {
             setUploadError(err.message ?? 'Upload gagal. Sila cuba lagi.');
@@ -116,8 +120,22 @@ export default function FileUploadField({
                     <FileIcon className="h-5 w-5 shrink-0 text-indigo-500" />
                     <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-gray-700">{uploadedFile.name}</p>
-                        <p className="text-xs text-gray-400">{formatFileSize(uploadedFile.size)}</p>
+                        {uploadedFile.size != null ? (
+                            <p className="text-xs text-gray-400">{formatFileSize(uploadedFile.size)}</p>
+                        ) : (
+                            <p className="text-xs text-green-600">Fail sedia ada</p>
+                        )}
                     </div>
+                    {uploadedFile.path && (
+                        <a
+                            href={route('vendor.view-temp-file', { path: uploadedFile.path })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 rounded px-2 py-1 text-xs text-indigo-600 underline hover:bg-indigo-100"
+                        >
+                            Lihat Fail
+                        </a>
+                    )}
                     <button
                         type="button"
                         onClick={() => inputRef.current?.click()}

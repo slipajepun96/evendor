@@ -39,12 +39,12 @@ class VendorProcessController extends Controller
         ]);
     }
 
-    public function showVendorApprovalView($vendor_id): Response
+    public function showVendorApprovalView($id): Response
     {
         // dd($vendor_id);
         
-            $unapproved_vendor = VendorApplication::where('vendor_id', $vendor_id)->first();
-            $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $vendor_id)->get();  
+            $unapproved_vendor = VendorApplication::where('id', $id)->first();
+            $boardDirectors = VendorBoard::where('vendor_board_vendor_id', $unapproved_vendor->vendor_id)->get();  
             // dd($boardDirectors);
 
             if (!$unapproved_vendor) {
@@ -96,7 +96,6 @@ class VendorProcessController extends Controller
 
     public function approveVendor(Request $request) 
     {
-        // dd($request->all());
         $validated = $request->validate([
             'vendor_application_id' => 'required|exists:vendor_applications,id',
             'application_status' => 'required|in:approved,rejected',
@@ -105,6 +104,12 @@ class VendorProcessController extends Controller
         // dd($validated);
 
         $application = VendorApplication::findOrFail($validated['vendor_application_id']);
+
+        // prevent double-submit from creating duplicate certificates
+        if ($application->application_status !== 'pending') {
+            return redirect()->route('vendor-approval.index')->with('error', 'Permohonan ini telah diproses.');
+        }
+
         $application->application_status = $validated['application_status'];
         $application->application_approved_rejected_by = Auth::id();
         $application->application_approved_rejected_date = now();
@@ -213,6 +218,39 @@ class VendorProcessController extends Controller
             return response($file, 200)
         ->header('Content-Type', $mimeType)
         ->header('Content-Disposition', 'inline; filename="' . basename($filePath) . '"');
+    }
+
+    public function suspendVendorCert(Request $request): RedirectResponse
+    {
+        try {
+            $current_user = Auth::user()->id;
+            $cert = VendorCertificate::where('id', $request->vendor_cert_uuid)->where('cert_status','!=','suspended')->firstOrFail();
+            $cert->cert_status = 'suspended';
+            $cert->cert_suspend_reason = $request->notes ?? "Tiada Sebab Dinyatakan";
+            $cert->cert_suspend_date = now();
+            $cert->cert_suspended_by_uuid = $current_user;
+
+            $cert->save();
+            return redirect()->route('dashboard')->with('success', 'Vendor status updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('dashboard')->with('error', 'Failed to suspend certificate: ' . $e->getMessage());
+        }
+    }
+
+    public function reactivateSuspendedVendorCert(Request $request): RedirectResponse
+    {
+        try {
+            $cert = VendorCertificate::where('id', $request->vendor_cert_uuid)->where('cert_status','=','suspended')->firstOrFail();
+            $cert->cert_status = 'approved';
+            $cert->cert_suspend_reason = NULL;
+            $cert->cert_suspend_date = NULL;
+            $cert->cert_suspended_by_uuid = NULL;
+
+            $cert->save();
+            return redirect()->route('dashboard')->with('success', 'Vendor status updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('dashboard')->with('error', 'Failed to reactivate suspended certificate: ' . $e->getMessage());
+        }
     }
         
 }

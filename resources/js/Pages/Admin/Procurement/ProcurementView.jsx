@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import ProcurementAddProcurement from './Partials/ProcurementAddProcurement';
+import ProcurementDeleteProcurement from './Partials/ProcurementDeleteProcurement';
 
 
 export default function ProcurementView({procurement}) 
@@ -106,6 +107,7 @@ export default function ProcurementView({procurement})
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2 gap-2">
+                    <ProcurementDeleteProcurement procurement={row} />
                     {/* <AllotteeEdit allottee={row} /> */}
                     {/* <Link href={route('vendor.view', row.vendor_id)}>
                         <PrimaryButton

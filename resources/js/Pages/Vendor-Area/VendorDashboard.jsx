@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import VendorAuthenticatedLayout from '@/Layouts/VendorAuthenticatedLayout';
 import { Head, usePage, Link } from '@inertiajs/react';
-import { BadgeCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BadgeCheck, OctagonAlert } from 'lucide-react';
 import VendorApplication from './Partials/VendorApplication';
 const now = new Date();
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -17,6 +18,8 @@ import {
   TimelineTitle,
 } from "flowbite-react";
 // import { HiArrowNarrowRight, HiCalendar } from "react-icons/hi";
+import { Alert } from "flowbite-react";
+import VendorEditProfileStartDialog from '@/Pages/Vendor-Area/Partials/VendorEditProfileStartDialog';
 
 const hours = now.getHours();
 // console.log(`Current hour: ${hours}`);
@@ -31,11 +34,22 @@ const formatDate = (dateString) => {
 };
 
 
-export default function VendorDashboard({ vendor, vendor_details, vendor_applications, vendor_active_cert, openProcurements = [] }) {
+export default function VendorDashboard({ vendor, vendor_details, vendor_applications, vendor_active_cert, openProcurements = [], vendor_active_cert_suspended }) {
     // const { vendor } = usePage().props.auth;
 
     const vendor_profile_completed = !!vendor_details;
     const vendor_application_status = vendor_applications.length > 0 ? vendor_applications[0].application_status : null;
+
+    const { flash } = usePage().props
+    const [showAlert, setShowAlert] = useState(false);
+
+    useEffect(() => {
+        if (flash?.success || flash?.error) {
+            setShowAlert(true);
+            const timer = setTimeout(() => setShowAlert(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [flash]);
     
 
 
@@ -74,7 +88,7 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                     </div>
                                     <div className="rounded-lg border-gray-200 shadow border p-4">
                                         <p className="font-bold text-gray-700">2. Hantar Permohonan Menjadi Vendor</p>
-                                        {vendor_profile_completed && (vendor_application_status === null) ? ( <p className='bg-green-600 rounded text-white px-1 text-xs font-bold uppercase inline-block'>Perlu Tindakan</p>
+                                        {vendor_profile_completed && (vendor_application_status === null || vendor_application_status === 'expired') ? ( <p className='bg-green-600 rounded text-white px-1 text-xs font-bold uppercase inline-block'>Perlu Tindakan</p>
                                         ) : vendor_profile_completed && (vendor_application_status !== null) ? (<p className='bg-sky-600 rounded text-white px-1 text-xs font-bold uppercase inline-block'>Selesai</p>
                                         ) : (
                                             <p className='bg-gray-400 rounded text-white px-1 text-xs font-bold uppercase inline-block'>Profil Tidak Lengkap</p>
@@ -123,12 +137,15 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                                             {/* <Link className='text-xs underline hover:font-bold' href={route('vendor.complete-registration')}>Kemaskini Pendaftaran Anda</Link> */}
                                        </div>
                                        <div><p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p></div>
+                                       
                                     </div>
+                                    <Link href={route('vendor.view-vendor-profile', vendor_details?.vendor_account_id)}><PrimaryButton className="mr-1">Lihat</PrimaryButton></Link>
+                                    <VendorEditProfileStartDialog vendor_id={vendor_details?.id}/>
                                 </div>
                             </div>
                             ) }
 
-                            {vendor_profile_completed && (vendor_application_status === null) && (
+                            {vendor_profile_completed && (vendor_application_status === null && vendor_active_cert === null) && (
                             <div className='bg-gray-300 h-30 p-4 rounded-xl relative'>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-700'>Permohonan Vendor</p>
@@ -172,20 +189,52 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             </div>
                             )}
 
-                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' ) && (
-                            <div className='bg-lime-300 h-30 p-4 rounded-xl relative'>
-                                <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                            { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'expired' ) && (
+                            <div className='bg-gray-300 h-30 p-4 rounded-xl relative'>
                                 <div className='relative z-10'>
                                     <p className='font-bold text-gray-700'>Permohonan Vendor</p>
                                     <div className='flex w-full justify-between'>
                                         <div>
-                                            <p className='text-2xl font-bold text-gray-700'>Diluluskan</p>
-                                            <p className='uppercase text-xs font-semibold'>Tamat Pada {formatDate(vendor_active_cert?.cert_end_date)}</p>
+                                            <p className='text-2xl font-bold text-gray-700'>Tiada</p>
+                                            <VendorApplication vendor_details_id={vendor_details?.id} vendor_id={vendor_details?.vendor_account_id} />
                                        </div>
-                                        <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                        <p className='text-4xl font-bold'><X size='48' color="#6a6a6a" /></p>
                                     </div>
                                 </div>
                             </div>
+                            )}
+
+                            { vendor_profile_completed && (vendor_application_status !== null && (vendor_applications[0].application_status === 'approved') ) && (
+                                <>
+                                {vendor_active_cert && (
+                                    <div className='bg-lime-300 h-30 p-4 rounded-xl relative'>
+                                        <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                                        <div className='relative z-10'>
+                                            <p className='font-bold text-gray-700'>Status Vendor</p>
+                                            <div className='flex w-full justify-between'>
+                                                <div>
+                                                    <p className='text-2xl font-bold text-gray-700'>Aktif</p>
+                                                    <p className='uppercase text-xs font-semibold'>Tamat Pada {formatDate(vendor_active_cert?.cert_end_date)}</p>
+                                            </div>
+                                                <p className='text-4xl font-bold'><BadgeCheck size='48' color="#166534" /></p>
+                                            </div>
+                                        </div>
+                                    </div>)} 
+                                    {vendor_active_cert_suspended && (
+                                    <div className='bg-yellow-300 h-30 p-4 rounded-xl relative'>
+                                        <div className='absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-xl'></div>
+                                        <div className='relative z-10'>
+                                            <p className='font-bold text-gray-700'>Status Vendor</p>
+                                            <div className='flex w-full justify-between'>
+                                                <div>
+                                                    <p className='text-2xl font-bold text-gray-700'>Digantung</p>
+                                                    <p className='uppercase text-xs font-semibold'>Nota : {vendor_active_cert_suspended?.cert_suspend_reason}</p>
+                                            </div>
+                                                <p className='text-4xl font-bold'><OctagonAlert size='48' color="#166534" /></p>
+                                            </div>
+                                        </div>
+                                    </div>)} 
+                                </>
                             
                             )}
                             
@@ -205,7 +254,20 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                             </div> */}
                         </div>
                     </div>
-                    { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' ) && (
+                    <div className='mt-4'>
+                        {showAlert && flash.success && (
+                            <Alert color="success" onDismiss={() => setShowAlert(false)}>
+                                <span className="font-medium">Success!</span> {flash.success}
+                            </Alert>
+                        )}
+                        
+                        {showAlert && flash.error && (
+                            <Alert color="failure" onDismiss={() => setShowAlert(false)}>
+                                <span className="font-medium">Error!</span> {flash.error}
+                            </Alert>
+                        )}
+                    </div>
+                    { vendor_profile_completed && (vendor_application_status !== null && vendor_applications[0].application_status === 'approved' && vendor_active_cert ) && (
                         <div className="overflow-hidden bg-white shadow-lg rounded-2xl mt-4 p-4">
                             <p className=" text-gray-900 font-semibold">
                                 Perakuan Pendaftaran Vendor

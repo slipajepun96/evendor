@@ -100,7 +100,7 @@ export default function ProcurementAddProcurement({ }) {
                                 <div>
                                     <InputLabel
                                         htmlFor="procurement_title"
-                                        value="Tajuk Perolehan"
+                                        value="Kod Perolehan"
                                     />
                                     <TextInput
                                         id="procurement_title"
@@ -110,6 +110,7 @@ export default function ProcurementAddProcurement({ }) {
                                         onChange={(e) =>
                                             setData('procurement_title', e.target.value)
                                         }
+                                        placeholder="Contoh : PASB/HQ/Tender/2026/01"
                                         required
                                     />
                                     <InputError
