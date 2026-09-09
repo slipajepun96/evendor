@@ -1,1 +1,0 @@
-import{j as s}from"./app-Do--cafg.js";function t(e){return s.jsxs("div",{className:"flex flex-col gap-0",children:[s.jsx("p",{className:"font-bold text-2xl",children:"E-Vendor"}),s.jsx("p",{className:"text-xs font-bold tracking-tight uppercase",children:"PKPP Agro Sdn. Bhd."})]})}export{t as A};

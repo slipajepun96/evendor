@@ -1,1 +1,0 @@
-import{j as s}from"./app-Do--cafg.js";function i({value:t,className:e="",children:o,...r}){return s.jsx("label",{...r,className:"block text-md font-semibold text-gray-900 "+e,children:t||o})}export{i as V};
