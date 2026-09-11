@@ -286,6 +286,12 @@ export default function VendorDashboard({ vendor, vendor_details, vendor_applica
                         </div>
                     )}
 
+                    <div className='border border-gray-300 p-4 rounded-xl bg-white mt-3'>
+                        <h1 className="text-xl font-bold text-gray-800">Sistem ini masih dalam pemantauan kami</h1>
+                        <p>Sekiranya anda menghadapi masalah teknikal atau ingin memberi pandangan, sila hubungi PIC Teknikal melalui Whatsapp</p>
+                        <a href="https://api.whatsapp.com/send?phone=60197487299&text=Hi%20Support%20E-Vendor" target='_blank'><PrimaryButton>Whatsapp</PrimaryButton></a> atau 019-748 7299
+                    </div>
+
                     <div className='border border-gray-300 p-4 rounded-xl bg-white mb-8 mt-3'>
                         <h1 className="text-xl font-bold text-gray-800">Tender / Sebut Harga Sedang Aktif</h1>
                         {openProcurements.length === 0 && (
