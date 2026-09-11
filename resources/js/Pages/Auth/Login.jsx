@@ -190,7 +190,7 @@ export default function Login({ status, canResetPassword }) {
                                             Kembali ke Halaman Utama
                                         </Link>
                                     </>
-                            | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                            | PKPP Agro Sdn Bhd © 2026 Hak Cipta Terpelihara
                             </footer>
                         </div>
                     </div>

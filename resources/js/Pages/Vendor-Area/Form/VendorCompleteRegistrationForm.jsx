@@ -58,6 +58,7 @@ export default function VendorDashboard() {
 
     const [vendorType, setVendorType] = useState(''); 
     const [companyType, setCompanyType] = useState(''); 
+    const [serviceType, setServiceType] = useState('');
     const [boardDirectors, setBoardDirectors] = useState([]); 
     const [shouldSubmit, setShouldSubmit] = useState(false);
     
@@ -283,6 +284,40 @@ export default function VendorDashboard() {
                     </div> */}
 
 
+                    <div className="overflow-hidden bg-white shadow-lg sm:rounded-2xl p-4 mb-4">
+                        <InputLabel
+                            htmlFor="service_type"
+                            value={
+                                <>
+                                    Pilih Jenis Perkhidmatan Yang Ditawarkan<span className="text-red-500">*</span>
+                                </>
+                            }
+                        />
+                        <RadioGroup
+                            name="service_type"
+                            value={serviceType}
+                            onChange={setServiceType}
+                            options={[
+                                { value: 'pembekalan', label: <div className="text-center"><div className="font-bold text-2xl">Pembekalan</div>
+                                <div className="text-xs font-semibold">
+                                    Pembekalan Baja <br />
+                                    Pembekalan Racun <br />
+                                    Pembekalan Alat Tulis <br />
+                                    dan lain lain
+                                    </div></div> },
+                                { value: 'perkhidmatan', label: <div className="text-center"><div className="font-bold text-2xl">Perkhidmatan</div>
+                                <div className="text-xs font-semibold">
+                                    Perkhidmatan Jalan Raya <br />
+                                    Perkhidmatan Tanam Semula <br />
+                                    Perkhidmatan Pengangkutan Dalaman <br />
+                                    dan lain lain
+                                    </div></div> },
+                            ]}
+                            columns={2}
+                        />
+                    </div>
+
+                    {serviceType && (
                     <form onSubmit={submit}>  
                         {/* part 1 */}
                         <div className="overflow-hidden bg-white shadow-lg sm:rounded-2xl p-4">
@@ -2527,6 +2562,7 @@ export default function VendorDashboard() {
 
                         {/* part 2 */}
                     </form>
+                    )}
                 </div>
             </div>
         </VendorAuthenticatedLayout>

@@ -20,6 +20,9 @@ export default function VendorAuthenticatedLayout({ header, children }) {
                 style={{
                 background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #3ABCC2 100%)",
                 }}> 
+
+        {/* <div className="absolute inset-0 -z-10 h-full w-full bg-[#ffffff] bg-[radial-gradient(125%_125%_at_50%_90%,_#ffffff_40%,_#10b981_100%)] bg-[size:100%_100%]"> */}
+                
             <nav className=" text-gray-900">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">

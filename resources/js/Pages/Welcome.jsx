@@ -203,6 +203,16 @@ export default function Welcome({ auth, canResetPassword, status, openProcuremen
                                                         required
                                                     />
 
+                                                    {(!/^.{8,}$/.test(data.password) ||
+                                                        !/[A-Z]/.test(data.password) ||
+                                                        !/[a-z]/.test(data.password) ||
+                                                        !/[0-9]/.test(data.password) ||
+                                                        !/[^A-Za-z0-9]/.test(data.password)) && (
+                                                        <p className="mt-1 text-xs text-gray-600">
+                                                            Kata laluan mestilah sekurang-kurangnya 8 aksara dan mengandungi huruf besar, huruf kecil, nombor serta simbol.
+                                                        </p>
+                                                    )}
+
                                                     <InputError message={errors.password} className="mt-2" />
                                                 </div>
 
@@ -219,6 +229,12 @@ export default function Welcome({ auth, canResetPassword, status, openProcuremen
                                                         onChange={(e) => setData('password_confirmation', e.target.value)}
                                                         required
                                                     />
+
+                                                    {data.password_confirmation && data.password_confirmation !== data.password && (
+                                                        <p className="mt-1 text-xs text-red-600">
+                                                            Kata laluan tidak sepadan.
+                                                        </p>
+                                                    )}
 
                                                     <InputError message={errors.password_confirmation} className="mt-2" />
                                                 </div>
@@ -316,7 +332,7 @@ export default function Welcome({ auth, canResetPassword, status, openProcuremen
                             </>
                         )}
                         
-                    | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                    | PKPP Agro Sdn Bhd © 2026 Hak Cipta Terpelihara
                     </footer>
                 </div>
             </div>

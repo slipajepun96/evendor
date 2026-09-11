@@ -58,7 +58,7 @@ export default function CheckCert({ certExists, cert_id, certDetails }) {
                 </div>
             </div>
             <footer className="text-center text-sm text-black border-t py-4">
-                PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                PKPP Agro Sdn Bhd © 2026 Hak Cipta Terpelihara
             </footer>
         </>
     );
